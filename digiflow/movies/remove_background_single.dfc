@@ -1,0 +1,14 @@
+FileNameOriginal:= ask_file("Select file to be corrected",true,"", "*.dfi;*.dfm;");
+FileNameBackground:= ask_file("Select file containing background image",true,"", "*.dfi;*.dfm;");;
+
+backImage:=read_image(FileNameBackground,0) max 10e-3;
+imageDets:=read_image_details(FileNameOriginal]);
+
+for j:=0 to imageDets.fLast-1 {
+		outImage:=left_string(FileNameOriginal,length(FileNameOriginal)-4);
+		image:=read_image(FileNameOriginal,j);
+		correctedImage:=image/backImage;
+		write_image(outImage+"_corrected.dfm",correctedImage,j);
+};
+
+

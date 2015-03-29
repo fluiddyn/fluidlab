@@ -1,0 +1,43 @@
+
+include("V:\Users\must\FluidDyn\Digiflow\Movies\record_movies.dfc")
+
+file:=open_file("V:\Users\must\FluidDyn\scripts\Experiments\path_working_exp.txt");
+path:=read_line(file);
+close_file(file);
+
+path := path+"\Images";
+create_directory(path);
+
+
+
+#options.processFrame := "(none)";
+options.processFrame := "rotate 90";
+
+region := "(all)";
+####region := "inner_cylinder";
+
+record_video(path+"\background.dfm", 
+             total_time:=2, freq_acq:=1., options, region);
+
+sleep_for(60*15);
+
+record_video(path+"\t=15min_90min_1Hz.dfm", 
+             total_time:=90*60, freq_acq:=1., options, region);
+
+nb_mins_between_movies := 120;
+start_timer(nb_mins_between_movies*60);
+
+for iv:=0 to 10 {
+ if (iv>0) {wait_for_timer();};
+ time_till_start := 105+iv*nb_mins_between_movies; 
+ file_name := "t="+time_till_start+"min_20min_1Hz.dfm";
+ record_video(path+"\"+file_name, 
+              total_time:=20*60, freq_acq:=1., options, region);
+};
+
+
+
+print("End of the sript.");
+
+
+

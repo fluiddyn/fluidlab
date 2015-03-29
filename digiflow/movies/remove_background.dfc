@@ -1,0 +1,14 @@
+dirName:=ask_directory("Select directory for working images","V:\Users\Must\Exp_data\");
+success:=change_directory(dirName+"\",true);
+fileList:=list_files("*.dfm");
+backImage:=read_image("background.dfm",1) max 10e-3;
+for i:=1 to n_size(fileList)-1 {
+	imageDets:=read_image_details(fileList[i]);
+	for j:=0 to imageDets.fLast-1 {
+		outImage:=left_string(fileList[i],length(fileList[i])-4);
+		image:=read_image(fileList[i],j);
+		correctedImage:=image/backImage;
+		write_image(outImage+"_corrected.dfm",correctedImage,j);
+	};
+};
+

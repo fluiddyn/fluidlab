@@ -1,0 +1,20 @@
+dirName:=ask_directory("Select directory for working images");
+success:=change_directory(dirName+"\",true);
+fileList:=list_files("*corrected.dfm");
+hV1:=view(read_image(fileList[0]));
+clickData:=get_mouse_click(hV1,wait_for_ever,true);
+col:=int(clickData.x);
+close_view(hV1);
+
+for i:=0 to n_size(fileList)-1 {
+	imageDets:=read_image_details(fileList[i]);
+	nt:=imageDets.fLast;
+	ny:=imageDets.ny;
+	timeSeries:=make_array(0,nt,ny);
+	for j:=0 to nt-1 {
+		outImage:=left_string(fileList[i],length(fileList[i])-4);
+		image:=read_image(fileList[i],j);
+		timeSeries[j,:]:=image[col,:];
+	};
+  	write_image(outImage+"_ts_col"+col+".dfm",timeSeries);
+};

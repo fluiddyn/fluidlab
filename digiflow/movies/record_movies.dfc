@@ -1,0 +1,82 @@
+
+function print(s){?s;};
+
+function close_live_view_if_opened(){
+hV := camera_get_view();
+if (not(is_null(hV))) {
+  camera_close_live_view();
+  while (is_integer(camera_get_view())) {};
+};
+};
+
+cam := camera_capabilities();
+freq_max := cam.fpsCameraMax;
+
+
+function record_video(
+  path_file, total_time, freq_acq, options:=null, region:="(all)"){
+
+print("Function record_video:");
+print("record the new movie and save it in");
+print(path_file);
+#print(freq_acq);
+# First, verify if the value of freq_max is OK.
+ratio := !freq_max/freq_acq;
+iratio := round(ratio);
+if (iratio <> ratio) {
+  print("freq_max/freq_acq should be an integer. freq_max recomputed...");
+  freq_acq := freq_max/iratio + 0.01;
+};
+
+
+hV := camera_get_view();
+
+if (is_null(hV)) {
+  print("Create a live view.");
+  options.fpsAcquire := freq_acq;
+  options.shutterSpeed := 1;
+  hV := camera_live_view(options);
+}
+;
+
+camera_set_frame_rate(freq_acq);
+
+total_time := total_time+0.01;
+nb_frames := int(1+total_time*freq_acq);
+
+print("nb_frames:");
+print(nb_frames);
+
+camera_capture_file(
+    path_file, 
+    nb_frames, nBits:=8,
+    regionName:=region
+);
+camera_wait_for_capture_ready();
+print("Start the capture.");
+camera_start_capture();
+
+camera_wait_for_capture();
+
+print("Stop the capture.");
+movie := camera_stop_capture(false);
+};
+
+
+
+
+#path := "C:\Users\pa371\Work";
+#options.processFrame := "rotate 90";
+#region := "inner_cylinder";
+#record_video(
+#  path+"\try_2s_24Hz.dfm", total_time:=2., freq_acq:=24., options, region);
+#record_video(
+#  path+"\try_10s_1Hz.dfm", total_time:=10, freq_acq:=1, options);
+#record_video(
+#  path+"\try_3s_6Hz.dfm", total_time:=3, freq_acq:=6, options);
+#
+#close_live_view_if_opened();
+#
+#print("End of the sript.");
+
+
