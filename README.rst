@@ -13,7 +13,7 @@ planned features have not yet been implemented.
 
 It has first been developed by `Pierre Augier
 <http://www.legi.grenoble-inp.fr/people/Pierre.Augier/>`_ (CNRS
-researcher at `LEGI <http://www.legi.grenoble-inp.fr>`_, Grenoble): in
+researcher at `LEGI <http://www.legi.grenoble-inp.fr>`_, Grenoble) in
 the G. K. Batchelor Fluid Dynamics Laboratory at DAMTP, University of
 Cambridge.
 

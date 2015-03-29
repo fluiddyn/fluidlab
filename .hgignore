@@ -22,7 +22,7 @@ fluiddyn/lab/boards/PowerDAQ/powerdaq.c
 fluiddyn/lab/boards/PowerDAQ/powerdaq.def
 fluiddyn/lab/boards/PowerDAQ/powerdaq.o
 
-fluiddyn.egg-info/*
+*.egg-info/*
 
 build/*
 dist/*.tar.gz

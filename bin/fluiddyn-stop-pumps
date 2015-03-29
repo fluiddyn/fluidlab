@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+"""Quickly stop the pumps!"""
+import argparse
+parser = argparse.ArgumentParser(description=__doc__)
+args = parser.parse_args()
+
+from fluiddyn.lab.pumps import MasterFlexPumps
+pumps = MasterFlexPumps(nb_pumps=2)
