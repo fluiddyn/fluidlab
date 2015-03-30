@@ -43,4 +43,6 @@ The package :mod:`fluidlab` contains:
 
 """
 
+from fluidlab._version import __version__
+
 from fluiddyn.util.util import load_exp

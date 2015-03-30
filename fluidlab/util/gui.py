@@ -32,7 +32,7 @@ from fluiddyn.util.deamons import DaemonThread as Daemon
 
 
 
-from fluiddyn.lab.rotatingobjects import (
+from fluidlab.rotatingobjects import (
     create_rotating_objects_kepler,
     DaemonRunningRotatingObject, 
     RotatingObject)
@@ -291,7 +291,7 @@ class MainFrameRunExp(ttk.Frame):
 
 if __name__ == '__main__':
 
-    from fluiddyn.lab.exp.withconductivityprobe import DaemonMeasureProfiles
+    from fluidlab.exp.withconductivityprobe import DaemonMeasureProfiles
     import numpy as np
 
 
