@@ -1,5 +1,6 @@
-"""Remote control of Raspberry Pi :mod:`fluidlab.raspberrypi.remotecontrol`
-===============================================================================
+"""
+Remote control of RPi (:mod:`fluidlab.objects.raspberrypi.remotecontrol`)
+=========================================================================
 
 
 """

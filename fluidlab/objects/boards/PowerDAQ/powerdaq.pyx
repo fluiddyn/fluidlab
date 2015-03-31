@@ -1,4 +1,4 @@
-"""PowerDAQ board (:mod:`fluidlab.boards.powerdaq`).
+"""PowerDAQ board (:mod:`fluidlab.objects.boards.powerdaq`).
 
 
 """

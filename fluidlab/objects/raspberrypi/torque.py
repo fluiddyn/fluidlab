@@ -1,5 +1,5 @@
-"""Torque measurements :mod:`fluidlab.raspberrypi.torque`
-=============================================================
+"""Torque measurements (:mod:`fluidlab.objects.raspberrypi.torque`)
+===================================================================
 
 Handle measurement, saving, loading and plotting of torque measured by
 a gain strain using a Raspberry Pi.
@@ -31,14 +31,14 @@ from fluiddyn.io import FLUIDDYN_PATH_EXP
 from fluiddyn.io.hdf5 import H5File
 import fluiddyn.output.figs as figs
 
-from fluidlab.boards import FalseBoard
+from fluidlab.objects.boards import FalseBoard
 if hostname in hostnames_measuring:
     try:
-        from fluidlab.raspberrypi.daq import MCP3008SPI
+        from fluidlab.objects.raspberrypi.daq import MCP3008SPI
         board = MCP3008SPI(differential=False)
     except (ImportError) as Error:
         print('Warning: ImportError '
-              'fluidlab.raspberrypi.daq (use FalseBoard).')
+              'fluidlab.objects.raspberrypi.daq (use FalseBoard).')
         board = FalseBoard()
         board.Error = Error
 

@@ -1,8 +1,9 @@
 """
-Pumps (:mod:`fluidlab.pumps`)
+Pumps (:mod:`fluidlab.objects.pumps`)
+=====================================
 
 .. _pumps:
-.. currentmodule:: fluidlab.pumps
+.. currentmodule:: fluidlab.objects.pumps
 
 Provides:
 
@@ -78,7 +79,7 @@ class MasterFlexPumps(object):
     Notes
     -----
     The pumps and this class are often used with the class
-    :class:`fluidlab.tanks.StratifiedTank`.
+    :class:`fluidlab.objects.tanks.StratifiedTank`.
 
     """
 

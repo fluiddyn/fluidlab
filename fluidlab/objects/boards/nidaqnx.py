@@ -1,7 +1,7 @@
-"""National Instrument board (:mod:`fluidlab.boards.nidaqnx`)
-=================================================================
+"""National Instrument board (:mod:`fluidlab.objects.boards.nidaqnx`)
+=====================================================================
 
-.. currentmodule:: fluidlab.boards.nidaqnx
+.. currentmodule:: fluidlab.objects.boards.nidaqnx
 
 Provides:
 

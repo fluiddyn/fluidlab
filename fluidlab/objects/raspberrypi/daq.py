@@ -1,5 +1,5 @@
-"""Raspberry Pi acquisition board MCP3008SPI :mod:`fluidlab.raspberrypi.daq`
-================================================================================
+"""RPi acquisition board MCP3008SPI (:mod:`fluidlab.objects.raspberrypi.daq`)
+=============================================================================
 
 """
 

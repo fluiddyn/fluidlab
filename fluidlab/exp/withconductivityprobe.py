@@ -39,8 +39,8 @@ from fluiddyn.util.timer import Timer
 
 from fluidlab.exp.withtank import ExperimentWithTank
 
-from fluidlab.boards import PowerDAQBoard
-from fluidlab.probes import MovingConductivityProbe
+from fluidlab.objects.boards import PowerDAQBoard
+from fluidlab.objects.probes import MovingConductivityProbe
 
 import fluiddyn.output.figs as figs
 
@@ -74,7 +74,7 @@ class Profiles(object):
         The associated experiment.
     path_save : str
         The absolute path of the directory associated with the experiment.
-    sprobe : :class:`fluidlab.probes.MovingConductivityProbe`
+    sprobe : :class:`fluidlab.objects.probes.MovingConductivityProbe`
         For controlling the conductivity probe and the traverse.
 
     """
@@ -112,7 +112,7 @@ class Profiles(object):
             the number of "periods" skipped (for which no profile is
             measured).
 
-        inner_cylinder : {None, :class:`fluidlab.rotatingobject.RotatingObject`}, optional
+        inner_cylinder : {None, :class:`fluidlab.objects.rotatingobject.RotatingObject`}, optional
             Object representing a rotating inner cylinder. Is given to
             obtain and save the rotation rate when a profile is saved.
 
@@ -452,12 +452,12 @@ class ExpWithConductivityProbe(ExperimentWithTank):
     ----------
     board : :class:`fluidlab.board.PowerDAQBoard`
         For controlling the acquisition board.
-    sprobe : :class:`fluidlab.probes.MovingConductivityProbe`
+    sprobe : :class:`fluidlab.objects.probes.MovingConductivityProbe`
         For controlling the conductivity probe and the traverse.
     profiles : :class:`fluidlab.exp.withconductivityprobe.Profiles`
         For profiles...
 
-    tank : :class:`fluidlab.tanks.StratifiedTank`
+    tank : :class:`fluidlab.objects.tanks.StratifiedTank`
         Contains the informations on the tank and the density profile.
     first_creation : bool
         False if the experiment has not been loaded from the disk.

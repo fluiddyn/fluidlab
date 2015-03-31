@@ -1,8 +1,8 @@
-"""Data Acquisition boards (:mod:`fluidlab.boards`)
-=======================================================
+"""Data Acquisition boards (:mod:`fluidlab.objects.boards`)
+===========================================================
 
 .. _lab.boards:
-.. currentmodule:: fluidlab.boards
+.. currentmodule:: fluidlab.objects.boards
 
 Provides two small classes, :class:`ObjectUsingBoard` and the modules:
 
@@ -12,17 +12,17 @@ Provides two small classes, :class:`ObjectUsingBoard` and the modules:
    nidaqnx
 
 **Remark**: Can not import the module
-:mod:`fluidlab.boards.powerdaq` in Linux... So no doc!
+:mod:`fluidlab.objects.boards.powerdaq` in Linux... So no doc!
 
 
 The classes for data acquisition boards should be obtained from this
 package. If the boards are not available, no error are raised and the
 classes are replaced by the class
-:class:`fluidlab.boards.FalseBoard`.
+:class:`fluidlab.objects.boards.FalseBoard`.
 
 For example, with a computer without PowerDAQ board::
 
-    from fluidlab.boards import PowerDAQBoard
+    from fluidlab.objects.boards import PowerDAQBoard
     board = PowerDAQBoard() # no error
     assert(board.works == False) # no error
     assert(not board) # no error
@@ -66,7 +66,7 @@ try:
    from .powerdaq import PowerDAQBoard
 except ImportError:
     _write_warning(
-       'Warning:\n    no fluidlab.boards.powerdaq (use FalseBoard).')
+       'Warning:\n    no fluidlab.objects.boards.powerdaq (use FalseBoard).')
     PowerDAQBoard = FalseBoard
 
 
@@ -77,7 +77,7 @@ if nidaqnx.works:
 else:
     _write_warning(
        'Warning:\n    '
-       'no fluidlab.boards.nidaqnx.NIDAQBoard (use FalseBoard).')
+       'no fluidlab.objects.boards.nidaqnx.NIDAQBoard (use FalseBoard).')
     NIDAQBoard = FalseBoard
 
 

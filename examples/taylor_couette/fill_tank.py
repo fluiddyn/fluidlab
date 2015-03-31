@@ -1,7 +1,7 @@
 """fill_tank.py: fill the tank of the "working" experiment.
 -----------------------------------------------------------
 
-See :mod:`fluidlab.tanks`.
+See :mod:`fluidlab.objects.tanks`.
 
 """
 from __future__ import division, print_function

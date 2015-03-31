@@ -1,8 +1,8 @@
 """
-Probes (:mod:`fluidlab.probes`)
-===================================
+Probes (:mod:`fluidlab.objects.probes`)
+=======================================
 
-.. currentmodule:: fluidlab.probes
+.. currentmodule:: fluidlab.objects.probes
 
 Provides:
 
@@ -25,13 +25,13 @@ from fluiddyn.io import txt
 
 from fluiddyn.util import time_as_str
 from fluiddyn.util import query
-from fluidlab.traverse import Traverse
+from fluidlab.objects.traverse import Traverse
 
-from fluidlab.boards import ObjectUsingBoard
+from fluidlab.objects.boards import ObjectUsingBoard
 
 import fluiddyn.output.figs as figs
 
-from fluidlab.pinchvalve import PinchValve, tube_as_opened_as_possible
+from fluidlab.objects.pinchvalve import PinchValve, tube_as_opened_as_possible
 
 # class TemperatureProbe(ObjectUsingBoard):
 #     """A class handling the temperature probe."""
@@ -492,7 +492,7 @@ if __name__ == '__main__':
 
 #     from fluiddyn.util.timer import Timer
 
-    from fluidlab.boards import PowerDAQBoard
+    from fluidlab.objects.boards import PowerDAQBoard
 
     board = PowerDAQBoard()
     sprobe = MovingConductivityProbe(board=board)

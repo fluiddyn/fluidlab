@@ -1,8 +1,8 @@
 """
-Traverses (:mod:`fluidlab.traverse`)
-========================================
+Traverses (:mod:`fluidlab.objects.traverse`)
+============================================
 
-.. currentmodule:: fluidlab.traverse
+.. currentmodule:: fluidlab.objects.traverse
 
 Provides:
 
@@ -16,7 +16,7 @@ from __future__ import division, print_function
 import numpy as np
 import time
 
-from fluidlab.boards import ObjectUsingBoard
+from fluidlab.objects.boards import ObjectUsingBoard
 
 
 
@@ -138,7 +138,7 @@ if __name__ == '__main__':
 
     from fluiddyn.util.timer import Timer
 
-    from fluidlab.boards import PowerDAQBoard
+    from fluidlab.objects.boards import PowerDAQBoard
 
     board = PowerDAQBoard()
 

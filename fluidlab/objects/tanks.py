@@ -1,9 +1,9 @@
 """
-Tanks (:mod:`fluidlab.tanks`)
-=================================
+Tanks (:mod:`fluidlab.objects.tanks`)
+=====================================
 
 .. _tanks:
-.. currentmodule:: fluidlab.tanks
+.. currentmodule:: fluidlab.objects.tanks
 
 Provides:
 
@@ -36,7 +36,7 @@ from fluiddyn.util import FunctionLinInterp
 import fluiddyn.util.query as query
 from fluiddyn.util.timer import Timer
 
-from fluidlab.pumps import MasterFlexPumps
+from fluidlab.objects.pumps import MasterFlexPumps
 
 
 class DensityProfile(FunctionLinInterp):
@@ -123,7 +123,7 @@ class StratifiedTank(object):
     dico_profile : dict, optional
         Characteristics of the profile.
 
-    pumps : :class:`fluidlab.pumps.MasterFlexPumps`
+    pumps : :class:`fluidlab.objects.pumps.MasterFlexPumps`
         Represent the pumps.
 
     str_path : str
@@ -264,7 +264,7 @@ class StratifiedTank(object):
         dt : {2, number}, optional
             Time interval (in s) between the change of flow rate.
 
-        pumps : {False, :class:`fluidlab.pumps.MasterFlexPumps`}, optional
+        pumps : {False, :class:`fluidlab.objects.pumps.MasterFlexPumps`}, optional
             If False, an instance is created.
 
         hastoplot : {True, False}, optional

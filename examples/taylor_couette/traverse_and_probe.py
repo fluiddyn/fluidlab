@@ -1,7 +1,7 @@
 """traverse_and_probe.py: for moving the traverse and testing the probe.
 ------------------------------------------------------------------------
 
-See :mod:`fluidlab.traverse` and :mod:`fluidlab.probes`.
+See :mod:`fluidlab.objects.traverse` and :mod:`fluidlab.objects.probes`.
 
 """
 

@@ -26,18 +26,20 @@ User Guide
 Modules Reference
 -----------------
 
-In order to discover FluidDyn, the best is to see how it is
+In order to discover FluidLab, the best is to see how it is
 structured. Here is a list of the first-level packages.
 
 .. autosummary::
    :toctree: generated/
 
-   fluidlab
+   fluidlab.objects
+   fluidlab.exp
+   fluidlab.postproc
 
-Scripts
--------
+Scripts and examples
+--------------------
 
-FluidDyn also comes with scripts and examples. They are organised in
+FluidLab also comes with scripts and examples. They are organised in
 the following directories:
 
 .. autosummary::

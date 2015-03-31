@@ -1,8 +1,8 @@
 """
-Rotating objects (:mod:`fluidlab.rotatingobjects`)
-======================================================
+Rotating objects (:mod:`fluidlab.objects.rotatingobjects`)
+==========================================================
 
-.. currentmodule:: fluidlab.rotatingobjects
+.. currentmodule:: fluidlab.objects.rotatingobjects
 
 Provides:
 
@@ -33,8 +33,8 @@ import inspect
 import glob
 import time
 
-from fluidlab.boards import ObjectUsingBoard
-from fluidlab.boards import NIDAQBoard
+from fluidlab.objects.boards import ObjectUsingBoard
+from fluidlab.objects.boards import NIDAQBoard
 from fluiddyn.util.timer import Timer
 from fluiddyn.util import query
 from fluiddyn.io import txt

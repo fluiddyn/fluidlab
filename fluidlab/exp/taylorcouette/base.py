@@ -127,7 +127,7 @@ from fluiddyn.util.constants import g, rho0, nu_pure_water
 
 from fluidlab.exp.withconductivityprobe import ExpWithConductivityProbe
 
-from fluidlab.tanks import TaylorCouette
+from fluidlab.objects.tanks import TaylorCouette
 
 
 A = 0.215
@@ -194,12 +194,12 @@ class TaylorCouetteExp(ExpWithConductivityProbe):
     ----------
     board : :class:`fluidlab.board.PowerDAQBoard`
         For controlling the acquisition board.
-    sprobe : :class:`fluidlab.probes.MovingConductivityProbe`
+    sprobe : :class:`fluidlab.objects.probes.MovingConductivityProbe`
         For controlling the conductivity probe and the traverse.
     profiles : :class:`fluidlab.exp.withconductivityprobe.Profiles`
         For profiles...
 
-    tank : :class:`fluidlab.tanks.TaylorCouette`
+    tank : :class:`fluidlab.objects.tanks.TaylorCouette`
         Contains the informations on the tank and the density profile.
     first_creation : bool
         False if the experiment has not been loaded from the disk.
@@ -387,7 +387,7 @@ approximately {:5.0f} mm.
         """Create the instance variable representing the tank.
 
         Here, `tank` represents a Taylor-Couette tank
-        (:class:`fluidlab.tanks.TaylorCouette`).
+        (:class:`fluidlab.objects.tanks.TaylorCouette`).
 
         """
         # print(self.params)

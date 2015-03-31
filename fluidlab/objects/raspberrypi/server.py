@@ -1,5 +1,5 @@
-"""Server :mod:`fluidlab.raspberrypi.server`
-================================================
+"""Server (:mod:`fluidlab.objects.raspberrypi.server`)
+======================================================
 
 Defines a rpyc server.
 
@@ -14,7 +14,7 @@ except ImportError:
 
 
 from fluiddyn.io import FLUIDDYN_PATH_EXP
-from fluidlab.raspberrypi.torque import TorqueRaspberryPi
+from fluidlab.objects.raspberrypi.torque import TorqueRaspberryPi
 
 
 class RaspberryPiService(SlaveService):

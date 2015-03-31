@@ -12,7 +12,7 @@ from str_path_working_exp import str_path
 import fluiddyn as fld
 
 
-from fluidlab.rotatingobjects import (
+from fluidlab.objects.rotatingobjects import (
     DaemonRunningRotatingObject,
     create_rotating_objects_pseudokepler
 )

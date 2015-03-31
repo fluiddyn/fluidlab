@@ -83,7 +83,7 @@ setup(name='fluidlab',
           'Programming Language :: Cython',
           'Programming Language :: C',
       ],
-      packages=find_packages(exclude=['doc', 'digiflow', 'script']),
+      packages=find_packages(exclude=['doc', 'digiflow', 'examples']),
       install_requires=['fluiddyn', 'h5py'],
       extras_require=dict(
           doc=['Sphinx>=1.1', 'numpydoc']),

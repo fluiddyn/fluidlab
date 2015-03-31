@@ -33,7 +33,7 @@ from fluiddyn.io.hdf5 import H5File
 from fluiddyn.util import query
 from fluiddyn.util.timer import Timer
 
-from fluidlab.tanks import StratifiedTank
+from fluidlab.objects.tanks import StratifiedTank
 
 from fluidlab.exp.base import Experiment
 
@@ -97,7 +97,7 @@ class ExperimentWithTank(Experiment):
 
     Attributes
     ----------
-    tank : :class:`fluidlab.tanks.StratifiedTank`
+    tank : :class:`fluidlab.objects.tanks.StratifiedTank`
         Contains the informations on the tank and the density profile.
     first_creation : bool
         False if the experiment has not been loaded from the disk.
@@ -193,7 +193,7 @@ class ExperimentWithTank(Experiment):
         """Create the instance variable representing the tank.
 
         Here, `tank` represents a simple stratified tank
-        (:class:`fluidlab.tanks.StratifiedTank`).
+        (:class:`fluidlab.objects.tanks.StratifiedTank`).
 
         """
         if 'H' in self.params:

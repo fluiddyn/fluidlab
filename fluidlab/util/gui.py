@@ -32,7 +32,7 @@ from fluiddyn.util.deamons import DaemonThread as Daemon
 
 
 
-from fluidlab.rotatingobjects import (
+from fluidlab.objects.rotatingobjects import (
     create_rotating_objects_kepler,
     DaemonRunningRotatingObject, 
     RotatingObject)

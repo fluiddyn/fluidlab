@@ -10,7 +10,7 @@ from __future__ import division, print_function
 import numpy as np
 import time
 
-from fluidlab.boards.powerdaq import PowerDAQBoard
+from fluidlab.objects.boards.powerdaq import PowerDAQBoard
 from fluidlab.createfigs import CreateFigs
 SAVE_FIG = 0
 import matplotlib.pyplot as plt

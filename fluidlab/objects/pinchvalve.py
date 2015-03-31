@@ -1,7 +1,7 @@
 """
-Pinching valve (:mod:`fluidlab.pinchvalve`)
+Pinching valve (:mod:`fluidlab.objects.pinchvalve`)
 
-.. currentmodule:: fluidlab.pinchvalve
+.. currentmodule:: fluidlab.objects.pinchvalve
 
 Provides:
 
@@ -21,7 +21,7 @@ Provides:
 
 from __future__ import division, print_function
 
-from fluidlab.boards import ObjectUsingBoard
+from fluidlab.objects.boards import ObjectUsingBoard
 
 class PinchValve(ObjectUsingBoard):
     """A class handling the pinch valve."""
@@ -72,7 +72,7 @@ def tube_as_opened_as_possible(valve):
 
 if __name__ == '__main__':
     import time
-    from fluidlab.boards import PowerDAQBoard
+    from fluidlab.objects.boards import PowerDAQBoard
 
     from fluiddyn.util.timer import Timer
 
