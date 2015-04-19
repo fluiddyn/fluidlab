@@ -45,9 +45,9 @@ class InstructionsUVMAT(ContainerXML):
 
         path_dir_root = input_table[0]
         path_dir_input = os.path.join(path_dir_root, input_table[1][1:])
-        self.set_attrib('path_dir_input', path_dir_input)
+        self._set_attrib('path_dir_input', path_dir_input)
 
-        self.set_attrib(
+        self._set_attrib(
             'path_dir_output',
             path_dir_input + self.output_dir_ext)
 
@@ -55,9 +55,9 @@ class InstructionsUVMAT(ContainerXML):
         slice0 = [ir.first_i, ir.last_i+1, ir.incr_i]
         try:
             slice1 = [ir.first_j-1, ir.last_j, ir.incr_j]
-            self.set_attrib('index_slices', [slice0, slice1])
+            self._set_attrib('index_slices', [slice0, slice1])
         except AttributeError:
-            self.set_attrib('index_slices', [slice0])
+            self._set_attrib('index_slices', [slice0])
 
 
 class ActionBase(object):
