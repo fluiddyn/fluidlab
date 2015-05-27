@@ -87,6 +87,6 @@ setup(name='fluidlab',
       install_requires=['fluiddyn >= 0.0.8a1', 'h5py'],
       extras_require=dict(
           doc=['Sphinx>=1.1', 'numpydoc']),
-      scripts=['bin/fluiddyn-stop-pumps'],
+      scripts=['bin/fluid_stop_pumps.py'],
       cmdclass={"build_ext": build_ext},
       ext_modules=ext_modules)
