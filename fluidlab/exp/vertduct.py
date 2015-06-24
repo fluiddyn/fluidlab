@@ -16,7 +16,7 @@ from __future__ import division, print_function
 
 import numpy as np
 
-from fluiddyn.util import load_exp
+from fluidlab import load_exp
 
 from fluidlab.exp.withconductivityprobe import ExpWithConductivityProbe
 

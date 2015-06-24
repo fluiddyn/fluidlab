@@ -2,16 +2,17 @@
 FluidLab
 ========
 
-*Framework for studying fluid dynamics by experiments.*
+*Framework for studying fluid dynamics by laboratory experiments.*
 
 `Package Documentation <http://pythonhosted.org/fluidlab>`__
 
-FluidLab is the experimentally oriented package of the `FluidDyn
-project <http://pythonhosted.org/fluiddyn>`__.  The project is still
-in a testing stage so it is still pretty unstable and many of its
-planned features have not yet been implemented.
+FluidLab is the package of the `FluidDyn project
+<http://pythonhosted.org/fluiddyn>`__ for doing laboratory
+experiments.  The project is still in a testing stage so it is still
+pretty unstable and many of its planned features have not yet been
+implemented.
 
-It has first been developed by `Pierre Augier
+An earlier version has first been developed by `Pierre Augier
 <http://www.legi.grenoble-inp.fr/people/Pierre.Augier/>`_ (CNRS
 researcher at `LEGI <http://www.legi.grenoble-inp.fr>`_, Grenoble) in
 the G. K. Batchelor Fluid Dynamics Laboratory at DAMTP, University of

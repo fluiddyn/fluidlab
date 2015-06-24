@@ -32,6 +32,7 @@ structured. Here is a list of the first-level packages.
 .. autosummary::
    :toctree: generated/
 
+   fluidlab.instruments
    fluidlab.objects
    fluidlab.exp
    fluidlab.postproc

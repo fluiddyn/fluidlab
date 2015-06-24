@@ -20,7 +20,7 @@ import os
 
 from fluidlab.exp.taylorcouette import TaylorCouetteExp, A, c
 
-from fluiddyn.util import load_exp
+from fluidlab import load_exp
 from fluiddyn.util.constants import g, rho0, rho_pure_water
 
 

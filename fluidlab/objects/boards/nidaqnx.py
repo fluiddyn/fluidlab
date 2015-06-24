@@ -24,7 +24,7 @@ from __future__ import division, print_function
 try:
     import PyDAQmx as daq
     works = True
-except (IOError, ImportError):
+except (IOError, ImportError, NotImplementedError):
     works = False
 
 import numpy as np

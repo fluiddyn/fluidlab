@@ -33,9 +33,11 @@ import fluiddyn as fld
 
 from fluiddyn.io.hdf5 import H5File
 
-from fluiddyn.util import (
-    decimate, FunctionLinInterp, gradient_colors, time_as_str)
+from fluiddyn.util import time_as_str
+from fluiddyn.util.signal import decimate
 from fluiddyn.util.timer import Timer
+
+from fluiddyn.output.util import gradient_colors
 
 from fluidlab.exp.withtank import ExperimentWithTank
 

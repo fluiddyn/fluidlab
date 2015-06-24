@@ -1,5 +1,5 @@
 
-import fluiddyn
+import fluidlab
 from fluidlab.exp.base import Experiment
 
 from fluidlab.exp.withtank import ExperimentWithTank
@@ -21,14 +21,13 @@ import os
 import shutil
 
 
-
 def del_and_load_exp(exp, **kargs):
     path_save = exp.path_save
     # str_path = os.path.split(path_save)[-1]
     str_path = path_save
     del(exp)
     # load the experiment
-    exp = fluiddyn.load_exp(str_path, **kargs)
+    exp = fluidlab.load_exp(str_path, **kargs)
     # clean by removing the directory
     shutil.rmtree(path_save)
     return exp
@@ -87,12 +86,6 @@ class TestVerticalDuctExp(unittest.TestCase):
         del_and_load_exp(exp, need_board=False)
 
 
-
-
-
-
-
-
 class TestTaylorCouetteExp(unittest.TestCase):
     def test_create_load(self):
         """Should be able to create and load an experiment."""
@@ -106,7 +99,6 @@ class TestTaylorCouetteExp(unittest.TestCase):
 
         self.assertEqual(exp._base_dir, os.path.join('TaylorCouette', 'Base'))
         del_and_load_exp(exp, need_board=False)
-
 
 
 class TestILSTaylorCouetteExp(unittest.TestCase):
@@ -128,8 +120,6 @@ class TestILSTaylorCouetteExp(unittest.TestCase):
         self.assertTrue('Ri' in exp.params)
 
         exp = del_and_load_exp(exp, need_board=False)
-
-
 
 
 class TestIQSTaylorCouetteExp(unittest.TestCase):
@@ -161,10 +151,6 @@ class TestI2LTaylorCouetteExp(unittest.TestCase):
         )
         self.assertEqual(exp._base_dir, os.path.join('TaylorCouette', 'I2L'))
         del_and_load_exp(exp, need_board=False)
-
-
-
-
 
 
 if __name__ == '__main__':

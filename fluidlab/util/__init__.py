@@ -9,7 +9,11 @@ Provides
 .. autosummary::
    :toctree:
 
+   util
    gui
 
 
 """
+
+
+from .util import load_exp

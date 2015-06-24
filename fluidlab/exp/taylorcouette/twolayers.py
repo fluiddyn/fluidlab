@@ -18,12 +18,9 @@ import numpy as np
 import os
 
 
-from fluidlab.exp.taylorcouette import TaylorCouetteExp, A, c
-from fluiddyn.util import load_exp
-from fluiddyn.util.constants import g, rho0, rho_pure_water
-
-
-
+from fluidlab.exp.taylorcouette import TaylorCouetteExp
+from fluidlab import load_exp
+from fluiddyn.util.constants import g, rho_pure_water
 
 
 class I2LTaylorCouetteExp(TaylorCouetteExp):

@@ -32,7 +32,7 @@ import h5py
 
 import fluiddyn.output.figs as figs
 
-from fluiddyn.util import FunctionLinInterp
+from fluiddyn.util.signal import FunctionLinInterp
 import fluiddyn.util.query as query
 from fluiddyn.util.timer import Timer
 

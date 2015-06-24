@@ -14,10 +14,7 @@ Provides:
 
 from __future__ import division, print_function
 
-import numpy as np
-import os
 
-from fluiddyn.util import load_exp
 from fluidlab.exp.withtank import ExperimentWithTank
 
 
@@ -28,7 +25,8 @@ class DoubleDiffusion(ExperimentWithTank):
 
     """
     _base_dir = 'Double_diffusion'
-    def __init__(self, 
+
+    def __init__(self,
                  zs=None, rhos=None, params=None,
                  description=None,
                  str_path=None
@@ -50,14 +48,4 @@ Experiment in a small beaker on the double diffusion instability.
             rhos=rhos, zs=zs,
             params=params,
             description=description,
-            str_path=str_path
-            )
-
-
-
-
-# if __name__ == '__main__':
-
-#     pass
-
-
+            str_path=str_path)

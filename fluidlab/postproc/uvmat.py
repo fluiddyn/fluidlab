@@ -19,11 +19,11 @@ log_level = logging.INFO  # to get information messages
 logging.basicConfig(format='%(message)s',
                     level=log_level)
 
-from fluiddyn.util.containerxml import ContainerXML, tidy_containerxml
+from fluiddyn.util.paramcontainer import ParamContainer, tidy_container
 from fluidlab.postproc.serieofarrays import SerieOfArraysFromFiles
 
 
-class InstructionsUVMAT(ContainerXML):
+class InstructionsUVMAT(ParamContainer):
 
     def __init__(self, **kargs):
 
@@ -38,7 +38,7 @@ class InstructionsUVMAT(ContainerXML):
     def _init_root(self):
 
         # get nicer names and a simpler organization...
-        tidy_containerxml(self)
+        tidy_container(self)
 
         input_table = self.input_table.split(' & ')
         self.input_table = '|'.join(input_table)
