@@ -6,14 +6,24 @@ try:
     from Cython.Distutils import build_ext
 except ImportError:
     from setuptools import Extension, build_ext
-    from distutils.command import build_ext
+    # from distutils.command import build_ext
 
 import os
+import sys
+import subprocess
+
 here = os.path.abspath(os.path.dirname(__file__))
 
-import sys
 if sys.version_info[:2] < (2, 7) or (3, 0) <= sys.version_info[0:2] < (3, 2):
     raise RuntimeError("Python version 2.7 or >= 3.2 required.")
+
+try:
+    hg_rev = subprocess.check_output(['hg', 'id', '--id']).strip()
+except (OSError, subprocess.CalledProcessError):
+    pass
+else:
+    with open('fluidlab/_hg_rev.py', 'w') as f:
+        f.write('hg_rev = "{}"\n'.format(hg_rev))
 
 # Get the long description from the relevant file
 with open(os.path.join(here, 'README.rst')) as f:
@@ -22,7 +32,10 @@ lines = long_description.splitlines(True)
 long_description = ''.join(lines[8:])
 
 # Get the version from the relevant file
-execfile('fluidlab/_version.py')
+d = {}
+execfile('fluidlab/_version.py', d)
+__version__ = d['__version__']
+
 # Get the development status from the version string
 if 'a' in __version__:
     devstatus = 'Development Status :: 3 - Alpha'

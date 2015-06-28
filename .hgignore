@@ -17,10 +17,12 @@ doc/ipynb/*.rst
 *.ipynb_checkpoints*
 *Untitled*.ipynb
 
-fluiddyn/lab/boards/PowerDAQ/libpowerdaq.a
-fluiddyn/lab/boards/PowerDAQ/powerdaq.c
-fluiddyn/lab/boards/PowerDAQ/powerdaq.def
-fluiddyn/lab/boards/PowerDAQ/powerdaq.o
+fluidlab/_hg_rev.py
+
+fluidlab/objects/boards/PowerDAQ/libpowerdaq.a
+fluidlab/objects/boards/PowerDAQ/powerdaq.c
+fluidlab/objects/boards/PowerDAQ/powerdaq.def
+fluidlab/objects/boards/PowerDAQ/powerdaq.o
 
 *.egg-info/*
 
@@ -41,5 +43,3 @@ dist*
 *cy.c
 
 scripts\Experiments\path_working_exp.txt
-
-scripts/Simul/Launch/Profile.prof
