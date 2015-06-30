@@ -31,7 +31,7 @@ def load_exp(str_path=None, *args, **kwargs):
     idepth = -1
     while path is None and idepth < depth_path_max:
         idepth += 1
-        paths = glob.glob(io.FLUIDDYN_PATH_EXP+'/' +
+        paths = glob.glob(io.FLUIDLAB_PATH+'/' +
                           idepth*'*/' + '*' + str_path + '*')
         if len(paths) > 0:
             path = paths[0]
@@ -40,8 +40,8 @@ def load_exp(str_path=None, *args, **kwargs):
         raise ValueError(
             """Haven't been able to find a path corresponding to str_path.
 You can try to increase the value of the constant depth_path_max
-(FLUIDDYN_PATH_EXP: {}
-str_path: {}).""".format(io.FLUIDDYN_PATH_EXP, str_path))
+(FLUIDLAB_PATH: {}
+str_path: {}).""".format(io.FLUIDLAB_PATH, str_path))
 
     path_h5_file = path+'/params.h5'
 

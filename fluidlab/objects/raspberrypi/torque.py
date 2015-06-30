@@ -27,7 +27,7 @@ hostnames_measuring = ['raspberrypi']
 
 from fluiddyn.util.timer import Timer
 from fluiddyn.util import time_as_str
-from fluiddyn.io import FLUIDDYN_PATH_EXP
+from fluiddyn.io import FLUIDLAB_PATH
 from fluiddyn.io.hdf5 import H5File
 import fluiddyn.output.figs as figs
 
@@ -48,7 +48,7 @@ class Torque(object):
     def __init__(self, path_exp=None, name_exp=None):
 
         if path_exp is None:
-            path_exp = FLUIDDYN_PATH_EXP
+            path_exp = FLUIDLAB_PATH
         self.path_exp = path_exp
         self.path_save = os.path.join(path_exp, 'Torque')
 
@@ -59,11 +59,6 @@ class Torque(object):
             name_exp = 'No name experiment given.'
         self.name_exp = name_exp
 
-
-
-
-
-
     def load(self, indice_file=-1, times_slice=None):
         """Load the torque measurements contained in a file."""
         path_files = glob(self.path_save+'/torque_*.h5')
@@ -72,11 +67,6 @@ class Torque(object):
         with H5File(path_file, 'r') as f:
             # warning: times_slice can not work!!!
             return f.load(times_slice=times_slice)
-
-
-
-
-
 
     def _plot_in_axis(self, ax, indice_files=-1, times_slice=None):
         if isinstance(indice_files, (list, np.ndarray, tuple)):
@@ -91,26 +81,21 @@ class Torque(object):
             ts = np.arange(nb_pts)/sample_rate
             ax.plot(ts, volts, 'x')
 
-
-
-
-
-    def plot(self, indice_files=-1, in_different_figs=False, 
+    def plot(self, indice_files=-1, in_different_figs=False,
              times_slice=None):
-        if (in_different_figs and 
-            isinstance(indice_files, (list, np.ndarray, tuple))
-        ):
+        if (in_different_figs and
+                isinstance(indice_files, (list, np.ndarray, tuple))):
             for ind in indice_files:
                 self.plot(ind)
         else:
-            figures = figs.Figures(hastosave=False, 
+            figures = figs.Figures(hastosave=False,
                                    path_save=self.path_save,
-                                   for_beamer=False, 
+                                   for_beamer=False,
                                    fontsize=18)
 
             fig = figures.new_figure(
                 fig_width_mm=180, fig_height_mm=135,
-                size_axe=[0.135, 0.14, 0.82, 0.81], 
+                size_axe=[0.135, 0.14, 0.82, 0.81],
                 name_file='fig_torque')
 
             ax = fig.gca()
@@ -126,19 +111,13 @@ class Torque(object):
             figs.show()
 
 
-
-
-
-
-
-
-
-
-
 freq_max = 1e4
+
+
 class TorqueRaspberryPi(Torque):
     volt_max = 3.26
     volt_per_raw = volt_max/1024
+
     def __init__(self, path_exp=None, name_exp=None, channel=0,
                  path_exp_client=None, open_client=None):
         if hostname not in hostnames_measuring:
@@ -162,7 +141,6 @@ class TorqueRaspberryPi(Torque):
         super(TorqueRaspberryPi, self).__init__(
             path_exp=path_exp, name_exp=name_exp)
 
-
     def measure(self, duration, sample_rate, hastosave=True):
 
         if sample_rate > freq_max:
@@ -175,10 +153,10 @@ class TorqueRaspberryPi(Torque):
             if not os.path.exists(self.path_save):
                 os.makedirs(self.path_save)
 
-            path_file = (self.path_save+'/torque_'+
+            path_file = (self.path_save+'/torque_' +
                          time_as_str()+'.h5')
 
-            with H5File(path_file,'w') as f:
+            with H5File(path_file, 'w') as f:
                 f.attrs['time start'] = str(datetime.datetime.now())
                 f.attrs['name_dir'] = self.name_exp
                 f.attrs['sample_rate'] = sample_rate
@@ -190,7 +168,7 @@ class TorqueRaspberryPi(Torque):
             if ip < nb_pts:
                 timer.wait_till_tick()
 
-        results *=  self.volt_per_raw # (in volt)
+        results *= self.volt_per_raw  # (in volt)
 
         if hastosave:
             dicttosave = {'volts': results}
@@ -198,7 +176,6 @@ class TorqueRaspberryPi(Torque):
                 f.save_dict_of_ndarrays(dicttosave)
 
         return results
-
 
     def copy_files_in_client(self, indice_files=None):
         if self.path_exp_client is None or self.open_client is None:
@@ -226,19 +203,13 @@ class TorqueRaspberryPi(Torque):
                     shutil.copyfileobj(flocal, f)
 
 
-
-
-
 class TorqueClient(Torque):
     """"""
-    
-    def __init__(self, path_exp=None, name_exp=None, 
+    def __init__(self, path_exp=None, name_exp=None,
                  connect=True):
 
         super(TorqueClient, self).__init__(
-            path_exp=path_exp, name_exp=name_exp
-            )
-            
+            path_exp=path_exp, name_exp=name_exp)
 
         if connect:
             # host = 'localhost'
@@ -247,11 +218,10 @@ class TorqueClient(Torque):
             self.conn = rpyc.classic.connect(host, 18861)
 
             self.conn.root.init_with_client(
-                FLUIDDYN_PATH_EXP_client=FLUIDDYN_PATH_EXP,
+                FLUIDLAB_PATH_client=FLUIDLAB_PATH,
                 name_exp=name_exp,
                 path_exp_client=path_exp,
-                open_client=open
-               )
+                open_client=open)
 
             self.remote_measure = self.conn.root.measure
             self.transfer_from_raspberrypi = self._transfer_from_raspberrypi
@@ -267,19 +237,8 @@ class TorqueClient(Torque):
         if key in ['remote_measure', 'transfer_from_raspberrypi']:
             raise ValueError(
                 'Since the argument of the constructor `connect` was False. '
-                'You can not use the function '+key+
+                'You can not use the function ' + key +
                 ' that needs the connection.')
-
-
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
@@ -292,13 +251,9 @@ if __name__ == '__main__':
 
         from fluidlab.utils import load_exp
         str_path_save = 'Exp_Omega=0.75_N0=1.83_2014-06-25'
-        exp = load_exp(str_path_save=str_path_save, 
+        exp = load_exp(str_path_save=str_path_save,
                        NEED_BOARD=False)
 
         torque = TorqueClient(
-            path_exp=exp.path_save, name_exp=exp.name_dir, 
+            path_exp=exp.path_save, name_exp=exp.name_dir,
             connect=True)
-
-
-
-

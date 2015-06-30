@@ -28,16 +28,16 @@ import inspect
 # from importlib import import_module
 
 import fluiddyn
-from fluiddyn.io import FLUIDDYN_PATH_EXP
+from fluiddyn.io import FLUIDLAB_PATH
 from fluiddyn.io.hdf5 import H5File
 
 from fluiddyn.util import time_as_str
 
 
-
 import sys
 if sys.platform.startswith('win'):
     import win32api, thread
+
     def handler(sig, hook=thread.interrupt_main):
         hook()
         return 1
@@ -48,7 +48,6 @@ class NumpyAwareJSONEncoder(json.JSONEncoder):
         if isinstance(obj, np.ndarray) and obj.ndim == 1:
                 return [x for x in obj]
         return json.JSONEncoder.default(self, obj)
-
 
 
 class Experiment(object):
@@ -133,9 +132,6 @@ class Experiment(object):
         if sys.platform.startswith('win'):
             win32api.SetConsoleCtrlHandler(handler, 1)
 
-
-
-
     def _init_from_str(self, str_path):
         """Basic initialisation (begin of path_save and first_creation).
 
@@ -157,17 +153,16 @@ class Experiment(object):
             if str_path is not None:
                 str_path = os.path.expanduser(str_path)
             if str_path is None:
-                self.path_save = join(FLUIDDYN_PATH_EXP, self._base_dir)
+                self.path_save = join(FLUIDLAB_PATH, self._base_dir)
             elif os.path.isabs(str_path):
                 self.path_save = str_path
             elif not str_path.startswith(self._base_dir):
-                self.path_save = join(FLUIDDYN_PATH_EXP,
+                self.path_save = join(FLUIDLAB_PATH,
                                       self._base_dir, str_path)
             else:
-                self.path_save = join(FLUIDDYN_PATH_EXP, str_path)
+                self.path_save = join(FLUIDLAB_PATH, str_path)
             self.first_creation = not os.path.exists(
                 join(self.path_save, 'params.h5'))
-
 
     def _create_self_params(self, params):
         """Initialise the dictionary params.
@@ -180,7 +175,6 @@ class Experiment(object):
             self.params = {}
         else:
             self.params = params
-
 
     def _verify_params_first_creation(self, params, keys_needed):
         """Verify the parameters during the first creation.
@@ -195,12 +189,9 @@ class Experiment(object):
 
         """
         for k in keys_needed:
-            if not k in params:
+            if k not in params:
                 raise AttributeError(
                     'This class needs the key "{}".'.format(k))
-
-
-
 
     def _init_name_dir(self):
         """Initialise the name of the directory where the data are saved.
@@ -224,10 +215,6 @@ class Experiment(object):
         self.name_dir = begin+end
         return begin, end
 
-
-
-
-
     def _complete_description(self, description_class, description=None):
         """Complete or create a descrition.
 
@@ -248,10 +235,6 @@ class Experiment(object):
         else:
             return description_class+description
 
-
-
-
-
     def _save_basic_infos(self):
         """Save some basic information on the experiment."""
         self.path_save = os.path.join(self.path_save, self.name_dir)
@@ -262,14 +245,12 @@ class Experiment(object):
         path_h5_file = self.path_save+'/params.h5'
         path_txt_file = self.path_save+'/description.txt'
 
-        if (os.path.exists(path_h5_file)
-            or os.path.exists(path_txt_file)):
+        if (os.path.exists(path_h5_file) or
+                os.path.exists(path_txt_file)):
             raise ValueError(
-'Cannot save in the directory\n'+
-self.path_save+
+                'Cannot save in the directory\n' + self.path_save +
 """because at least one file where the data should be saved already
-exists."""
-)
+exists.""")
 
         with H5File(path_h5_file, 'w') as f:
             f.attrs['class_name'] = self.__class__.__name__
@@ -279,18 +260,18 @@ exists."""
                 # if the module where the class is defined has been
                 # run as a script, module_exp == '__main__' and this
                 # is not an useful information to save.
-                path_mod = os.path.abspath(inspect.getsourcefile(self.__class__))
+                path_mod = os.path.abspath(inspect.getsourcefile(
+                    self.__class__))
                 namep = 'fluiddyn'
                 if namep in path_mod:
-                    pypath_mod = namep+path_mod.split(namep,1)[1][:-3]
+                    pypath_mod = namep+path_mod.split(namep, 1)[1][:-3]
                     module_exp = pypath_mod.replace(
                         '/', '.').replace('\\', '.')
                 else:
                     raise ValueError(
 """Experiment classes has to be defined in the package, otherwise they
 can not be loaded automatically. Otherwise, you can properly import
-the module (such as __name__ != '__main__') and it should work."""
-)
+the module (such as __name__ != '__main__') and it should work.""")
 
             f.attrs['module_name'] = str(module_exp)
 
@@ -315,20 +296,14 @@ the module (such as __name__ != '__main__') and it should work."""
                 cls=NumpyAwareJSONEncoder, indent=2
             )+'\n')
 
-
-
-
     def _load_basic_infos(self, verbose=False):
         """Load some basic information on the experiments."""
         path_h5_file = self.path_save+'/params.h5'
-        with H5File(path_h5_file,'r') as f:
+        with H5File(path_h5_file, 'r') as f:
             self.time_start = f.attrs['time start']
             self.name_dir = f.attrs['name_dir']
             self.description = f.attrs['description']
             self.params = f.load_dict('params')
-
-
-
 
     def save_script(self):
         """Save the file from where this function is called."""
@@ -342,29 +317,11 @@ the module (such as __name__ != '__main__') and it should work."""
         shutil.copyfile(path_caller, os.path.join(dest, name_file_dest))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
 
     exp = Experiment(
         params=None,
         description=None,
-        str_path=None
-    )
-
+        str_path=None)
 
     # exp = fluiddyn.load_exp('Exp_2014-08-16_15-47-00')
