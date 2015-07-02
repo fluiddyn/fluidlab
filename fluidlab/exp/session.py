@@ -28,6 +28,7 @@ from fluiddyn.util import time_as_str
 
 
 class Session(object):
+    """to do"""
     def __init__(self, path=None, name=None, info=None,
                  save_in_dir=True,
                  email_to=None, email_title=None, email_delay=None):
@@ -146,7 +147,7 @@ class SessionWithDefaultParams(Session):
 
 
 if __name__ == '__main__':
-    session = Session(name='test', save_in_dir=True)
+    session = Session(name='test', save_in_dir=False)
 
     session.logger.print_log('Hello.', 1, 3.14, end='')
 
