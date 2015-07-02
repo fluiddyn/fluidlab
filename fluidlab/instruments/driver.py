@@ -22,9 +22,10 @@ class Driver(object):
             worker._complete_driver_class(cls)
 
     def __setattr__(self, k, v):
+
         if (not isinstance(v, Value) and
-                k in self.__dict__ and
-                isinstance(self.__dict__[k], Value)):
+                k in self.__class__.__dict__ and
+                isinstance(self.__class__.__dict__[k], Value)):
             raise ValueError(
                 k + ' is associated with a quantity in the instrument. '
                 'Do not set this value by assignment. Use a set function.')
@@ -34,7 +35,7 @@ class Driver(object):
     def __init__(self):
         self._interface = self.interface = Interface()
 
-        for v in self.__dict__.values():
+        for v in self.__class__.__dict__.values():
             if isinstance(v, Value):
                 v._interface = self._interface
 
@@ -50,7 +51,7 @@ class Driver(object):
 
     def _get_value_from_name(self, name):
         try:
-            value = self.__dict__[name]
+            value = self.__class__.__dict__[name]
         except AttributeError:
             raise AttributeError()
         if not isinstance(value, Value):

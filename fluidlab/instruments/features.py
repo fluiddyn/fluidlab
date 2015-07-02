@@ -30,8 +30,9 @@ class Feature(object):
 class FunctionCommand(Feature):
     def __init__(self, name, command_str, doc):
         self._name = name
-        self.command_str = command_str
         self.__doc__ = doc
+
+        self.command_str = command_str
 
     def _complete_driver_class(self, Driver):
         command_str = self.command_str
@@ -44,20 +45,23 @@ class FunctionCommand(Feature):
 
 class Value(Feature):
     def __init__(self, name, command_get=None, command_set=None,
-                 doc=None):
+                 doc=''):
         self._name = name
+        self.__doc__ = doc
+
         self.command_get = command_get
         self.command_set = command_set
-        self.__doc__ = doc
 
 
 class ValueBool(Value):
     def __init__(self, name, command_get=None, command_set=None,
-                 doc=None):
+                 doc=''):
         self._name = name
+        self.__doc__ = doc
+
         self.command_get = command_get
         self.command_set = command_set
-        self.__doc__ = doc
+
 
     def _complete_driver_class(self, Driver):
         name = self._name
