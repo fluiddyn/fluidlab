@@ -23,15 +23,20 @@ Provides:
 
 
 class Feature(object):
-    def __repr__(self):
-        return (super(Feature, self).__repr__() + '\n' + self.__doc__)
-
-
-class FunctionCommand(Feature):
-    def __init__(self, name, command_str, doc):
+    def __init__(self, name, doc=''):
         self._name = name
         self.__doc__ = doc
 
+    def __repr__(self):
+        if len(self.__doc__) > 0:
+            return (super(Feature, self).__repr__() + '\n' + self.__doc__)
+        else:
+            return super(Feature, self).__repr__()
+
+
+class FunctionCommand(Feature):
+    def __init__(self, name, doc='', command_str=''):
+        super(FunctionCommand, self).__init__(name, doc)
         self.command_str = command_str
 
     def _complete_driver_class(self, Driver):
@@ -44,25 +49,13 @@ class FunctionCommand(Feature):
 
 
 class Value(Feature):
-    def __init__(self, name, command_get=None, command_set=None,
-                 doc=''):
-        self._name = name
-        self.__doc__ = doc
-
+    def __init__(self, name, doc='', command_get=None, command_set=None):
+        super(Value, self).__init__(name, doc)
         self.command_get = command_get
         self.command_set = command_set
 
 
 class ValueBool(Value):
-    def __init__(self, name, command_get=None, command_set=None,
-                 doc=''):
-        self._name = name
-        self.__doc__ = doc
-
-        self.command_get = command_get
-        self.command_set = command_set
-
-
     def _complete_driver_class(self, Driver):
         name = self._name
         command_get = self.command_get

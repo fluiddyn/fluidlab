@@ -76,10 +76,5 @@ Trigger._complete_cls([
     FunctionCommand('trigger', '*TRG', 'Execute trigger command')])
 
 
-class Instr(IEC60488, Trigger):
-    """An IEC60488 instrument with trigger."""
-
-
 if __name__ == '__main__':
     iec = IEC60488()
-    instr = Instr()
