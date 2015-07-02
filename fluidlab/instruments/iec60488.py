@@ -11,10 +11,6 @@ Provides:
    :members:
    :private-members:
 
-.. autoclass:: Instr
-   :members:
-   :private-members:
-
 """
 
 from fluidlab.instruments.features import FunctionCommand, ValueBool
@@ -51,19 +47,17 @@ class IEC60488(Driver):
 
 features = [
     FunctionCommand(
-        'clear_status', '*CLS', 'Clears the data status structure'),
+        'clear_status', 'Clears the data status structure', '*CLS'),
     FunctionCommand(
-        'query_esr', '*ESR?', 'Query the standard event status register.'),
-    FunctionCommand('wait', '*WAI', 'Wait to continue'),
+        'query_esr', 'Query the standard event status register.', '*ESR?'),
+    FunctionCommand('wait', 'Wait to continue', '*WAI'),
     FunctionCommand(
-        'perform_internal_test', '*TST?',
-        'Perform internal self-test.'),
-    FunctionCommand('reset_device', '*RST', 'Perform a device reset'),
+        'perform_internal_test',
+        'Perform internal self-test.', '*TST?'),
+    FunctionCommand('reset_device', 'Perform a device reset', '*RST'),
     ValueBool('operation_complete_flag',
-              command_get='*OPC?', command_set='*OPC',
-              doc='Operation complete flag')
-]
-
+              doc='Operation complete flag.',
+              command_get='*OPC?', command_set='*OPC')]
 
 IEC60488._complete_cls(features)
 
@@ -73,7 +67,7 @@ class Trigger(Driver):
     """
 
 Trigger._complete_cls([
-    FunctionCommand('trigger', '*TRG', 'Execute trigger command')])
+    FunctionCommand('trigger', 'Execute trigger command.', '*TRG')])
 
 
 if __name__ == '__main__':
