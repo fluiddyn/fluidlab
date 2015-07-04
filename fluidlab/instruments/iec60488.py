@@ -13,7 +13,7 @@ Provides:
 
 """
 
-from fluidlab.instruments.features import FunctionCommand, ValueBool
+from fluidlab.instruments.features import FunctionCommand, BoolValue
 
 from fluidlab.instruments.driver import Driver
 
@@ -55,18 +55,18 @@ features = [
         'perform_internal_test',
         'Perform internal self-test.', '*TST?'),
     FunctionCommand('reset_device', 'Perform a device reset', '*RST'),
-    ValueBool('operation_complete_flag',
+    BoolValue('operation_complete_flag',
               doc='Operation complete flag.',
               command_get='*OPC?', command_set='*OPC')]
 
-IEC60488._complete_cls(features)
+IEC60488._build_class(features)
 
 
 class Trigger(Driver):
     """A mixin class, implementing the optional trigger command.
     """
 
-Trigger._complete_cls([
+Trigger._build_class([
     FunctionCommand('trigger', 'Execute trigger command.', '*TRG')])
 
 

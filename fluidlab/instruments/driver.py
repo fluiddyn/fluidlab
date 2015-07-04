@@ -17,9 +17,9 @@ from fluidlab.instruments.features import Value
 class Driver(object):
     """Instrument driver (base class)."""
     @classmethod
-    def _complete_cls(cls, workers):
+    def _build_class(cls, workers):
         for worker in workers:
-            worker._complete_driver_class(cls)
+            worker._build_driver_class(cls)
 
     def __init__(self, interface=None):
         if interface is None:
