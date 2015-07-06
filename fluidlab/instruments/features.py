@@ -7,7 +7,11 @@ Provides:
    :members:
    :private-members:
 
-.. autoclass:: FunctionCommand
+.. autoclass:: WriteCommand
+   :members:
+   :private-members:
+
+.. autoclass:: QueryCommand
    :members:
    :private-members:
 
@@ -46,16 +50,39 @@ class Feature(object):
             return super(Feature, self).__repr__()
 
 
-class FunctionCommand(Feature):
+class WriteCommand(Feature):
     def __init__(self, name, doc='', command_str=''):
-        super(FunctionCommand, self).__init__(name, doc)
+        super(WriteCommand, self).__init__(name, doc)
         self.command_str = command_str
 
     def _build_driver_class(self, Driver):
         command_str = self.command_str
 
         def func(self):
-            self.interface.write(command_str)
+            self._interface.write(command_str)
+        
+        func.__doc__ = self.__doc__
+        setattr(Driver, self._name, func)
+
+
+class QueryCommand(Feature):
+    def __init__(self, name, doc='', command_str='', parse_result=None):
+        super(QueryCommand, self).__init__(name, doc)
+        self.command_str = command_str
+        self.parse_result = parse_result
+
+    def _build_driver_class(self, Driver):
+        command_str = self.command_str
+
+        parse_result = self.parse_result
+
+        if parse_result is None:
+            def func(self):
+                return self._interface.query(command_str)
+        else:
+            def func(self):
+                return parse_result(self._interface.query(command_str))
+            
         func.__doc__ = self.__doc__
         setattr(Driver, self._name, func)
 
@@ -187,4 +214,82 @@ class NumberValue(Value):
 
 
 class RegisterValue(NumberValue):
-    pass
+    def __init__(self, name, doc='', command_set=None, command_get=None,
+                 keys=None, default_value=0):
+
+        if keys is None:
+            raise ValueError('Keys has to contain the keys of the register.')
+
+        self.keys = keys
+        self.nb_bits = len(keys)
+
+        limits = (0, 2**self.nb_bits)
+
+        super(RegisterValue, self).__init__(
+            name, doc, command_set=command_set, command_get=command_get,
+            limits=limits)
+        
+        if isinstance(default_value, int):
+            self.default_value = self.compute_dict_from_number(default_value)
+        elif isinstance(default_value, dict):
+            for k in default_value.keys():
+                if k not in keys:
+                    raise ValueError('key {} not in keys'.format(k))
+            for k in keys:
+                default_value.setdefault(k, False)
+            self.default_value = default_value
+        else:
+            raise ValueError('default_value has to be an int or a dict.')
+
+    def _build_driver_class(self, Driver):
+        name = self._name
+        command_get = self.command_get
+        command_set = self.command_set
+
+        setattr(Driver, name, self)
+
+    def get_as_number(self):
+        """Get the register as number"""
+        value = self._interface.query(self.command_get)
+        self._check_value(value)
+        return value
+
+    def get(self):
+        """Get the register as dictionary"""
+        number = self.get_as_number()
+        return self.compute_dict_from_number(number)
+
+    def set(self, value):
+        """Set the register"""
+
+        if isinstance(value, dict):
+            value = self.compute_number_from_dict(value)
+
+        self._check_value(value)
+        self._interface.write(self.command_set + ' {}'.format(value))
+
+    def compute_number_from_dict(self, d):
+        for k in d.keys():
+            if k not in keys:
+                raise ValueError('key {} not in keys'.format(k))
+
+        self._complete_dict_with_default(d)
+
+        number = 0
+        for i, k in enumerate(self.keys):
+            if d[k]:
+                number += 2**i
+        return number
+
+    def compute_dict_from_number(self, number):
+        s = bin(number)[2:].zfill(self.nb_bits)
+
+        d = {}
+        for i, k in enumerate(self.keys):
+            d[k] = s[-1-i] == '1'
+            
+        return d
+
+    def _complete_dict_with_default(self, d):
+        for k, v in self.default_value.items():
+            d.setdefault(k, v)

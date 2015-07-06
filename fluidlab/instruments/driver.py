@@ -9,7 +9,8 @@ Provides:
 
 """
 
-from fluidlab.instruments.interface import Interface
+from fluidlab.instruments.interfaces import (
+    Interface, FalseInterface, PyvisaInterface)
 
 from fluidlab.instruments.features import Value
 
@@ -17,13 +18,19 @@ from fluidlab.instruments.features import Value
 class Driver(object):
     """Instrument driver (base class)."""
     @classmethod
-    def _build_class(cls, workers):
-        for worker in workers:
-            worker._build_driver_class(cls)
+    def _build_class_with_features(cls, features):
+        for feature in features:
+            feature._build_driver_class(cls)
 
-    def __init__(self, interface=None):
+    def __init__(self, interface=None, backend=None):
         if interface is None:
-            self._interface = self.interface = Interface()
+            interface = FalseInterface()
+        elif isinstance(interface, str):
+            interface = PyvisaInterface(interface, backend=backend)
+        elif not isinstance(interface, Interface):
+            raise NotImplementedError('interface:', interface)
+            
+        self._interface = self.interface = interface
 
         self.values = {}
         for name in dir(self):
@@ -68,4 +75,4 @@ class Driver(object):
         return value
 
 if __name__ == '__main__':
-    driver = Driver()
+    driver = Driver('ASRL4::INSTR', backend='@sim')

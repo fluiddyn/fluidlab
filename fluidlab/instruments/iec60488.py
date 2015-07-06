@@ -4,17 +4,16 @@
 [This module is inspired by the module `slave.iec60488`. Part of the
 documentation is taken from it. Thank you to the Slave authors.]
 
-This module implements a IEC 60488-2:2004(E) compliant interface.
+This module implements an IEC 60488-2:2004(E) compliant interface.
 
 The `IEC 60488-2`_ describes a standard digital interface for programmable
 instrumentation. It is used by devices connected via the IEEE 488.1 bus,
 commonly known as GPIB. It is an adoption of the *IEEE std. 488.2-1992*
 standard.
 
-The `IEC 60488-2`_ requires the existence of several commands which are
-logically grouped.
+The `IEC 60488-2`_ requires the existence of several commands which
+are implemented in the class:
 
-Provides:
 
 .. autoclass:: IEC60488
    :members:
@@ -69,13 +68,27 @@ following mixin classes.
 """
 
 from fluidlab.instruments.features import (
-    FunctionCommand, BoolValue, StringValue, RegisterValue)
+    QueryCommand, BoolValue, StringValue, RegisterValue)
 
 from fluidlab.instruments.driver import Driver
 
 
+EVENT_STATUS_BYTES = [
+    'operation complete',
+    'request control',
+    'query error',
+    'device dependent error',
+    'execution error',
+    'command error',
+    'user request',
+    'power on']
+
+
+
+
+
 class IEC60488(Driver):
-    """
+    """Instrument driver with IEC 60488-2 interface
 
     The `IEC 60488-2`_ requires the existence of several commands which are
     logically grouped.
@@ -85,7 +98,7 @@ class IEC60488(Driver):
     - `*CLS` - Clears the data status structure.
     - `*ESE` - Write the event status enable register.
     - `*ESE?` - Query the event status enable register.
-    - `*ESR?` - Query the standard event status register.
+    - `*ESR?` - Query the event status register.
     - `*SRE` - Write the status enable register.
     - `*SRE?` - Query the status enable register.
     - `*STB` - Query the status register.
@@ -103,21 +116,56 @@ class IEC60488(Driver):
     - `*WAI` - Wait to continue.
     """
 
-features = [
-    FunctionCommand(
-        'clear_status', 'Clears the data status structure', '*CLS'),
-    FunctionCommand(
-        'query_esr', 'Query the standard event status register.', '*ESR?'),
-    FunctionCommand('wait', 'Wait to continue', '*WAI'),
-    FunctionCommand(
-        'perform_internal_test',
-        'Perform internal self-test.', '*TST?'),
-    FunctionCommand('reset_device', 'Perform a device reset', '*RST'),
-    BoolValue('operation_complete_flag',
-              doc='Operation complete flag.',
-              command_set='*OPC')]
+    def query_event_status_register(self):
+        number = self.query_esr()
+        return self.status_enable_register.compute_dict_from_number(number)
 
-IEC60488._build_class(features)
+    def query_status_register(self):
+        number = self.query_stb()
+        return self.status_enable_register.compute_dict_from_number(number)
+
+    
+features = [
+    # Reporting Commands
+    QueryCommand(
+        'clear_status', 'Clears the data status structure', '*CLS'),
+    RegisterValue(
+        'event_status_enable_register',
+        doc=(
+        """Event status enable register
+        
+        Used in the status and events reporting system.
+        """),
+        command_set='*ESE', keys=EVENT_STATUS_BYTES),
+    QueryCommand(
+        'query_esr', 'Query the event status register', '*ESR?'),
+    RegisterValue(
+        'status_enable_register',
+        doc=(
+        """Status enable register
+        
+        Used in the status reporting system.
+        """),
+        command_set='*SRE', keys=EVENT_STATUS_BYTES),
+    QueryCommand(
+        'query_stb', 'Query the status register', '*STB?'),
+    # Internal operation commands
+    QueryCommand(
+        'query_identification', 'Identification query', '*IDN?'),
+    QueryCommand('reset_device', 'Perform a device reset', '*RST'),
+    QueryCommand(
+        'perform_internal_test',
+        'Perform internal self-test', '*TST?'),
+    # Synchronization commands
+    QueryCommand(
+        'wait_till_completion_of_operations',
+        'Return "1" when all operation are completed', '*OPC'),
+    QueryCommand(
+        'get_operation_complete_flag',
+        'Get operation complete flag', '*OPC?'),
+    QueryCommand('wait', 'Wait to continue', '*WAI')]
+
+IEC60488._build_class_with_features(features)
 
 
 class PowerOn(Driver):
@@ -129,7 +177,7 @@ class PowerOn(Driver):
     * `*PSC?` - Query the power-on status clear bit.
     """
 
-PowerOn._build_class([
+PowerOn._build_class_with_features([
     BoolValue('power_on_status',
               doc='Power-on status.',
               command_set='*PSC')])
@@ -145,13 +193,14 @@ class ParallelPoll(Driver):
     * `*PRE?` - Query the parallel poll enable register.
     """
 
-ParallelPoll._build_class([
-    FunctionCommand(
+ParallelPoll._build_class_with_features([
+    QueryCommand(
         'query_status_message_bit',
         'Query the individual status message bit', '*IST?'),
     RegisterValue('parallel_poll',
                   doc='Parallel poll enable register.',
-                  command_set='*PRE')])
+                  command_set='*PRE',
+                  keys='')])
 
 
 class ResourceDescription(Driver):
@@ -164,7 +213,7 @@ class ResourceDescription(Driver):
     * `*RDT?` - Query the stored resource description.
     """
 
-ResourceDescription._build_class([
+ResourceDescription._build_class_with_features([
     StringValue('resource_description',
                 doc='Resource description.',
                 command_set='*RDT')])
@@ -179,7 +228,7 @@ class ProtectedUserData(Driver):
     * `*PUD?` - Query the protected user data.
     """
 
-ProtectedUserData._build_class([
+ProtectedUserData._build_class_with_features([
     StringValue('user_data',
                 doc='Protected user data.',
                 command_set='*PUD')])
@@ -193,8 +242,8 @@ class Calibration(Driver):
     * `*CAL?` - Perform internal self calibration.
     """
 
-Calibration._build_class([
-    FunctionCommand(
+Calibration._build_class_with_features([
+    QueryCommand(
         'perform_calibration',
         'Perform internal self calibration', '*CAL?')])
 
@@ -207,8 +256,8 @@ class Trigger(Driver):
     * `*TRG` - Execute trigger command.
     """
 
-Trigger._build_class([
-    FunctionCommand('trigger', 'Execute trigger command.', '*TRG')])
+Trigger._build_class_with_features([
+    QueryCommand('trigger', 'Execute trigger command.', '*TRG')])
 
 
 class TriggerMacro(Driver):
@@ -220,7 +269,7 @@ class TriggerMacro(Driver):
     * `*DDT?` - Define device trigger query.
     """
 
-TriggerMacro._build_class([
+TriggerMacro._build_class_with_features([
     StringValue('define_device_trigger',
                 doc='Define device trigger.',
                 command_set='*DDT')])
@@ -239,17 +288,17 @@ class Macro(Driver):
     * `*PMC` - Define device trigger query.
     """
 
-Macro._build_class([
-    FunctionCommand(
+Macro._build_class_with_features([
+    QueryCommand(
         'dmc', 'Define device trigger (???).', '*DMC'),
     StringValue('emc',
                 doc='Define device trigger (???).',
                 command_set='*EMC'),
-    FunctionCommand(
+    QueryCommand(
         'gmc', 'Define device trigger (???).', '*GMC?'),
-    FunctionCommand(
+    QueryCommand(
         'lmc', 'Define device trigger (???).', '*LMC?'),
-    FunctionCommand(
+    QueryCommand(
         'pmc', 'Define device trigger (???).', '*PMC')])
 
 
@@ -260,8 +309,9 @@ class ObjectIdentification(Driver):
 
     * `*OPT?` - Option identification query.
     """
-ObjectIdentification._build_class([
-    FunctionCommand(
+
+ObjectIdentification._build_class_with_features([
+    QueryCommand(
         'opt_identification', 'Option identification query.', '*OPT?')])
 
 
@@ -274,11 +324,11 @@ class StoredSetting(Driver):
     * `*SAV` - Store current settings of the device in local memory.
     """
 
-StoredSetting._build_class([
-    FunctionCommand(
+StoredSetting._build_class_with_features([
+    QueryCommand(
         'restore_device_settings',
         'Restore device settings from local memory.', '*RCL'),
-    FunctionCommand(
+    QueryCommand(
         'store_current_settings',
         'Store current settings of the device in local memory.', '*SAV')])
 
@@ -291,8 +341,8 @@ class Learn(Driver):
     * `*LRN?` - Learn device setup query.
     """
 
-Learn._build_class([
-    FunctionCommand(
+Learn._build_class_with_features([
+    QueryCommand(
         'learn_device_setup',
         'Learn device setup query.', '*LRN?')])
 
@@ -306,11 +356,11 @@ class SystemConfiguration(Driver):
     * `*DLF` - Disable listener function command.
     """
 
-SystemConfiguration._build_class([
-    FunctionCommand(
+SystemConfiguration._build_class_with_features([
+    QueryCommand(
         'accept_address_command',
         'Accept address command.', '*AAD'),
-    FunctionCommand(
+    QueryCommand(
         'disable_listener',
         'Disable listener function command.', '*DLF')])
 
@@ -323,8 +373,8 @@ class PassingControl(Driver):
     * `*PCB` - Pass control back.
     """
 
-PassingControl._build_class([
-    FunctionCommand(
+PassingControl._build_class_with_features([
+    QueryCommand(
         'pass_control_back',
         'Pass control back.', '*PCB')])
 

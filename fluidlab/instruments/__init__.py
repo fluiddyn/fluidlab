@@ -11,7 +11,7 @@ Provides:
 
    driver
    features
-   interface
+   interfaces
    iec60488
 
 """

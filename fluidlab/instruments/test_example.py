@@ -13,21 +13,24 @@ class SimpleTestCase(unittest.TestCase):
         instr.clear_status()
         instr.reset_device()
 
-        instr.operation_complete_flag.get()
-        instr.operation_complete_flag.set()
+        instr.status_enable_register.get()
+        instr.status_enable_register.set(50)
 
-        instr.get('operation_complete_flag')
-        instr.set('operation_complete_flag')
+        instr.get('status_enable_register')
+        instr.set('status_enable_register', 1)
 
         # coming from Trigger
         instr.trigger()
 
         # test errors:
         with self.assertRaises(ValueError):
-            instr.operation_complete_flag = True
+            instr.status_enable_register.set(550)
+        
+        with self.assertRaises(ValueError):
+            instr.status_enable_register = True
 
         with self.assertRaises(AttributeError):
-            instr.get('operation_complte_flag')
+            instr.get('status_enble_register')
 
         with self.assertRaises(ValueError):
             instr.get('interface')
