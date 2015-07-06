@@ -15,7 +15,19 @@ Provides:
    :members:
    :private-members:
 
-.. autoclass:: ValueBool
+.. autoclass:: BoolValue
+   :members:
+   :private-members:
+
+.. autoclass:: StringValue
+   :members:
+   :private-members:
+
+.. autoclass:: NumberValue
+   :members:
+   :private-members:
+
+.. autoclass:: RegisterValue
    :members:
    :private-members:
 
@@ -49,10 +61,15 @@ class FunctionCommand(Feature):
 
 
 class Value(Feature):
-    def __init__(self, name, doc='', command_get=None, command_set=None):
+    def __init__(self, name, doc='', command_set=None, command_get=None):
         super(Value, self).__init__(name, doc)
-        self.command_get = command_get
         self.command_set = command_set
+
+        if command_get is None and command_set is not None:
+            command_get = command_set + '?'
+
+        self.command_get = command_get
+
 
     def _build_driver_class(self, Driver):
         name = self._name
@@ -81,11 +98,10 @@ class BoolValue(Value):
 
 
 class StringValue(Value):
-    def __init__(self, name, doc='', command_get=None, command_set=None,
+    def __init__(self, name, doc='', command_set=None, command_get=None,
                  possible_values=None):
-        super(StringValue, self).__init__(name, doc)
-        self.command_get = command_get
-        self.command_set = command_set
+        super(StringValue, self).__init__(
+            name, doc, command_set=command_set, command_get=command_get)
         self.possible_values = possible_values
 
     def _check_value(self, value):
@@ -119,11 +135,10 @@ class StringValue(Value):
 
 
 class NumberValue(Value):
-    def __init__(self, name, doc='', command_get=None, command_set=None,
+    def __init__(self, name, doc='', command_set=None, command_get=None,
                  limits=None):
-        super(NumberValue, self).__init__(name, doc)
-        self.command_get = command_get
-        self.command_set = command_set
+        super(NumberValue, self).__init__(
+            name, doc, command_set=command_set, command_get=command_get)
 
         if limits is not None and len(limits) != 2:
             raise ValueError(
@@ -169,3 +184,7 @@ class NumberValue(Value):
             self._interface.write(command_set)
 
         self.set = set.__get__(self, self.__class__)
+
+
+class RegisterValue(NumberValue):
+    pass
