@@ -19,7 +19,6 @@ The package :mod:`fluidlab` contains:
 from fluidlab._version import __version__
 
 from fluidlab.util import load_exp
-
 del util
 
 import fluiddyn as fld

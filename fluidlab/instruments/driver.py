@@ -10,7 +10,7 @@ Provides:
 """
 
 from fluidlab.instruments.interfaces import (
-    Interface, FalseInterface, PyvisaInterface)
+    Interface, FalseInterface)
 
 from fluidlab.instruments.features import Value
 
@@ -22,14 +22,16 @@ class Driver(object):
         for feature in features:
             feature._build_driver_class(cls)
 
-    def __init__(self, interface=None, backend=None):
+    def __init__(self, interface=None, backend='@py'):
         if interface is None:
             interface = FalseInterface()
         elif isinstance(interface, str):
+            from fluidlab.instruments.interfaces.with_visa import (
+                PyvisaInterface)
             interface = PyvisaInterface(interface, backend=backend)
         elif not isinstance(interface, Interface):
             raise NotImplementedError('interface:', interface)
-            
+
         self._interface = self.interface = interface
 
         self.values = {}

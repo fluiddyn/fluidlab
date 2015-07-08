@@ -84,9 +84,6 @@ EVENT_STATUS_BYTES = [
     'power on']
 
 
-
-
-
 class IEC60488(Driver):
     """Instrument driver with IEC 60488-2 interface
 
@@ -124,7 +121,6 @@ class IEC60488(Driver):
         number = self.query_stb()
         return self.status_enable_register.compute_dict_from_number(number)
 
-    
 features = [
     # Reporting Commands
     QueryCommand(
@@ -132,20 +128,20 @@ features = [
     RegisterValue(
         'event_status_enable_register',
         doc=(
-        """Event status enable register
-        
-        Used in the status and events reporting system.
-        """),
+            """Event status enable register
+
+Used in the status and events reporting system.
+"""),
         command_set='*ESE', keys=EVENT_STATUS_BYTES),
     QueryCommand(
         'query_esr', 'Query the event status register', '*ESR?'),
     RegisterValue(
         'status_enable_register',
         doc=(
-        """Status enable register
-        
-        Used in the status reporting system.
-        """),
+            """Status enable register
+
+Used in the status reporting system.
+"""),
         command_set='*SRE', keys=EVENT_STATUS_BYTES),
     QueryCommand(
         'query_stb', 'Query the status register', '*STB?'),

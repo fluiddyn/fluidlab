@@ -60,7 +60,7 @@ class WriteCommand(Feature):
 
         def func(self):
             self._interface.write(command_str)
-        
+
         func.__doc__ = self.__doc__
         setattr(Driver, self._name, func)
 
@@ -82,12 +82,14 @@ class QueryCommand(Feature):
         else:
             def func(self):
                 return parse_result(self._interface.query(command_str))
-            
+
         func.__doc__ = self.__doc__
         setattr(Driver, self._name, func)
 
 
 class Value(Feature):
+    _fmt = '{}'
+
     def __init__(self, name, doc='', command_set=None, command_get=None):
         super(Value, self).__init__(name, doc)
         self.command_set = command_set
@@ -97,46 +99,14 @@ class Value(Feature):
 
         self.command_get = command_get
 
-
-    def _build_driver_class(self, Driver):
-        name = self._name
-        command_get = self.command_get
-        command_set = self.command_set
-
-        setattr(Driver, name, self)
-
-        def get(self):
-            """Get """ + name
-            return self._interface.query(command_get)
-
-        setattr(Driver, 'get_' + self._name, get)
-        self.get = get.__get__(self, self.__class__)
-
-        def set(self):
-            """Set """ + name
-            self._interface.write(command_set)
-
-        setattr(Driver, 'set_' + self._name, set)
-        self.set = set.__get__(self, self.__class__)
-
-
-class BoolValue(Value):
-    pass
-
-
-class StringValue(Value):
-    def __init__(self, name, doc='', command_set=None, command_get=None,
-                 possible_values=None):
-        super(StringValue, self).__init__(
-            name, doc, command_set=command_set, command_get=command_get)
-        self.possible_values = possible_values
-
     def _check_value(self, value):
-        if (self.possible_values is not None and
-                value not in self.possible_values):
-            raise ValueError(
-                'Value {} not in possible_values, which is equal to {}'.format(
-                    value, repr(self.possible_values)))
+        pass
+
+    def _convert_from_str(self, value):
+        return value.strip()
+
+    def _convert_as_str(self, value):
+        return self._fmt.format(value)
 
     def _build_driver_class(self, Driver):
         name = self._name
@@ -147,18 +117,48 @@ class StringValue(Value):
 
         def get(self):
             """Get """ + name
-            value = self._interface.query(command_get)
-            self._check_value(value)
-            return value
+            result = self._convert_from_str(self._interface.query(command_get))
+            self._check_value(result)
+            return result
 
         self.get = get.__get__(self, self.__class__)
 
         def set(self, value):
             """Set """ + name
             self._check_value(value)
-            self._interface.write(command_set)
+            self._interface.write(
+                command_set + ' ' + self._convert_as_str(value))
 
         self.set = set.__get__(self, self.__class__)
+
+
+class BoolValue(Value):
+    def _convert_from_str(self, value):
+        if value == '0':
+            return False
+        else:
+            return bool(value)
+
+    def _convert_as_str(self, value):
+        if value:
+            return '1'
+        else:
+            return '0'
+
+
+class StringValue(Value):
+    def __init__(self, name, doc='', command_set=None, command_get=None,
+                 valid_values=None):
+        super(StringValue, self).__init__(
+            name, doc, command_set=command_set, command_get=command_get)
+        self.valid_values = valid_values
+
+    def _check_value(self, value):
+        if (self.valid_values is not None and
+                value not in self.valid_values):
+            raise ValueError(
+                'Value "{}" not in valid_values, which is equal to {}'.format(
+                    value, repr(self.valid_values)))
 
 
 class NumberValue(Value):
@@ -190,27 +190,19 @@ class NumberValue(Value):
                 'Value ({}) is larger than lim_max ({})'.format(
                     value, lim_max))
 
-    def _build_driver_class(self, Driver):
-        name = self._name
-        command_get = self.command_get
-        command_set = self.command_set
 
-        setattr(Driver, name, self)
+class FloatValue(NumberValue):
+    _fmt = '{:f}'
 
-        def get(self):
-            """Get """ + name
-            value = self._interface.query(command_get)
-            self._check_value(value)
-            return value
+    def _convert_from_str(self, value):
+        return float(value)
 
-        self.get = get.__get__(self, self.__class__)
 
-        def set(self, value):
-            """Set """ + name
-            self._check_value(value)
-            self._interface.write(command_set)
+class IntValue(NumberValue):
+    _fmt = '{:d}'
 
-        self.set = set.__get__(self, self.__class__)
+    def _convert_from_str(self, value):
+        return int(value)
 
 
 class RegisterValue(NumberValue):
@@ -228,7 +220,7 @@ class RegisterValue(NumberValue):
         super(RegisterValue, self).__init__(
             name, doc, command_set=command_set, command_get=command_get,
             limits=limits)
-        
+
         if isinstance(default_value, int):
             self.default_value = self.compute_dict_from_number(default_value)
         elif isinstance(default_value, dict):
@@ -243,9 +235,6 @@ class RegisterValue(NumberValue):
 
     def _build_driver_class(self, Driver):
         name = self._name
-        command_get = self.command_get
-        command_set = self.command_set
-
         setattr(Driver, name, self)
 
     def get_as_number(self):
@@ -270,7 +259,7 @@ class RegisterValue(NumberValue):
 
     def compute_number_from_dict(self, d):
         for k in d.keys():
-            if k not in keys:
+            if k not in self.keys:
                 raise ValueError('key {} not in keys'.format(k))
 
         self._complete_dict_with_default(d)
@@ -287,7 +276,7 @@ class RegisterValue(NumberValue):
         d = {}
         for i, k in enumerate(self.keys):
             d[k] = s[-1-i] == '1'
-            
+
         return d
 
     def _complete_dict_with_default(self, d):

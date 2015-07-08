@@ -4,17 +4,17 @@ Toolkit for various tasks (:mod:`fluidlab.util.util`)
 
 
 """
-
+from __future__ import print_function
 
 import os
 import glob
 from importlib import import_module
 
-import h5py
 import numpy as np
-
+import h5py
 
 from fluiddyn import io
+
 import fluiddyn as fld
 
 
