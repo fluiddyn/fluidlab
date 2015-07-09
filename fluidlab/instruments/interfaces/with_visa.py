@@ -1,5 +1,5 @@
-"""Interfaces with pyvisa (:mod:`fluidlab.instruments.interfaces.visa`)
-=======================================================================
+"""Interfaces with pyvisa (:mod:`fluidlab.instruments.interfaces.with_visa`)
+============================================================================
 
 Provides:
 
