@@ -10,10 +10,14 @@ from fluidlab.instruments.features import (
 
 
 class Device2(Driver):
-    """An IEC60488 instrument with other things"""
+    """Simple instrument driver
+
+    The instrument is defined in pyvisa-sim (as "device 2").
+
+    """
 
 Device2._build_class_with_features([
-    QueryCommand('get_idn', doc='Get identity.', command_str='*IDN?'),
+    QueryCommand('get_idn', doc='Get identity', command_str='*IDN?'),
     StringValue('rail', doc='A string rail',
                 command_set='INST',
                 valid_values=['P6V', 'P25V', 'N25V']),

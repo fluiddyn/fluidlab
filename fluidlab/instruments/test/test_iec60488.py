@@ -1,13 +1,18 @@
 
 import unittest
 
-from fluidlab.instruments.example_instru_with_trigger import Instru
+
+from fluidlab.instruments.iec60488 import IEC60488, Trigger
+
+
+class InstruWithTrigger(IEC60488, Trigger):
+    """An IEC60488 instrument with trigger."""
 
 
 class SimpleTestCase(unittest.TestCase):
 
     def test_instr(self):
-        instr = Instru()
+        instr = InstruWithTrigger()
 
         # coming from IEC60488
         instr.clear_status()
@@ -25,7 +30,7 @@ class SimpleTestCase(unittest.TestCase):
         # test errors:
         with self.assertRaises(ValueError):
             instr.status_enable_register.set(550)
-        
+
         with self.assertRaises(ValueError):
             instr.status_enable_register = True
 
