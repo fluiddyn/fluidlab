@@ -1,5 +1,5 @@
-"""Interfaces with pyvisa (:mod:`fluidlab.instruments.interfaces.with_visa`)
-============================================================================
+"""Interfaces with pyvisa (:mod:`fluidlab.instruments.interfaces.visa`)
+=======================================================================
 
 Provides:
 
@@ -9,7 +9,7 @@ Provides:
 
 """
 
-import visa
+import pyvisa as visa
 
 from fluidlab.instruments.interfaces import Interface
 
@@ -22,3 +22,7 @@ class PyvisaInterface(Interface):
         self.write = instr.write
         self.read = instr.read
         self.query = instr.query
+
+
+if __name__ == '__main__':
+    interface = PyvisaInterface('ASRL2::INSTR', backend='@sim')

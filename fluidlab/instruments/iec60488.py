@@ -1,5 +1,5 @@
-"""IEC60488 (:mod:`fluidlab.instruments.iec60488`)
-==================================================
+"""IEC60488 drivers (:mod:`fluidlab.instruments.iec60488`)
+==========================================================
 
 [This module is inspired by the module `slave.iec60488`. Part of the
 documentation is taken from it. Thank you to the Slave authors.]
@@ -70,7 +70,7 @@ following mixin classes.
 from fluidlab.instruments.features import (
     QueryCommand, BoolValue, StringValue, RegisterValue)
 
-from fluidlab.instruments.driver import Driver
+from fluidlab.instruments.drivers import VISADriver as Driver
 
 
 EVENT_STATUS_BYTES = [

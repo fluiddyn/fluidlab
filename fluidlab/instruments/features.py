@@ -1,5 +1,5 @@
-"""Features (:mod:`fluidlab.instruments.features`)
-==================================================
+"""Features for defining drivers (:mod:`fluidlab.instruments.features`)
+=======================================================================
 
 Provides:
 
@@ -28,6 +28,14 @@ Provides:
    :private-members:
 
 .. autoclass:: NumberValue
+   :members:
+   :private-members:
+
+.. autoclass:: IntValue
+   :members:
+   :private-members:
+
+.. autoclass:: FloatValue
    :members:
    :private-members:
 
@@ -134,6 +142,7 @@ class Value(Feature):
 
 class BoolValue(Value):
     def _convert_from_str(self, value):
+        value = value.strip()
         if value == '0':
             return False
         else:

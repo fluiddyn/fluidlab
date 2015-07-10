@@ -9,9 +9,17 @@ Provides:
 .. autosummary::
    :toctree:
 
-   driver
+   drivers
    features
    interfaces
    iec60488
+
+   scope
+   funcgen
+
+   daqmx
+   firewire
+   sound
+
 
 """

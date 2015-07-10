@@ -3,13 +3,13 @@
 
 """
 
-from fluidlab.instruments.driver import Driver
+from fluidlab.instruments.drivers import VISADriver
 
 from fluidlab.instruments.features import (
     QueryCommand, StringValue, FloatValue, BoolValue)
 
 
-class Device2(Driver):
+class Device2(VISADriver):
     """Simple instrument driver
 
     The instrument is defined in pyvisa-sim (as "device 2").
@@ -32,4 +32,4 @@ Device2._build_class_with_features([
 
 
 if __name__ == '__main__':
-    device = Device2('ASRL2::INSTR', backend='@sim')
+    dev = Device2('ASRL2::INSTR', backend='@sim')
