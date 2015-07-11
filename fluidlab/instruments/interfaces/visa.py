@@ -11,10 +11,10 @@ Provides:
 
 import pyvisa as visa
 
-from fluidlab.instruments.interfaces import Interface
+from fluidlab.instruments.interfaces import QueryInterface
 
 
-class PyvisaInterface(Interface):
+class PyvisaInterface(QueryInterface):
     def __init__(self, resource_name, backend='@py'):
         rm = visa.ResourceManager(backend)
         instr = rm.get_instrument(resource_name)

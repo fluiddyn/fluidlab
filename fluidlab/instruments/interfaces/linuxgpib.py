@@ -12,10 +12,10 @@ Provides:
 import gpib
 import time
 
-from fluidlab.instruments.interfaces import Interface
+from fluidlab.instruments.interfaces import QueryInterface
 
 
-class GPIBInterface(Interface):
+class GPIBInterface(QueryInterface):
     def __init__(self, board_adress, instrument_adress):
         self.handle = gpib.dev(board_adress, instrument_adress)
 
