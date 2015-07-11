@@ -1,6 +1,8 @@
 """Features for defining drivers (:mod:`fluidlab.instruments.features`)
 =======================================================================
 
+.. todo:: Work on the documentation of :mod:`fluidlab.instruments.features`.
+
 Provides:
 
 .. autoclass:: Feature
@@ -64,6 +66,9 @@ class WriteCommand(Feature):
         self.command_str = command_str
 
     def _build_driver_class(self, Driver):
+        """Add a "write function" to the driver class
+
+        """
         command_str = self.command_str
 
         def func(self):
@@ -80,6 +85,9 @@ class QueryCommand(Feature):
         self.parse_result = parse_result
 
     def _build_driver_class(self, Driver):
+        """Add a "query function" to the driver class
+
+        """
         command_str = self.command_str
 
         parse_result = self.parse_result

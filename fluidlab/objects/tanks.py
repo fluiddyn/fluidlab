@@ -1,9 +1,10 @@
-"""
-Tanks (:mod:`fluidlab.objects.tanks`)
-=====================================
+"""Tanks (:mod:`fluidlab.objects.tanks`)
+========================================
 
 .. _tanks:
 .. currentmodule:: fluidlab.objects.tanks
+
+.. todo:: Solve a bug loading the tank (about values Rin, Rout...).
 
 Provides:
 
@@ -18,8 +19,6 @@ Provides:
 
 .. autoclass:: TaylorCouette
    :members:
-
-.. todo:: Solve bug loading the tank (about values Rin, Rout...).
 
 """
 

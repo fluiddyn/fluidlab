@@ -4,6 +4,17 @@
 .. _exp:
 .. currentmodule:: fluidlab.exp
 
+.. autosummary::
+   :toctree:
+
+   session
+
+.. warning::
+
+   Beware, most of the modules of this package (those listed below)
+   are depreciated and will be at least rewritten with other base
+   class.
+
 
 Physically, an experiment consists in interacting objects.  The
 experimentalist wants to control the actions of the objects with a
@@ -53,5 +64,3 @@ This package provides:
    vertduct
 
 """
-
-

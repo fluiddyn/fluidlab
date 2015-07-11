@@ -1,6 +1,7 @@
 
 import unittest
 
+from fluiddyn.io import stdout_redirected
 
 from fluidlab.instruments.iec60488 import IEC60488, Trigger
 
@@ -14,18 +15,19 @@ class SimpleTestCase(unittest.TestCase):
     def test_instr(self):
         instr = InstruWithTrigger()
 
-        # coming from IEC60488
-        instr.clear_status()
-        instr.reset_device()
+        with stdout_redirected():
+            # coming from IEC60488
+            instr.clear_status()
+            instr.reset_device()
 
-        instr.status_enable_register.get()
-        instr.status_enable_register.set(50)
+            instr.status_enable_register.get()
+            instr.status_enable_register.set(50)
 
-        instr.get('status_enable_register')
-        instr.set('status_enable_register', 1)
+            instr.get('status_enable_register')
+            instr.set('status_enable_register', 1)
 
-        # coming from Trigger
-        instr.trigger()
+            # coming from Trigger
+            instr.trigger()
 
         # test errors:
         with self.assertRaises(ValueError):

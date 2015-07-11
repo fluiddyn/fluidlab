@@ -1,6 +1,11 @@
 """IEC60488 drivers (:mod:`fluidlab.instruments.iec60488`)
 ==========================================================
 
+.. todo::
+
+   Verify if IEC60488 drivers work and are convenient (which
+   names for the functions and values?)...
+
 [This module is inspired by the module `slave.iec60488`. Part of the
 documentation is taken from it. Thank you to the Slave authors.]
 
@@ -13,7 +18,6 @@ standard.
 
 The `IEC 60488-2`_ requires the existence of several commands which
 are implemented in the class:
-
 
 .. autoclass:: IEC60488
    :members:

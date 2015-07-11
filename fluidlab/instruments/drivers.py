@@ -1,6 +1,9 @@
 """Instrument drivers (:mod:`fluidlab.instruments.drivers`)
 ==========================================================
 
+.. todo:: Verify potential bug due to the fact that values are class
+   attributes.
+
 Provides:
 
 .. autoclass:: Driver

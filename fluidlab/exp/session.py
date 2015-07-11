@@ -1,8 +1,14 @@
-"""
-Experiment session (:mod:`fluidlab.exp.session`)
-================================================
+"""Experiment session (:mod:`fluidlab.exp.session`)
+===================================================
 
-.. currentmodule:: fluidlab.exp.session
+.. todo::
+
+   Improve :class:`fluidlab.exp.session.Session` to produce a nice
+   `session.h5`.
+
+.. todo::
+   Implement a working :class:`fluidlab.exp.session.DataTable` class.
+
 
 Provides:
 
@@ -11,6 +17,10 @@ Provides:
    :private-members:
 
 .. autoclass:: SessionWithDefaultParams
+   :members:
+   :private-members:
+
+.. autoclass:: DataTable
    :members:
    :private-members:
 
@@ -28,7 +38,17 @@ from fluiddyn.util import time_as_str
 
 
 class Session(object):
-    """to do"""
+    """Experimental session
+
+    Base class representing an experimental session. A session
+    automatically creates or loads files containing data. It contains
+    a object `logger` for printing with logging (and possibly sending
+    emails).
+
+    It contains managers of data tables for saving, loading and
+    plotting data time series (see :class:`DataTable`).
+
+    """
     def __init__(self, path=None, name=None, info=None,
                  save_in_dir=True,
                  email_to=None, email_title=None, email_delay=None):
@@ -107,6 +127,9 @@ class Session(object):
 
 
 class DataTable(object):
+    """Data table for time series
+
+    """
     def __init__(self, path=None, name=None, session=None):
 
         self.name = name = name or 'data'
@@ -124,6 +147,10 @@ class DataTable(object):
 
 
 class SessionWithDefaultParams(Session):
+    """Not implemented
+
+
+    """
 
     @classmethod
     def create_default_params(cls):
