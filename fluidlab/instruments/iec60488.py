@@ -72,9 +72,9 @@ following mixin classes.
 """
 
 from fluidlab.instruments.features import (
-    QueryCommand, BoolValue, StringValue, RegisterValue)
+    WriteCommand, QueryCommand, BoolValue, StringValue, RegisterValue)
 
-from fluidlab.instruments.drivers import VISADriver as Driver
+from fluidlab.instruments.drivers import VISADriver
 
 
 EVENT_STATUS_BYTES = [
@@ -88,7 +88,7 @@ EVENT_STATUS_BYTES = [
     'power on']
 
 
-class IEC60488(Driver):
+class IEC60488(VISADriver):
     """Instrument driver with IEC 60488-2 interface
 
     The `IEC 60488-2`_ requires the existence of several commands which are
@@ -168,7 +168,7 @@ Used in the status reporting system.
 IEC60488._build_class_with_features(features)
 
 
-class PowerOn(Driver):
+class PowerOn(VISADriver):
     """A mixin class, implementing the optional power on commands.
 
     Power on common commands
@@ -183,7 +183,7 @@ PowerOn._build_class_with_features([
               command_set='*PSC')])
 
 
-class ParallelPoll(Driver):
+class ParallelPoll(VISADriver):
     """A mixin class, implementing the optional parallel poll commands.
 
     Parallel poll common commands
@@ -203,7 +203,7 @@ ParallelPoll._build_class_with_features([
                   keys='')])
 
 
-class ResourceDescription(Driver):
+class ResourceDescription(VISADriver):
     """A mixin class, implementing the optional resource description common
     commands.
 
@@ -219,7 +219,7 @@ ResourceDescription._build_class_with_features([
                 command_set='*RDT')])
 
 
-class ProtectedUserData(Driver):
+class ProtectedUserData(VISADriver):
     """A mixin class, implementing the protected user data commands.
 
     Protected user data commands
@@ -234,7 +234,7 @@ ProtectedUserData._build_class_with_features([
                 command_set='*PUD')])
 
 
-class Calibration(Driver):
+class Calibration(VISADriver):
     """A mixin class, implementing the optional calibration command.
 
     Calibration command
@@ -248,7 +248,7 @@ Calibration._build_class_with_features([
         'Perform internal self calibration', '*CAL?')])
 
 
-class Trigger(Driver):
+class Trigger(VISADriver):
     """A mixin class, implementing the optional trigger command.
 
     Trigger command
@@ -257,10 +257,10 @@ class Trigger(Driver):
     """
 
 Trigger._build_class_with_features([
-    QueryCommand('trigger', 'Execute trigger command.', '*TRG')])
+    WriteCommand('trigger', 'Execute trigger command.', '*TRG')])
 
 
-class TriggerMacro(Driver):
+class TriggerMacro(VISADriver):
     """A mixin class, implementing the optional trigger macro commands.
 
     Trigger macro commands
@@ -275,7 +275,7 @@ TriggerMacro._build_class_with_features([
                 command_set='*DDT')])
 
 
-class Macro(Driver):
+class Macro(VISADriver):
     """A mixin class, implementing the optional macro commands.
 
     Macro Commands
@@ -302,7 +302,7 @@ Macro._build_class_with_features([
         'pmc', 'Define device trigger (???).', '*PMC')])
 
 
-class ObjectIdentification(Driver):
+class ObjectIdentification(VISADriver):
     """A mixin class, implementing the optional object identification command.
 
     Option Identification command
@@ -315,7 +315,7 @@ ObjectIdentification._build_class_with_features([
         'opt_identification', 'Option identification query.', '*OPT?')])
 
 
-class StoredSetting(Driver):
+class StoredSetting(VISADriver):
     """A mixin class, implementing the optional stored setting commands.
 
     Stored settings commands
@@ -333,7 +333,7 @@ StoredSetting._build_class_with_features([
         'Store current settings of the device in local memory.', '*SAV')])
 
 
-class Learn(Driver):
+class Learn(VISADriver):
     """A mixin class, implementing the optional learn command.
 
     Learn command
@@ -347,7 +347,7 @@ Learn._build_class_with_features([
         'Learn device setup query.', '*LRN?')])
 
 
-class SystemConfiguration(Driver):
+class SystemConfiguration(VISADriver):
     """A mixin class, implementing the optional system configuration commands.
 
     System configuration commands
@@ -365,7 +365,7 @@ SystemConfiguration._build_class_with_features([
         'Disable listener function command.', '*DLF')])
 
 
-class PassingControl(Driver):
+class PassingControl(VISADriver):
     """A mixin class, implementing the optional passing control command.
 
     Passing control command

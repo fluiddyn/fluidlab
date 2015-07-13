@@ -171,6 +171,7 @@ class StringValue(Value):
         self.valid_values = valid_values
 
     def _check_value(self, value):
+        value = value.lower()
         if (self.valid_values is not None and
                 value not in self.valid_values):
             raise ValueError(

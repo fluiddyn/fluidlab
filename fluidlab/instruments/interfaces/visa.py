@@ -18,10 +18,12 @@ class PyvisaInterface(QueryInterface):
     def __init__(self, resource_name, backend='@py'):
         rm = visa.ResourceManager(backend)
         instr = rm.get_instrument(resource_name)
+        self._lowlevel = instr
         self.pyvisa_instr = instr
         self.write = instr.write
         self.read = instr.read
         self.query = instr.query
+        self.close = instr.close
 
 
 if __name__ == '__main__':
