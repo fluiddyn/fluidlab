@@ -22,6 +22,7 @@ class PyvisaInterface(QueryInterface):
         self.pyvisa_instr = instr
         self.write = instr.write
         self.read = instr.read
+        self.read_raw = instr.read_raw
         self.query = instr.query
         self.close = instr.close
 
