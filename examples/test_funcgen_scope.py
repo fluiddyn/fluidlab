@@ -4,7 +4,6 @@ import unittest
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
-
 from fluidlab.instruments.scope.agilent_dsox2014a import AgilentDSOX2014a
 from fluidlab.instruments.funcgen.tektronix_afg3022b import TektronixAFG3022b
 
@@ -77,10 +76,11 @@ class TestContainer(unittest.TestCase):
         voltage = 3
         offset = 1
         frequency = 1e4  # Hz
-        format = "byte"
+        format_output = 'byte'
         params0 = voltage, offset, frequency, 0
         self.init_output_funct_generator(voltage, frequency, offset, shape)
-        times, voltage_scope = self.get_scope_time_voltage(nb_points, format)
+        times, voltage_scope = self.get_scope_time_voltage(nb_points,
+                                                           format_output)
 
         # print(func(times, *params0))
         # print(voltage_scope)
@@ -128,6 +128,7 @@ def func_square(times, amplitude, offset, frequency, phase):
 def func_ramp(times, amplitude, offset, frequency, phase):
     result = np.empty_like(times)
     for it, t in enumerate(times):
+        # hp = number that counts the Half Periods
         hp = 2 * frequency * (t + phase)
         if np.floor(hp) % 2 == 0:
             result[it] = offset + (hp - np.floor(hp) - 1/2) * amplitude
