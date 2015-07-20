@@ -55,7 +55,7 @@ class Feature(object):
 
     def __repr__(self):
         if len(self.__doc__) > 0:
-            return (super(Feature, self).__repr__() + '\n\n' + self.__doc__)
+            return (super(Feature, self).__repr__() + '\n' + self.__doc__)
         else:
             return super(Feature, self).__repr__()
 
@@ -103,7 +103,13 @@ class QueryCommand(Feature):
         setattr(Driver, self._name, func)
 
 
-class Value(Feature):
+class SuperValue(Feature):
+    def _build_driver_class(self, Driver):
+        name = self._name
+        setattr(Driver, name, self)
+
+
+class Value(SuperValue):
     _fmt = '{}'
 
     def __init__(self, name, doc='', command_set=None, command_get=None):

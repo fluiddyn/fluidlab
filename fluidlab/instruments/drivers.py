@@ -22,7 +22,7 @@ import platform
 from fluidlab.instruments.interfaces import (
     Interface, FalseInterface)
 
-from fluidlab.instruments.features import Value
+from fluidlab.instruments.features import SuperValue
 
 
 class Driver(object):
@@ -43,14 +43,14 @@ class Driver(object):
         self.values = {}
         for name in dir(self):
             v = getattr(self, name)
-            if isinstance(v, Value):
+            if isinstance(v, SuperValue):
                 self.values[name] = v
                 v._interface = self._interface
 
     def __setattr__(self, k, v):
-        if (not isinstance(v, Value) and
+        if (not isinstance(v, SuperValue) and
                 k in dir(self) and
-                isinstance(getattr(self, k), Value)):
+                isinstance(getattr(self, k), SuperValue)):
             raise ValueError(
                 k + ' is associated with a quantity in the instrument. '
                 'Do not set this value by assignment. Use a set function.')
@@ -74,7 +74,7 @@ class Driver(object):
         except AttributeError:
             Error = AttributeError
         else:
-            if not isinstance(value, Value):
+            if not isinstance(value, SuperValue):
                 Error = ValueError
 
         if Error:
