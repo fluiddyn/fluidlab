@@ -49,7 +49,7 @@ TektronixAFG3022b._build_class_with_features([
     BoolValue('output1_state', doc='', command_set='OUTPut1:STATe'),
     BoolValue('output2_state', doc='', command_set='OUTPut2:STATe'),
     StringValue('function_shape', doc='', command_set='FUNCTION',
-                valid_values=['sin', 'sine', 'ramp', 'square']),
+                valid_values=['sin', 'sine', 'ramp', "squ",  'square']),
     FloatValue(
         'frequency', doc='The function frequency.', command_set='FREQUENCY'),
     FloatValue(

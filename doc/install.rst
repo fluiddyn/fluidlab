@@ -6,10 +6,10 @@ installation of Python packages are discussed in `the main
 documentation of the project
 <https://pythonhosted.org/fluiddyn/install.html>`_.
 
-Optional dependencies
----------------------
+Dependencies
+------------
 
-- ?
+- Numpy, Scipy, ...
 
 Install commands
 ----------------
@@ -24,6 +24,17 @@ Installation with Pip should also work::
 
   pip install fluidlab
 
+
+Optional dependencies
+---------------------
+
+
+.. toctree::
+   :maxdepth: 2
+
+   linuxgpib
+
+  
 Run the tests
 -------------
 

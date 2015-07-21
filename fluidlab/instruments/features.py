@@ -46,6 +46,18 @@ Provides:
    :private-members:
 
 """
+import warnings
+
+
+def custom_formatwarning(message, category, filename, lineno, line=None):
+    return '{}:{}: {}: {}\n'.format(
+        filename, lineno, category.__name__, message)
+
+
+warnings.formatwarning = custom_formatwarning
+warnings.simplefilter('always', UserWarning)
+# warnings.simplefilter('always', Warning)
+# warnings.simplefilter('always')
 
 
 class Feature(object):
@@ -124,6 +136,9 @@ class Value(SuperValue):
     def _check_value(self, value):
         pass
 
+    def _check_instrument_value(self, value):
+        pass
+
     def _convert_from_str(self, value):
         return value.strip()
 
@@ -145,11 +160,13 @@ class Value(SuperValue):
 
         self.get = get.__get__(self, self.__class__)
 
-        def set(self, value):
+        def set(self, value, warn=True):
             """Set """ + name
             self._check_value(value)
             self._interface.write(
                 command_set + ' ' + self._convert_as_str(value))
+            if warn:
+                self._check_instrument_value(value)
 
         self.set = set.__get__(self, self.__class__)
 
@@ -168,6 +185,14 @@ class BoolValue(Value):
         else:
             return '0'
 
+    def _check_instrument_value(self, value):
+        instr_value = self.get()
+        if instr_value != value:
+            msg = (self._name + ' could not be set to ' +
+                   str(value) + ' and was set to ' +
+                   str(instr_value) + ' instead')
+            warnings.warn(msg, UserWarning)
+
 
 class StringValue(Value):
     def __init__(self, name, doc='', command_set=None, command_get=None,
@@ -183,6 +208,14 @@ class StringValue(Value):
             raise ValueError(
                 'Value "{}" not in valid_values, which is equal to {}'.format(
                     value, repr(self.valid_values)))
+
+    def _check_instrument_value(self, value):
+        instr_value = self.get()
+        if not(value.startswith(instr_value)):
+            msg = (self._name + ' could not be set to ' +
+                   str(value) + ' and was set to ' +
+                   str(instr_value) + ' instead')
+            warnings.warn(msg, UserWarning)
 
 
 class NumberValue(Value):
@@ -213,6 +246,14 @@ class NumberValue(Value):
             raise ValueError(
                 'Value ({}) is larger than lim_max ({})'.format(
                     value, lim_max))
+
+    def _check_instrument_value(self, value):
+        instr_value = self.get()
+        if instr_value != value:
+            msg = (self._name + ' could not be set to ' +
+                   str(value) + ' and was set to ' +
+                   str(instr_value) + ' instead')
+            warnings.warn(msg, UserWarning)
 
 
 class FloatValue(NumberValue):
