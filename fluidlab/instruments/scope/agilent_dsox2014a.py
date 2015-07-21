@@ -111,7 +111,7 @@ AgilentDSOX2014a._build_class_with_features([
 
         The coupling for each analog channel can be set to AC or DC.""",
         command_set=':CHANnel1:COUPling',
-        valid_values=['AC', 'DC']),
+        valid_values=['ac', 'dc']),
     BoolValue(
         'channel1_display',
         doc="""Display on or off.""",

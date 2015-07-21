@@ -2,7 +2,7 @@ from __future__ import print_function, division
 
 import numpy as np
 
-from fluidlab import Session
+from fluidlab.exp.session import Session
 from fluiddyn.util.timer import Timer
 
 from fluidlab.instruments.scope.agilent_dsox2014a import AgilentDSOX2014a
@@ -29,7 +29,7 @@ session = Session(
     email_title='False experiment with function generator and oscilloscope',
     email_delay=2*3600)
 
-print = session.print_log
+print = session.logger.print_log
 
 # data_table = session.get_data_table()
 # data_table.init_plot(['Umin', 'Umax'], num_fig=1)
@@ -53,7 +53,7 @@ scope = AgilentDSOX2014a('USB0::2391::6040::MY51450715::0::INSTR')
 
 scope.channel1_coupling.set('DC')
 scope.channel1_range.set(volts_out.max())
-scope.timebase_range.set('1e3')
+scope.timebase_range.set(1e-3)
 scope.trigger_level.set(offset)
 
 

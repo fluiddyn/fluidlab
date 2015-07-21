@@ -210,7 +210,8 @@ class StringValue(Value):
                     value, repr(self.valid_values)))
 
     def _check_instrument_value(self, value):
-        instr_value = self.get()
+        value = value.lower()
+        instr_value = self.get().lower()
         if not(value.startswith(instr_value)):
             msg = (self._name + ' could not be set to ' +
                    str(value) + ' and was set to ' +
@@ -249,7 +250,7 @@ class NumberValue(Value):
 
     def _check_instrument_value(self, value):
         instr_value = self.get()
-        if instr_value != value:
+        if abs(instr_value-value) > 0.001*abs(value):
             msg = (self._name + ' could not be set to ' +
                    str(value) + ' and was set to ' +
                    str(instr_value) + ' instead')
