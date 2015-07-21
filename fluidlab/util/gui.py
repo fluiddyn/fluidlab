@@ -6,16 +6,14 @@
 
 """
 
-import sys
-
-try: # Python 3
+try:  # Python 3
     import tkinter as tk
     from tkinter import N, W, E, S, END
     from tkinter import ttk
     from tkinter.scrolledtext import ScrolledText
     from tkinter.simpledialog import SimpleDialog
     import tkinter.font as font
-except ImportError: # Python 2
+except ImportError:  # Python 2
     import Tkinter as tk
     from Tkinter import N, W, E, S, END
     import ttk
@@ -31,10 +29,9 @@ from fluiddyn._version import __version__
 from fluiddyn.util.deamons import DaemonThread as Daemon
 
 
-
 from fluidlab.objects.rotatingobjects import (
     create_rotating_objects_kepler,
-    DaemonRunningRotatingObject, 
+    DaemonRunningRotatingObject,
     RotatingObject)
 
 
@@ -66,19 +63,6 @@ class ElapsedTimeClock(ttk.Label):
         self.after(200, self.tick)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 class FrameRotatingObject(ttk.Frame):
     """A simple frame for an object with a write function."""
     def __init__(self, master, obj, title=None, **kargs):
@@ -91,7 +75,6 @@ class FrameRotatingObject(ttk.Frame):
         self.grid(sticky=(N, W, E, S), **kargs)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-
 
     def create_widgets(self):
 
@@ -115,7 +98,6 @@ class FrameRotatingObject(ttk.Frame):
 
         self._redefine_write()
 
-
     def _redefine_write(self):
         """Dynamically overwrite the function write of the object."""
 
@@ -135,14 +117,6 @@ class FrameRotatingObject(ttk.Frame):
             new_write, self.obj, self.obj.__class__)
 
 
-
-
-
-
-
-
-
-
 class FrameWritingObject(ttk.Frame):
     """A simple frame for an object with a write function."""
     def __init__(self, master, obj, title=None, **kargs):
@@ -156,7 +130,6 @@ class FrameWritingObject(ttk.Frame):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
-
     def create_widgets(self):
 
         label_title = ttk.Label(self, text=self.title, font='TkHeadingFont')
@@ -169,13 +142,12 @@ class FrameWritingObject(ttk.Frame):
 
         self._redefine_write()
 
-
     def _redefine_write(self):
         """Dynamically overwrite the function write of the object."""
 
         def new_write(obj, string):
             print(string)
-            # unstable on Windows!!! bad solution... 
+            # unstable on Windows!!! bad solution...
             # Have to find something better...
             # self.text.insert(END, string+'\n')
             # self.text.yview_moveto(1)
@@ -192,9 +164,6 @@ class FrameWritingObject(ttk.Frame):
             new_write, self.obj, self.obj.__class__)
 
 
-
-
-
 class MyDialogCloseWindow(SimpleDialog):
 
     def body(self, master):
@@ -203,9 +172,9 @@ class MyDialogCloseWindow(SimpleDialog):
 "and stop the experiment?")
         self.agree = False
         ttk.Label(master, text=question).grid()
+
     def apply(self):
         self.agree = True
-
 
 
 class MainFrameRunExp(ttk.Frame):
@@ -235,7 +204,6 @@ class MainFrameRunExp(ttk.Frame):
         self.frames_objects = {}
         self.create_widgets()
 
-
     def create_widgets(self):
 
         if hasattr(self, '_exp'):
@@ -263,20 +231,15 @@ class MainFrameRunExp(ttk.Frame):
         self.frames_objects[obj.name] = FrameWritingObject(
             self, obj, **kargs)
 
-
     def add_frame_rotating_object(self, obj, **kargs):
         """"""
         self.frames_objects[obj.name] = FrameRotatingObject(
             self, obj, **kargs)
 
-
-
-
     def mainloop(self):
         for child in self.winfo_children():
             child.grid_configure(padx=10, pady=10)
         ttk.Frame.mainloop(self)
-
 
     def ask_if_has_to_be_deleted(self):
 
@@ -285,20 +248,15 @@ class MainFrameRunExp(ttk.Frame):
             self.root.destroy()
 
 
-
-
-
-
 if __name__ == '__main__':
 
     from fluidlab.exp.withconductivityprobe import DaemonMeasureProfiles
     import numpy as np
 
-
     def Omega_i(t):
         Omega = 1.
         period = 60
-        return Omega/2*( 1 - np.cos(2*np.pi*t/period) )
+        return Omega/2*(1 - np.cos(2*np.pi*t/period))
 
         # time_rampe = 10
         # t = t/time_rampe
@@ -314,27 +272,16 @@ if __name__ == '__main__':
     R_o = 482/2
     rc, rt = create_rotating_objects_kepler(Omega_i, R_i, R_o)
 
-
     import fluiddyn as fld
     exp = fld.load_exp('Exp_Omega1=0.70_N0=1.80_2014-09-01_23-47-47')
-
-
-
-
-
 
     mainframe = MainFrameRunExp(exp=exp)
     mainframe.add_frame_object(exp.profiles, column=0, row=3)
     mainframe.add_frame_object(rc, column=0, row=4)
     mainframe.add_frame_object(rt, column=0, row=5)
 
-
-
-
-
-
     deamon_profiles = DaemonMeasureProfiles(
-        exp=exp, duration=600, period=10, 
+        exp=exp, duration=600, period=10,
         speed_measurements=400, speed_up=100)
 
     daemon_rc = DaemonRunningRotatingObject(rc)

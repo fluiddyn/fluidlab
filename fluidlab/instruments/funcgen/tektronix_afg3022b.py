@@ -57,9 +57,10 @@ TektronixAFG3022b._build_class_with_features([
         doc=(
 """Peak to peak voltage.
 
-Warning: The voltage depends on the impedance of the receiver of the signal.
-If its impedence is high, the actual output voltage is twice what it should be.
-If its impedance is 50ohm, there is no problem.
+Warning: The voltage depends on the impedance of the receiver of the
+signal.  If its impedence is very large, the actual output voltage is
+twice what it should be.  If its impedance is 50 ohm, there is no
+problem.
 
 """),
         command_set='VOLTAGE:AMPLITUDE'),
