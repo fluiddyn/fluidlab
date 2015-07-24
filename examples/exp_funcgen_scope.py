@@ -4,18 +4,15 @@ import numpy as np
 
 from fluidlab.exp.session import Session
 from fluiddyn.util.timer import Timer
+from fluiddyn.output.figs import show
+
 
 from fluidlab.instruments.scope.agilent_dsox2014a import AgilentDSOX2014a
 from fluidlab.instruments.funcgen.tektronix_afg3022b import TektronixAFG3022b
 
-
-nb_changes = 10
-period = 2.
-
-volt_min = 0.1
-volt_max = 3.
-
-volts_out = np.linspace(volt_min, volt_max, nb_changes)
+total_time = 5.
+time_step = 1.
+omega = 2*np.pi/2.
 
 # conversion volt into temperature (nothing physical, just for the example)
 alpha = 0.01
@@ -23,58 +20,68 @@ alpha = 0.01
 
 # Initialization session, log, saving and emails
 session = Session(
-    path='Tests',
-    name='',
-    email_to='pierre.augier@legi.cnrs.fr',
-    email_title='False experiment with function generator and oscilloscope',
-    email_delay=2*3600)
+    path='./Tests',
+    name='Exp_funcgen_scope',
+    # email_to='pierre.augier@legi.cnrs.fr',
+    # email_title='False experiment with function generator and oscilloscope',
+    # email_delay=2*3600
+)
 
 print = session.logger.print_log
+send_mail_if_has_to = session.logger.send_mail_if_has_to
 
-# data_table = session.get_data_table()
-# data_table.init_plot(['Umin', 'Umax'], num_fig=1)
-# data_table.init_plot(['T1', 'T2'], num_fig=2)
+data_table = session.get_data_table(
+    fieldnames=['U0', 'U1', 'T0', 'T1'])
+
+data_table.init_figure(['T0', 'T1'])
 
 
 # set-up the function generator
 funcgen = TektronixAFG3022b('USB0::1689::839::C034062::0::INSTR')
-
 offset = 1.
-
 funcgen.function_shape.set('sin')
 funcgen.frequency.set(1e4)
-funcgen.voltage.set(volts_out[0])
+funcgen.voltage.set(0.)
 funcgen.offset.set(offset)
 funcgen.output1_state.set(True)
 
-
 # set-up the oscilloscope
 scope = AgilentDSOX2014a('USB0::2391::6040::MY51450715::0::INSTR')
-
 scope.channel1_coupling.set('DC')
-scope.channel1_range.set(volts_out.max())
+scope.channel1_range.set(5.)
 scope.timebase_range.set(1e-3)
 scope.trigger_level.set(offset)
 
 
-# start the time loop
-timer = Timer(period)
-for it in range(nb_changes):
+# initialization of the time loop
+t_last_print = 0.
+timer = Timer(time_step)
+t = timer.get_time_till_start()
 
-    funcgen.voltage.set(volts_out[it])
+# start the time loop
+while t < total_time:
+
+    t = timer.get_time_till_start()
+    volts_out = np.cos(omega*t) + 0.1*np.random.rand()
+
+    funcgen.voltage.set(volts_out)
 
     time, volts = scope.get_curve(nb_points=200)
-    # we have to divide by 2 because of impedance issues
-    volts /= 2
 
-    Umin = volts.min()
-    Umax = volts.max()
+    U0 = volts.min()
+    U1 = volts.max()
 
-    # data_table.add_data({'Umin': Umin, 'Umax': Umax,
-    #                      'T1': alpha*Umin, 'T2': alpha*Umax})
+    data_table.add_data({'U0': U0, 'U1': U1,
+                         'T0': alpha*U0, 'T1': alpha*U1})
 
-    # for fig in data_table.figures:
-    #     fig.draw()
+    if t - t_last_print > 1 - time_step/2.:
+        t_last_print = t
+        print('time till start: {:8.5} s'.format(t))
+        data_table.update_figures()
 
-    if it < nb_changes-1:
-        timer.wait_till_tick()
+        # send_mail_if_has_to()
+
+    timer.wait_till_tick()
+
+print('last time: {:8.5} s'.format(t))
+show()

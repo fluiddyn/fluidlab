@@ -79,7 +79,11 @@ class Session(object):
         if not save_in_dir and path is None:
             path = './'
 
-        path = path or FLUIDLAB_PATH
+        if path is None:
+            path = FLUIDLAB_PATH
+        elif not (path.startswith('.') or path.startswith('/')):
+            # !! wrong under Windows ??!!
+            path = os.path.join(FLUIDLAB_PATH, path)
 
         if name is None:
             name = ''
@@ -133,7 +137,7 @@ class Session(object):
         if self._new_session:
             self.data_tables = {}
         else:
-            # should be initialized in a better way (loaded from files)
+            # should be initialized in a better way (loaded from files?)
             self.data_tables = {}
 
         path_log_file = os.path.join(
@@ -141,6 +145,13 @@ class Session(object):
         self.logger = Logger(path=path_log_file,
                              email_to=email_to, email_title=email_title,
                              email_delay=email_delay)
+
+        if self._new_session:
+            self.logger.print_log(
+                'Create experimental session ({})'.format(time_as_str()))
+        else:
+            self.logger.print_log(
+                'Reload experimental session ({})'.format(time_as_str()))
 
     def get_data_table(self, name=None, **kargs):
         """Create or get a data table.
