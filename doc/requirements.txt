@@ -1,0 +1,7 @@
+cython
+numpy
+matplotlib
+scipy
+fluiddyn
+Sphinx>=1.1
+numpydoc
