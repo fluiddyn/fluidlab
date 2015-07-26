@@ -5,8 +5,8 @@ try:
     from Cython.Distutils.extension import Extension
     from Cython.Distutils import build_ext
 except ImportError:
-    from setuptools import Extension, build_ext
-    # from distutils.command import build_ext
+    from setuptools import Extension
+    from distutils.command import build_ext
 
 import os
 import sys
