@@ -14,6 +14,8 @@
 import sys
 import os
 
+import subprocess
+
 # to be able to build the doc without h5py with Read the docs
 on_rtd = os.environ.get('READTHEDOCS')
 if on_rtd:
@@ -33,12 +35,10 @@ if on_rtd:
 import fluidlab
 
 
-# for debug readthedocs
-from glob import glob
-import fluidlab.exp as exp
-print(glob(os.path.dirname(exp.__file__) + '/*'))
-import fluidlab.exp.session as s
-print(s.__file__)
+def call_bash(commands):
+    subprocess.call(['/bin/bash', '-c', commands])
+
+call_bash('cd ipynb && ipython nbconvert --to rst tuto_lab_user.ipynb')
 
 
 # If extensions (or modules to document with autodoc) are in another directory,

@@ -1,3 +1,4 @@
+ipython[notebook]
 numpy
 matplotlib
 scipy

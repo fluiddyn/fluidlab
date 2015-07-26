@@ -15,7 +15,6 @@
    are depreciated and will be at least rewritten with other base
    class.
 
-
 Physically, an experiment consists in interacting objects.  The
 experimentalist wants to control the actions of the objects with a
 good control in space and time and in a reproducible way. The results
