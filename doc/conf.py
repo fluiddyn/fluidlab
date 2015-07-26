@@ -32,6 +32,16 @@ if on_rtd:
 
 import fluidlab
 
+# for debug readthedocs
+from glob import glob
+import fluidlab.exp as exp
+
+print(glob(os.path.dirname(exp.__file__) + '/*'))
+
+import fluidlab.exp.session as s
+print(s.__file__)
+
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
