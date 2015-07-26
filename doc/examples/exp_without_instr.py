@@ -6,25 +6,27 @@ from fluidlab.exp.session import Session
 from fluiddyn.util.timer import Timer
 from fluiddyn.output.figs import show
 
+raise_error = False
+
+# unless explicitly mentioned, FluidLab uses SI units, so the times are is s
 total_time = 5.
-time_step = 0.1
+time_step = 0.2
 omega = 2*np.pi/2.
 
 # conversion volt into temperature (nothing physical, just for the example)
 alpha = 2.
 
-
-# Initialization session, log, saving and emails
+# initialize session, log, saving and emails
 session = Session(
-    path='./Tests',
+    path='Tests',
     name='False_exp',
-    # email_to='pierre.augier@legi.cnrs.fr',
+    # email_to='experimentalist@lab.earth',
     # email_title='False experiment without instrument',
-    # email_delay=30
+    # email_delay=30  # time in s
 )
 
 print = session.logger.print_log
-send_mail_if_has_to = session.logger.send_mail_if_has_to
+send_email_if_has_to = session.logger.send_email_if_has_to
 
 data_table = session.get_data_table(
     fieldnames=['U0', 'U1', 'T0', 'T1'])
@@ -34,13 +36,11 @@ data_table.init_figure(['U0', 'U1'])
 
 # initialization of the time loop
 t_last_print = 0.
+t = 0.
 timer = Timer(time_step)
-t = timer.get_time_till_start()
 
 # start the time loop
 while t < total_time:
-
-    t = timer.get_time_till_start()
 
     U0 = np.cos(omega*t) + 0.1*np.random.rand()
     U1 = U0 * np.random.rand()
@@ -52,11 +52,14 @@ while t < total_time:
         t_last_print = t
         print('time till start: {:8.5} s'.format(t))
         data_table.update_figures()
+        send_email_if_has_to()
 
-        # send_mail_if_has_to()
+    t = timer.wait_tick()
 
-    timer.wait_till_tick()
+if raise_error:
+    print("let's raise a ValueError to see what it gives.")
+    raise ValueError('The flag raise_error is True...')
 
-print('last time: {:8.5} s'.format(t))
+print('Time end: {:8.5} s'.format(t))
 
 show()

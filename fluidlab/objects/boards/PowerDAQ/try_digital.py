@@ -28,5 +28,5 @@ timer = Timer(period)
 for i in xrange(5):
     time.sleep(1)
     board.dout.write(0)
-    timer.wait_till_tick()
+    timer.wait_tick()
     board.dout.write(2)

@@ -280,12 +280,11 @@ class DaemonRunningRotatingObject(Daemon):
             t = tnow-tstart
             rr = ro.rotation_rate_vs_t(t)
             ro.set_rotation_rate(rr)
-            timer.wait_till_tick()
+            timer.wait_tick()
         ro.write('exit loop')
 
     def stop(self):
         super(DaemonRunningRotatingObject, self).stop()
-
 
 
 def create_rotating_objects_pseudokepler(Omega_i, R_i, R_o, gamma):

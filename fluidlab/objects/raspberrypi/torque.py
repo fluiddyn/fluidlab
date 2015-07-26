@@ -166,7 +166,7 @@ class TorqueRaspberryPi(Torque):
             results[ip] = self.board.convert(self.channel)
             # print('result:', results[ip]*self.volt_per_raw)
             if ip < nb_pts:
-                timer.wait_till_tick()
+                timer.wait_tick()
 
         results *= self.volt_per_raw  # (in volt)
 

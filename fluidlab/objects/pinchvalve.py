@@ -23,6 +23,7 @@ from __future__ import division, print_function
 
 from fluidlab.objects.boards import ObjectUsingBoard
 
+
 class PinchValve(ObjectUsingBoard):
     """A class handling the pinch valve."""
     def __init__(self, board=None, channel=0):
@@ -41,13 +42,14 @@ class PinchValve(ObjectUsingBoard):
         return ContextManagerOpenedValve(self)
 
 
-
 class ContextManagerOpenedValve(object):
     def __init__(self, valve):
         self.valve = valve
+
     def __enter__(self):
         self.valve.open()
         return self.valve
+
     def __exit__(self, type, value, traceback):
         self.valve.close()
 
@@ -55,6 +57,7 @@ class ContextManagerOpenedValve(object):
 class FalseContextManager(object):
     def __enter__(self):
         return self
+
     def __exit__(self, type, value, traceback):
         pass
 
@@ -64,10 +67,6 @@ def tube_as_opened_as_possible(valve):
         return ContextManagerOpenedValve(valve)
     else:
         return FalseContextManager()
-
-
-
-
 
 
 if __name__ == '__main__':
@@ -88,5 +87,5 @@ if __name__ == '__main__':
         # with valve.opened():
         with tube_as_opened_as_possible(valve):
             print('valve opened.')
-            timer.wait_till_tick()
+            timer.wait_tick()
         print('valve closed.')

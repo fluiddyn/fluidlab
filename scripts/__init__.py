@@ -1,7 +1,7 @@
 """Example scripts
 ==================
 
-.. currentmodule:: examples
+.. currentmodule:: scripts
 
 
 .. autosummary::

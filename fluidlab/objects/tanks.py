@@ -366,7 +366,7 @@ end of the tube out of the tank. Are you ready?""")
             lflowrate_rhomax.append(flowrate_rhomax)
 
             if PUMP:
-                timer.wait_till_tick()
+                timer.wait_tick()
 
             print('volume pumped / volume to pump = {0:5.4f}'.format(
                 vol_pumped/vol_to_pump), end='\r')

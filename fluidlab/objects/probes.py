@@ -513,7 +513,7 @@ if __name__ == '__main__':
     #     print(sprobe.move_measure(deltaz=-distance, speed=300))
     #     time.sleep(0.2)
     #     sprobe.move(deltaz=distance, speed=100, bloquing=True)
-    #     timer.wait_till_tick()
+    #     timer.wait_tick()
 
 
     # sprobe.test_measure(rho_real=1.097727)

@@ -21,6 +21,7 @@ User Guide
 
    install
    tutorials
+   examples
 
 
 Modules Reference
@@ -47,7 +48,7 @@ the following directories:
    :toctree: generated/
 
    bin
-   examples
+   scripts
 
 More
 ----
@@ -56,7 +57,7 @@ More
    :maxdepth: 1
 
    FluidLab forge in Bitbucket <https://bitbucket.org/fluiddyn/fluidlab>
-   FluidLab in PyPI  <https://pypi.python.org/pypi/fluidlab/>
+   FluidLab in PyPI <https://pypi.python.org/pypi/fluidlab/>
    to_do
    changes
 

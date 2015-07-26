@@ -30,22 +30,22 @@ to run particular types of experiments. Typically, the steps can be:
 
 The scripts are now described in more details:
 
-.. automodule:: examples.taylor_couette.params_creation_TC_lin
+.. automodule:: scripts.taylor_couette.params_creation_TC_lin
 
-.. automodule:: examples.taylor_couette.create_exp_TC_lin
+.. automodule:: scripts.taylor_couette.create_exp_TC_lin
 
-.. automodule:: examples.taylor_couette.str_path_working_exp
+.. automodule:: scripts.taylor_couette.str_path_working_exp
 
-.. automodule:: examples.taylor_couette.fill_tank
+.. automodule:: scripts.taylor_couette.fill_tank
 
-.. automodule:: examples.taylor_couette.traverse_and_probe
+.. automodule:: scripts.taylor_couette.traverse_and_probe
 
-.. automodule:: examples.taylor_couette.run_exp_impulsive_start
+.. automodule:: scripts.taylor_couette.run_exp_impulsive_start
 
-.. automodule:: examples.taylor_couette.run_exp_control_1cylinder
+.. automodule:: scripts.taylor_couette.run_exp_control_1cylinder
 
-.. automodule:: examples.taylor_couette.run_exp_control_2cylinders
+.. automodule:: scripts.taylor_couette.run_exp_control_2cylinders
 
-.. automodule:: examples.taylor_couette.plot_profiles
+.. automodule:: scripts.taylor_couette.plot_profiles
 
 """

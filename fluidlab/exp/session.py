@@ -147,11 +147,13 @@ class Session(object):
                              email_delay=email_delay)
 
         if self._new_session:
-            self.logger.print_log(
-                'Create experimental session ({})'.format(time_as_str()))
+            action = 'Create'
         else:
-            self.logger.print_log(
-                'Reload experimental session ({})'.format(time_as_str()))
+            action = 'Load'
+
+        self.logger.print_log(
+            action + ' experimental session ({})\n'.format(time_as_str()) +
+            'path: ' + self.path)
 
     def get_data_table(self, name=None, **kargs):
         """Create or get a data table.

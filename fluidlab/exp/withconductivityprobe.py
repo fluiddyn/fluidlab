@@ -199,7 +199,7 @@ class Profiles(object):
                         raise e
 
             if il < nb_loops-1:
-                timer.wait_till_tick()
+                timer.wait_tick()
 
     def save_one(self, path_file, profile, time_now,
                  rotation_rate=None):

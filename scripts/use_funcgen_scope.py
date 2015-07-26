@@ -1,21 +1,15 @@
 from __future__ import print_function, division
 
-import unittest
 import numpy as np
 from scipy.optimize import curve_fit
-import matplotlib.pyplot as plt
+
 from fluidlab.instruments.scope.agilent_dsox2014a import AgilentDSOX2014a
 from fluidlab.instruments.funcgen.tektronix_afg3022b import TektronixAFG3022b
 
 
-# Tektronix AFG3022B
-funcgen = TektronixAFG3022b('USB0::1689::839::C034062::0::INSTR')
-# Agilent DSO-X 2014A
-scope = AgilentDSOX2014a('USB0::2391::6040::MY51450715::0::INSTR')
-
-
 def init_output_funct_generator(voltage=1, frequency=1e4,
                                 offset=0, shape='square', warn=True):
+    funcgen = TektronixAFG3022b('USB0::1689::839::C034062::0::INSTR')
 
     funcgen.output1_state.set(1, warn)
     funcgen.function_shape.set(shape, warn)
@@ -23,7 +17,9 @@ def init_output_funct_generator(voltage=1, frequency=1e4,
     funcgen.voltage.set(voltage, warn)
     funcgen.offset.set(offset, warn)
 
+
 def get_scope_time_voltage(nb_points=1000, format_output='ascii', warn=True):
+    scope = AgilentDSOX2014a('USB0::2391::6040::MY51450715::0::INSTR')
     scope.autoscale()
     time, data = scope.get_curve(nb_points, format_output, warn)
     # we have to divide by 2 because of impedance issues
@@ -95,12 +91,9 @@ def func_ramp(times, amplitude, offset, frequency, phase):
             result[it] = offset - (hp - np.floor(hp) - 1/2) * amplitude
     return result
 
+if __name__ == '__main__':
 
-shape = 'square'
-func = func_sin
-warn = 1
+    shape = 'square'
+    func = func_sin
 
-for_test_shape(shape, func)
-
-
-del scope, funcgen
+    for_test_shape(shape, func)
