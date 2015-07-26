@@ -63,6 +63,14 @@ if os.path.exists(path_PowerDAQ):
     ext_modules.append(ext_PowerDAQ)
 
 
+install_requires = ['fluiddyn >= 0.0.10a1', 'h5py',
+                    'pyusb', 'minimalmodbus']
+
+on_rtd = os.environ.get('READTHEDOCS')
+if not on_rtd:
+    install_requires.append('h5py')
+
+
 setup(name='fluidlab',
       version=__version__,
       description=('Framework for studying fluid dynamics by experiments.'),
@@ -98,8 +106,7 @@ setup(name='fluidlab',
           'Programming Language :: C',
       ],
       packages=find_packages(exclude=['doc', 'digiflow', 'examples']),
-      install_requires=['fluiddyn >= 0.0.10', 'h5py',
-                        'pyusb', 'minimalmodbus'],
+      install_requires=install_requires,
       extras_require=dict(
           doc=['Sphinx>=1.1', 'numpydoc']),
       scripts=['bin/fluid_stop_pumps.py'],

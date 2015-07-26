@@ -1,7 +1,6 @@
-cython
 numpy
 matplotlib
 scipy
-fluiddyn>=0.0.10a0
+fluiddyn>=0.0.10a1
 Sphinx>=1.1
 numpydoc
