@@ -98,7 +98,7 @@ setup(name='fluidlab',
           'Programming Language :: C',
       ],
       packages=find_packages(exclude=['doc', 'digiflow', 'examples']),
-      install_requires=['fluiddyn >= 0.0.8a1', 'h5py',
+      install_requires=['fluiddyn >= 0.0.10', 'h5py',
                         'pyusb', 'minimalmodbus'],
       extras_require=dict(
           doc=['Sphinx>=1.1', 'numpydoc']),
