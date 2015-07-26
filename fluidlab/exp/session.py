@@ -32,7 +32,6 @@ from copy import copy
 
 import numpy as np
 import matplotlib.pyplot as plt
-plt.ion()
 
 from fluiddyn.util.logger import Logger
 from fluiddyn.io import FLUIDLAB_PATH
@@ -198,6 +197,7 @@ class DataTable(object):
 
     def __init__(self, name=None, path=None, session=None, extension=None,
                  fieldnames=None, add_time=True, add_clock=True):
+        plt.ion()
 
         if session is not None and path is not None:
             raise ValueError(
