@@ -49,6 +49,11 @@ call_bash(
     """
     which python
     which ipython
+    ipython --version
+    echo ' cat ipython: '
+    echo ' '
+    cat $(which ipython)
+    echo ' '
     cd ipynb && ipython nbconvert --to rst tuto_lab_user.ipynb
     """)
 
