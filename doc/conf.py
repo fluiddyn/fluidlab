@@ -49,7 +49,7 @@ call_bash(
     """
     which python
     which ipython
-    pip install --upgrade --no-deps --force-reinstall ipython[notebook]
+    pip install --upgrade --no-deps --ignore-installed ipython[notebook]
     ipython --version
     echo ' cat ipython: '
     echo ' '
