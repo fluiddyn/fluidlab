@@ -1,7 +1,8 @@
-ipython[notebook]
+ipython[notebook]>=3.0.0
 numpy
 matplotlib
 scipy
+psutil
 fluiddyn>=0.0.10a1
 Sphinx>=1.1
 numpydoc
