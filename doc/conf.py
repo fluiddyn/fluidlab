@@ -49,6 +49,7 @@ call_bash(
     """
     which python
     which ipython
+    pip install --upgrade --no-deps --force-reinstall ipython[notebook]
     ipython --version
     echo ' cat ipython: '
     echo ' '
@@ -57,6 +58,8 @@ call_bash(
     cd ipynb && ipython nbconvert --to rst tuto_lab_user.ipynb
     """)
 
+import IPython
+print('IPython.__version__', IPython.__version__)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
