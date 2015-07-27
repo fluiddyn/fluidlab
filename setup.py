@@ -63,8 +63,7 @@ if os.path.exists(path_PowerDAQ):
     ext_modules.append(ext_PowerDAQ)
 
 
-install_requires = ['fluiddyn >= 0.0.10a1', 'h5py',
-                    'pyusb', 'minimalmodbus']
+install_requires = ['fluiddyn >= 0.0.10a1', 'pyusb', 'minimalmodbus']
 
 on_rtd = os.environ.get('READTHEDOCS')
 if not on_rtd:
