@@ -42,9 +42,13 @@ def call_bash(commands):
 import pygments
 print('in conf.py', pygments.__file__)
 
+path_bin = os.path.split(sys.executable)[0]
+
 call_bash(
+    'source ' + path_bin + '/activate'
     """
     which python
+    which ipython
     cd ipynb && ipython nbconvert --to rst tuto_lab_user.ipynb
     """)
 
