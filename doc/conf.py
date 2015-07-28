@@ -44,19 +44,19 @@ print('in conf.py', pygments.__file__)
 
 path_bin = os.path.split(sys.executable)[0]
 
-call_bash(
-    'source ' + path_bin + '/activate'
-    """
-    which python
-    which ipython
-    pip install --upgrade --no-deps --ignore-installed ipython[notebook]
-    ipython --version
-    echo ' cat ipython: '
-    echo ' '
-    cat $(which ipython)
-    echo ' '
-    cd ipynb && ipython nbconvert --to rst tuto_lab_user.ipynb
-    """)
+# call_bash(
+#     'source ' + path_bin + '/activate'
+#     """
+#     which python
+#     which ipython
+#     # pip install --upgrade --no-deps --ignore-installed ipython[notebook]
+#     ipython --version
+#     #echo ' cat ipython: '
+#     #echo ' '
+#     #cat $(which ipython)
+#     #echo ' '
+#     #cd ipynb && ipython nbconvert --to rst tuto_lab_user.ipynb
+#     """)
 
 import IPython
 print('IPython.__version__', IPython.__version__)
@@ -88,7 +88,7 @@ extensions = [
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ['templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -125,7 +125,7 @@ release = fluidlab.__version__
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', 'templates']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
