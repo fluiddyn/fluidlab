@@ -31,8 +31,9 @@ class DocAttributesDomain(PythonDomain):
                 env = self.state.document.settings.env
 
                 name = self.arguments[0]
-                cls = env.app.import_object(
-                    env.currmodule + '.' + env.currclass)
+                currmodule = env.ref_context.get('py:module')
+                currclass = env.ref_context.get('py:class')
+                cls = env.app.import_object(currmodule + '.' + currclass)
                 name_attr = name.split('.')[1]
                 obj = cls.__dict__[name_attr]
                 lines = list(self.content)

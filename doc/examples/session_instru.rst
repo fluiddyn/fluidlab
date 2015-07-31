@@ -16,7 +16,10 @@ gives with the logger and the emails.
 .. literalinclude:: exp_without_instr.py
 
 The next script also corresponds to a false experiment but two real
-instruments, a function generator and an oscilloscope, are used:
+instruments, a function generator
+(:mod:`fluidlab.instruments.funcgen.tektronix_afg3022b`) and an
+oscilloscope(:mod:`fluidlab.instruments.scope.agilent_dsox2014a`),
+are used:
 
 .. literalinclude:: exp_funcgen_scope.py  
 

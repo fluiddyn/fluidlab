@@ -39,9 +39,6 @@ import fluidlab
 def call_bash(commands):
     subprocess.call(['/bin/bash', '-c', commands])
 
-import pygments
-print('in conf.py', pygments.__file__)
-
 path_bin = os.path.split(sys.executable)[0]
 
 # call_bash(
@@ -58,8 +55,9 @@ path_bin = os.path.split(sys.executable)[0]
 #     #cd ipynb && ipython nbconvert --to rst tuto_lab_user.ipynb
 #     """)
 
-import IPython
-print('IPython.__version__', IPython.__version__)
+if on_rtd:
+    import IPython
+    print('IPython.__version__', IPython.__version__)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
