@@ -1,4 +1,4 @@
-"""Sphinx extension provide a new directive *mathmacro*.
+"""Sphinx extension: provide a new directive *mathmacro*.
 
 This extension has to be added after the other math extension since it
 redefined the math directive and the math role. For example, like this
@@ -6,8 +6,8 @@ redefined the math directive and the math role. For example, like this
 
   extensions = [
       'sphinx.ext.autodoc', 'sphinx.ext.doctest',
-      'sphinx.ext.mathjax', 
-      'sphinx.ext.viewcode', 'sphinx.ext.autosummary', 
+      'sphinx.ext.mathjax',
+      'sphinx.ext.viewcode', 'sphinx.ext.autosummary',
       'numpydoc',
       'mathmacro']
 
@@ -42,6 +42,7 @@ def multiple_replacer(replace_dict):
                         for k in replace_dict.keys()])
     pattern = re.compile(pattern, re.M)
     return lambda string: pattern.sub(replacement_function, string)
+
 
 def multiple_replace(string, replace_dict):
     mreplace = multiple_replacer(replace_dict)
@@ -80,7 +81,7 @@ class NewMathDirective(MathDirective):
         return super(NewMathDirective, self).run()
 
 
-def new_math_role(role, rawtext, text, lineno, inliner, 
+def new_math_role(role, rawtext, text, lineno, inliner,
                   options={}, content=[]):
     """New math role parsing the latex code."""
     try:
@@ -100,4 +101,3 @@ def setup(app):
     app.add_role('math', new_math_role)
     app.add_directive('math', NewMathDirective)
     app.add_directive('mathmacro', MathMacro)
-

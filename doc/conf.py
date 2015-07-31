@@ -39,9 +39,6 @@ import fluidlab
 def call_bash(commands):
     subprocess.call(['/bin/bash', '-c', commands])
 
-import pygments
-print('in conf.py', pygments.__file__)
-
 path_bin = os.path.split(sys.executable)[0]
 
 # call_bash(
@@ -58,8 +55,9 @@ path_bin = os.path.split(sys.executable)[0]
 #     #cd ipynb && ipython nbconvert --to rst tuto_lab_user.ipynb
 #     """)
 
-import IPython
-print('IPython.__version__', IPython.__version__)
+if on_rtd:
+    import IPython
+    print('IPython.__version__', IPython.__version__)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -82,13 +80,14 @@ extensions = [
     # 'sphinx.ext.pngmath',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode', 'sphinx.ext.autosummary',
+    'docattributes',
     'numpydoc',
     'mathmacro',
-    'IPython.sphinxext.ipython_directive'
+    'IPython.sphinxext.ipython_directive',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['templates']
+# templates_path = ['templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -125,7 +124,7 @@ release = fluidlab.__version__
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build', 'templates']
+exclude_patterns = ['_build']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

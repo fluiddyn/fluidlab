@@ -65,11 +65,11 @@ class Feature(object):
         self._name = name
         self.__doc__ = doc
 
-    def __repr__(self):
-        if len(self.__doc__) > 0:
-            return (super(Feature, self).__repr__() + '\n' + self.__doc__)
-        else:
-            return super(Feature, self).__repr__()
+    # def __repr__(self):
+    #     if len(self.__doc__) > 0:
+    #         return (super(Feature, self).__repr__() + '\n' + self.__doc__)
+    #     else:
+    #         return super(Feature, self).__repr__()
 
 
 class WriteCommand(Feature):

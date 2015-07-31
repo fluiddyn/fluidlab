@@ -19,23 +19,23 @@ from fluidlab.instruments.features import (
 
 class AgilentDSOX2014a(IEC60488, Trigger, ObjectIdentification,
                        StoredSetting, Learn):
-    """Driver for the oscilloscope Agilent DSOX2014a
+    """Driver for the oscilloscope Agilent DSOX2014a.
 
 
     """
 
     def get_curve(self, nb_points=1000, format_output='byte'):
-        """Acquire and return two Numpy arrays (time and data)
+        """Acquire and return two Numpy arrays (time and data).
 
         Parameters
         ----------
 
         nb_points : int
-          number of points returned
+          Number of points returned.
 
         format_output : string
-          format of the data that is sent from the scope.
-          Has to be in ['ascii', 'byte']
+          Format of the data that is sent from the scope.
+          Has to be in ['ascii', 'byte'].
 
         """
 

@@ -13,7 +13,7 @@ from fluidlab.instruments.iec60488 import (
     StoredSetting)
 
 from fluidlab.instruments.features import (
-    QueryCommand, BoolValue, FloatValue, StringValue)
+    BoolValue, FloatValue, StringValue)
 
 
 class TektronixAFG3022b(IEC60488, PowerOn, Calibration,
@@ -24,16 +24,7 @@ class TektronixAFG3022b(IEC60488, PowerOn, Calibration,
     """
 
     # def set_function_shape(self, shape):
-    #     """Set the function's shape
 
-    #     Parameters
-    #     ----------
-
-    #     shape : string
-    #       defining the function shape. Has to be in ['sine', 'sin',
-    #       'ramp', 'square'] (not case sensitive)
-
-    #     """
     #     shape = shape.lower()
     #     if shape in ('sin', 'sine'):
     #         self.interface.write('FUNCTION SIN')
@@ -48,8 +39,16 @@ class TektronixAFG3022b(IEC60488, PowerOn, Calibration,
 TektronixAFG3022b._build_class_with_features([
     BoolValue('output1_state', doc='', command_set='OUTPut1:STATe'),
     BoolValue('output2_state', doc='', command_set='OUTPut2:STATe'),
-    StringValue('function_shape', doc='', command_set='FUNCTION',
-                valid_values=['sin', 'sine', 'ramp', "squ",  'square']),
+    StringValue(
+        'function_shape',
+        doc=(
+"""Function shape.
+
+Has to be in ['sine', 'sin', 'ramp', 'square'] (not case sensitive)
+
+"""),
+        command_set='FUNCTION',
+        valid_values=['sin', 'sine', 'ramp', "squ",  'square']),
     FloatValue(
         'frequency', doc='The function frequency.', command_set='FREQUENCY'),
     FloatValue(
