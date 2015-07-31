@@ -1,4 +1,4 @@
-"""
+    """
 Modbus interfaces (:mod:`fluidlab.instruments.modbus.interfaces`)
 =================================================================
 
