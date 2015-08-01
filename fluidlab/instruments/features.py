@@ -304,18 +304,26 @@ class RegisterValue(NumberValue):
         setattr(Driver, name, self)
 
     def get_as_number(self):
-        """Get the register as number"""
+        """Get the register as number."""
         value = self._interface.query(self.command_get)
         self._check_value(value)
         return value
 
     def get(self):
-        """Get the register as dictionary"""
+        """Get the register as dictionary."""
         number = self.get_as_number()
         return self.compute_dict_from_number(number)
 
     def set(self, value):
-        """Set the register"""
+        """Set the register.
+
+        Parameters
+        ----------
+
+        value : {dict, int}
+           The value as a dictionnary or an integer.
+
+        """
 
         if isinstance(value, dict):
             value = self.compute_number_from_dict(value)

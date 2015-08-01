@@ -19,22 +19,11 @@ from fluidlab.instruments.features import (
 class TektronixAFG3022b(IEC60488, PowerOn, Calibration,
                         Trigger, ObjectIdentification, StoredSetting):
     """
+    A driver for the function generator Tektronix AFG 3022 B.
+
 
 
     """
-
-    # def set_function_shape(self, shape):
-
-    #     shape = shape.lower()
-    #     if shape in ('sin', 'sine'):
-    #         self.interface.write('FUNCTION SIN')
-    #     elif shape == 'ramp':
-    #         self.interface.write('FUNCTION RAMP')
-    #     elif shape == 'square':
-    #         self.interface.write('FUNCTION SQUARE')
-    #     else:
-    #         raise ValueError('First argument must be sin, ramp or square')
-
 
 TektronixAFG3022b._build_class_with_features([
     BoolValue('output1_state', doc='', command_set='OUTPut1:STATe'),
@@ -42,7 +31,7 @@ TektronixAFG3022b._build_class_with_features([
     StringValue(
         'function_shape',
         doc=(
-"""Function shape.
+"""The function shape (str).
 
 Has to be in ['sine', 'sin', 'ramp', 'square'] (not case sensitive)
 
@@ -54,7 +43,7 @@ Has to be in ['sine', 'sin', 'ramp', 'square'] (not case sensitive)
     FloatValue(
         'voltage',
         doc=(
-"""Peak to peak voltage.
+"""Peak to peak voltage (in volt).
 
 Warning: The voltage depends on the impedance of the receiver of the
 signal.  If its impedence is very large, the actual output voltage is
@@ -64,7 +53,8 @@ problem.
 """),
         command_set='VOLTAGE:AMPLITUDE'),
     FloatValue(
-        'offset', doc='The function offset.', command_set='VOLTAGE:OFFSET')])
+        'offset', doc='The function offset (in volt).',
+        command_set='VOLTAGE:OFFSET')])
 
 
 if __name__ == '__main__':

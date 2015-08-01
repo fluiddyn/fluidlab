@@ -31,10 +31,10 @@ class AgilentDSOX2014a(IEC60488, Trigger, ObjectIdentification,
         ----------
 
         nb_points : int
-          Number of points returned.
+          The number of points that have to be returned.
 
         format_output : string
-          Format of the data that is sent from the scope.
+          The format of the data that is sent from the scope.
           Has to be in ['ascii', 'byte'].
 
         """
@@ -91,38 +91,38 @@ AgilentDSOX2014a._build_class_with_features([
         'autoscale', doc='Autoscale the oscilloscope.',
         command_str=':AUTOscale'),
     IntValue(
-        'nb_points', doc='Number of points returned.',
+        'nb_points', doc='The number of points returned.',
         command_set=':WAVeform:POINts'),
     FloatValue(
         'channel1_probe_attenuation',
-        doc="""Probe attenuation ratio.""",
+        doc="""The probe attenuation ratio.""",
         command_set=':CHANnel1:PROBe'),
     FloatValue(
         'channel1_range',
-        doc="""Vertical full-scale range value.""",
+        doc="""The vertical full-scale range value (in volt).""",
         command_set=':CHANnel1:range'),
     FloatValue(
         'channel1_scale',
-        doc="""Units per division of the channel.""",
+        doc="""The number of units per division of the channel.""",
         command_set=':CHANnel1:SCALe'),
     StringValue(
         'channel1_coupling',
-        doc="""Input coupling for the channel.
+        doc="""The type of input coupling for the channel.
 
-        The coupling for each analog channel can be set to AC or DC.""",
+        It can be set to "AC" or "DC".""",
         command_set=':CHANnel1:COUPling',
         valid_values=['ac', 'dc']),
     BoolValue(
         'channel1_display',
-        doc="""Display on or off.""",
+        doc="""A boolean setting the display of the channel.""",
         command_set=':CHANnel1:DISPlay'),
     FloatValue(
         'timebase_range',
-        doc="""Time for 10 div in seconds.""",
+        doc="""The time for 10 division in seconds.""",
         command_set=':TIMebase:RANGe'),
     FloatValue(
         'trigger_level',
-        doc="""Trigger level voltage for the active trigger source.""",
+        doc="""The trigger level voltage for the active trigger source.""",
         command_set=':TRIGger:LEVel')
 ])
 
