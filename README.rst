@@ -4,10 +4,10 @@ FluidLab
 
 *Framework for studying fluid dynamics by laboratory experiments.*
 
-`Package Documentation <http://pythonhosted.org/fluidlab>`__
+`Package Documentation <http://fluidlab.readthedocs.org>`__
 
 FluidLab is the package of the `FluidDyn project
-<http://pythonhosted.org/fluiddyn>`__ for doing laboratory
+<http://fluiddyn.readthedocs.org>`__ for doing laboratory
 experiments.  The project is still in a testing stage so it is still
 pretty unstable and many of its planned features have not yet been
 implemented.
