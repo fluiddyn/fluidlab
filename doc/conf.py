@@ -19,19 +19,9 @@ import subprocess
 # to be able to build the doc without h5py with Read the docs
 on_rtd = os.environ.get('READTHEDOCS')
 if on_rtd:
-    print('In conf.py: on_rtd is True')
-    try:
-        from mock import Mock as MagicMock
-    except:
-        pass
-    else:
-        class Mock(MagicMock):
-            @classmethod
-            def __getattr__(cls, name):
-                    return Mock()
-
-        MOCK_MODULES = ['h5py']
-        sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+    # this package comes from fluiddyn
+    from fluidrtd import mock_modules
+    mock_modules(['h5py'])
 
 import fluidlab
 
@@ -183,7 +173,7 @@ html_short_title = 'FluidLab ' + release
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+html_static_path = []
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.

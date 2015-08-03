@@ -27,9 +27,6 @@ User Guide
 Modules Reference
 -----------------
 
-In order to discover FluidLab, the best is to see how it is
-structured. Here is a list of the first-level packages.
-
 .. autosummary::
    :toctree: generated/
 

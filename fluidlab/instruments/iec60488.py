@@ -115,6 +115,16 @@ class IEC60488(VISADriver):
     - `*OPC` - Set operation complete flag high.
     - `*OPC?` - Query operation complete flag.
     - `*WAI` - Wait to continue.
+
+    Parameters
+    ----------
+
+    interface : {str or interface}
+      A VISA interface or a string defining a VISA interface.
+
+    backend : str
+      Defines the backend used by pyvisa ("@py", "@ni", "@sim"...)
+
     """
 
     def query_event_status_register(self):

@@ -26,7 +26,15 @@ from fluidlab.instruments.features import SuperValue
 
 
 class Driver(object):
-    """Instrument driver (base class)."""
+    """Instrument driver (base class).
+
+    Parameters
+    ----------
+
+    interface : :class:`fluidlab.instruments.interface.Interface`
+      The interface used to communicate with the instrument.
+
+    """
     @classmethod
     def _build_class_with_features(cls, features):
         for feature in features:
@@ -59,12 +67,12 @@ class Driver(object):
         super(Driver, self).__setattr__(k, v)
 
     def set(self, name, *args, **kargs):
-        """Set a value"""
+        """Set a value."""
         value = self._get_value_from_name(name)
         value.set(*args, **kargs)
 
     def get(self, name, *args, **kargs):
-        """Get a value"""
+        """Get a value."""
         value = self._get_value_from_name(name)
         return value.get(*args, **kargs)
 
@@ -85,6 +93,18 @@ class Driver(object):
 
 
 class VISADriver(Driver):
+    """A VISA driver.
+
+    Parameters
+    ----------
+
+    interface : {str or interface}
+      A VISA interface or a string defining a VISA interface.
+
+    backend : str
+      Defines the backend used by pyvisa ("@py", "@ni", "@sim"...)
+
+    """
     def __init__(self, interface=None, backend='@py'):
 
         if isinstance(interface, str):
