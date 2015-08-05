@@ -136,7 +136,7 @@ class VISADriver(Driver):
                         instrument_adress = tmp[1]
                     elif len(tmp) == 2:
                         board_adress = tmp[0]
-                        instrument_adress = tmp[0]
+                        instrument_adress = tmp[1]
                     else:
                         raise ValueError(
                             'GPIB resource string not understood.')
