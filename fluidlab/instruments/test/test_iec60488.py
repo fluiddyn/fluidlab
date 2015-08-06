@@ -13,9 +13,10 @@ class InstruWithTrigger(IEC60488, Trigger):
 class SimpleTestCase(unittest.TestCase):
 
     def test_instr(self):
-        instr = InstruWithTrigger()
 
         with stdout_redirected():
+            instr = InstruWithTrigger()
+
             # coming from IEC60488
             instr.clear_status()
             instr.reset_device()
