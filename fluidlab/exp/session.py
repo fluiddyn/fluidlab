@@ -73,7 +73,7 @@ class Session(object):
     """
     def __init__(self, path=None, name=None, info=None,
                  save_in_dir=True,
-                 email_to=None, email_title=None, email_delay=None):
+                 email_to=None, email_title=None, email_delay=None, email_server='localhost'):
 
         if not save_in_dir and path is None:
             path = './'
@@ -143,7 +143,7 @@ class Session(object):
             self.path, self._base_name_files + 'log.txt')
         self.logger = Logger(path=path_log_file,
                              email_to=email_to, email_title=email_title,
-                             email_delay=email_delay)
+                             email_delay=email_delay, email_server=email_server)
 
         if self._new_session:
             action = 'Create'
