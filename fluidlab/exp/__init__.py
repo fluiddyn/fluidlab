@@ -63,3 +63,6 @@ This package provides:
    vertduct
 
 """
+
+from .session import Session
+from fluiddyn.util.timer import Timer

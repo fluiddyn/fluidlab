@@ -70,6 +70,27 @@ class Int16Value(Value):
         self._interface.write_int16(self._adress, value)
 
 
+class Int16StringValue(SuperValue):
+    def __init__(self, name, doc='', interger_list=None, string_list=None, adress=0):
+        self._adress = adress
+        self.interger_list = interger_list
+        self.string_list = string_list
+        super(Value, self).__init__(name, doc)
+    
+    def get(self):
+        integer = self._interface.read_int16(self._adress)
+        for j in range(len(self.interger_list)):
+            if self.interger_list[j] == integer:
+                string = self.string_list[j]
+        return string
+    
+    def set(self, string):
+        for j in range(len(self.string_list)):
+            if self.string_list[j] == string:
+                integer = self.integer_list[j]
+        self._interface.write_int16(self._adress, integer)
+
+
 class ReadOnlyFloat32Value(Value):
     def get(self):
         return self._interface.read_readonlyfloat32(self._adress)

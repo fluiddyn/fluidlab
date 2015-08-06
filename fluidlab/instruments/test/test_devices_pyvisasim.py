@@ -1,6 +1,7 @@
 
 import unittest
 
+from fluiddyn.io import stdout_redirected
 
 from fluidlab.instruments.test.devices_pyvisasim import Device2
 
@@ -8,7 +9,10 @@ from fluidlab.instruments.test.devices_pyvisasim import Device2
 class SimpleTestCase(unittest.TestCase):
 
     def test_device2(self):
-        dev = Device2('ASRL2::INSTR', backend='@sim')
+
+        with stdout_redirected():
+
+            dev = Device2('ASRL2::INSTR', backend='@sim')
 
         idn = dev.get_idn()
         self.assertEqual(idn, u'SCPI,MOCK,VERSION_1.0\n')

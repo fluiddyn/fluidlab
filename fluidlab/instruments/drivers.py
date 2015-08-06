@@ -54,6 +54,7 @@ class Driver(object):
             if isinstance(v, SuperValue):
                 self.values[name] = v
                 v._interface = self._interface
+                v._driver = self
 
     def __setattr__(self, k, v):
         if (not isinstance(v, SuperValue) and
