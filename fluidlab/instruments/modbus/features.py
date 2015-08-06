@@ -71,7 +71,7 @@ class Int16Value(Value):
 
 
 class Int16StringValue(SuperValue):
-    def __init__(self, name, doc='', interger_list, string_list, adress=0):
+    def __init__(self, name, doc='', interger_list=None, string_list=None, adress=0):
         self._adress = adress
         self.interger_list = interger_list
         self.string_list = string_list

@@ -1,6 +1,6 @@
 """
 Laboratory experiments (:mod:`fluidlab`)
-============================================
+========================================
 
 .. _lab:
 .. currentmodule:: fluidlab
@@ -13,6 +13,7 @@ The package :mod:`fluidlab` contains:
    objects
    exp
    postproc
+   output
 
 """
 

@@ -2,9 +2,8 @@ from __future__ import print_function, division
 
 import numpy as np
 
-from fluidlab.exp.session import Session
-from fluiddyn.util.timer import Timer
-from fluiddyn.output.figs import show
+from fluidlab.exp import Session, Timer
+from fluidlab.output import show
 
 raise_error = False
 

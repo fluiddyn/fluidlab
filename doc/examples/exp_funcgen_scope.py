@@ -2,9 +2,8 @@ from __future__ import print_function, division
 
 import numpy as np
 
-from fluidlab.exp.session import Session
-from fluiddyn.util.timer import Timer
-from fluiddyn.output.figs import show
+from fluidlab.exp import Session, Timer
+from fluidlab.output import show
 
 from fluidlab.instruments.scope.agilent_dsox2014a import AgilentDSOX2014a
 from fluidlab.instruments.funcgen.tektronix_afg3022b import TektronixAFG3022b
@@ -66,8 +65,8 @@ while t < total_time:
     U0 = volts.min()
     U1 = volts.max()
 
-    data_table.add_data({'U0': U0, 'U1': U1,
-                         'T0': alpha*U0, 'T1': alpha*U1})
+    data_table.save({'U0': U0, 'U1': U1,
+                     'T0': alpha*U0, 'T1': alpha*U1})
 
     if t - t_last_print > 1 - time_step/2.:
         t_last_print = t
