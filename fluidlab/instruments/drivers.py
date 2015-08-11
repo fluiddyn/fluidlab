@@ -145,7 +145,7 @@ class VISADriver(Driver):
 
                     interface = GPIBInterface(board_adress, instrument_adress)
 
-            if interface.startswith('USB') and platform.system() == 'Darwin':
+            elif interface.startswith('USB') and platform.system() == 'Darwin':
                 backend='@ni'
 
         if isinstance(interface, str):
