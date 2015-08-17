@@ -39,7 +39,6 @@ from fluiddyn.io.hdf5 import H5File
 from fluiddyn.io.mycsv import CSVFile
 from fluiddyn.util import time_as_str
 
-
 class Session(object):
     """Experimental session
 

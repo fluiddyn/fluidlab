@@ -43,6 +43,7 @@ This package provides:
    base
    withtank
    withconductivityprobe
+   octavesession
 
 - a package with classes representing Taylor-Couette experiments:
 
