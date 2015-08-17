@@ -110,9 +110,10 @@ class VISADriver(Driver):
         if isinstance(interface, str):
             if interface.startswith('GPIB') and backend == '@py':
                 # pyvisa-py does not yet support GPIB so we use
-                # ni-visa under Windows and linuxgpib otherwise,
+                # ni-visa under Windows and Mac OS X
+                # and linuxgpib under Linux,
 
-                if platform.system() == 'Windows':
+                if platform.system() == 'Windows' or platform.system() == 'Darwin':
                     backend = '@ni'
                 else:
                     from fluidlab.instruments.interfaces.linuxgpib import (
@@ -143,6 +144,9 @@ class VISADriver(Driver):
                             'GPIB resource string not understood.')
 
                     interface = GPIBInterface(board_adress, instrument_adress)
+
+            elif interface.startswith('USB') and platform.system() == 'Darwin':
+                backend='@ni'
 
         if isinstance(interface, str):
             from fluidlab.instruments.interfaces.visa import (
