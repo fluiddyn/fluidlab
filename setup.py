@@ -4,9 +4,11 @@ from setuptools import setup, find_packages
 try:
     from Cython.Distutils.extension import Extension
     from Cython.Distutils import build_ext
+    has_cython = True
 except ImportError:
     from setuptools import Extension
     from distutils.command import build_ext
+    has_cython = False
 
 import os
 import sys
@@ -62,8 +64,11 @@ if os.path.exists(path_PowerDAQ):
         sources=[path_sources+'/powerdaq.pyx'])
     ext_modules.append(ext_PowerDAQ)
 
-
-install_requires = ['fluiddyn >= 0.0.10a1', 'pyusb', 'minimalmodbus']
+if has_cython:
+    # Older versions of Cython cause setup.py to fail
+    install_requires = ['Cython >= 0.23', 'fluiddyn >= 0.0.10a1', 'pyusb', 'minimalmodbus']
+else:
+    install_requires = ['fluiddyn >= 0.0.10a1', 'pyusb', 'minimalmodbus']
 
 on_rtd = os.environ.get('READTHEDOCS')
 if not on_rtd:
