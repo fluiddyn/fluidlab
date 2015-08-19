@@ -44,6 +44,7 @@ packages:
    scope
    funcgen
    multimeter
+   multiplexer
 
 Other very common communication standards are Modbus and Firewire:
 
