@@ -25,6 +25,8 @@ class PyvisaInterface(QueryInterface):
         self.read_raw = instr.read_raw
         self.query = instr.query
         self.close = instr.close
+        self.assert_trigger = instr.assert_trigger
+        self.wait_for_srq = instr.wait_for_srq
 
 
 if __name__ == '__main__':

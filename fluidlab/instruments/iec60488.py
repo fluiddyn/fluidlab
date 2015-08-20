@@ -142,7 +142,7 @@ class IEC60488(VISADriver):
 
 features = [
     # Reporting Commands
-    QueryCommand(
+    WriteCommand(
         'clear_status', 'Clears the data status structure', '*CLS'),
     RegisterValue(
         'event_status_enable_register',
@@ -167,12 +167,12 @@ Used in the status reporting system.
     # Internal operation commands
     QueryCommand(
         'query_identification', 'Identification query', '*IDN?'),
-    QueryCommand('reset_device', 'Perform a device reset', '*RST'),
+    WriteCommand('reset_device', 'Perform a device reset', '*RST'),
     QueryCommand(
         'perform_internal_test',
         'Perform internal self-test', '*TST?'),
     # Synchronization commands
-    QueryCommand(
+    WriteCommand(
         'wait_till_completion_of_operations',
         'Return "1" when all operation are completed', '*OPC'),
     QueryCommand(

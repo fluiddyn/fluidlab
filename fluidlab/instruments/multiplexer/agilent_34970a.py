@@ -22,7 +22,7 @@ class Agilent34970aValue(SuperValue):
         self.function_name = function_name
     
     def _build_driver_class(self, Driver):
-        name = self.name
+        name = self._name
         function_name = self.function_name
         
         setattr(Driver, name, self)
@@ -30,6 +30,8 @@ class Agilent34970aValue(SuperValue):
         def get(self, chanList, samplesPerChan=1, sampleRate=None):
             """Get """ + name
             result = self._driver.scan(chanList, function_name, samplesPerChan, sampleRate)
+            if len(result) == 1:
+                result = result[0]
             return result
         
         self.get = get.__get__(self, self.__class__)
@@ -74,8 +76,11 @@ class Agilent34970a(IEC60488):
         """ Initiates a scan """
         
         try:
-            numChans = len(channelList)
+            # Checks if channelList is iterable
+            numChans = len([x for x in channelList])
         except:
+            # If not, convert to 1-uple
+            channelList = ( channelList, )
             numChans = 1
             pass
             
@@ -89,7 +94,7 @@ class Agilent34970a(IEC60488):
         
         # Check that channel numbers are right
         badChans = [x for x in channelList if ((x < 100) and (x >= 400))]
-        if badChans > 0:
+        if len(badChans) > 0:
             raise ValueError('Channels must be specified in the form scc, where s is the slot number (100, 200, 300), and cc is the channel number. For example, channel 10 on the slot 300 is referred to as 310.')
             
         # Set measurement type to desired function on specified channels
@@ -106,16 +111,16 @@ class Agilent34970a(IEC60488):
         for chan in channelList:
             if self.Range.has_key(str(chan)):
                 # set channel to manual range
-                self.interface.write('SENS:' + functionName + ':RANG ' + str(self.Range[str(chan)]) +',(@' + str(chan) + ')'
-            else:
+                self.interface.write('SENS:' + functionName + ':RANG ' + str(self.Range[str(chan)]) +',(@' + str(chan) + ')')
+            elif functionName != 'TEMP':
                 # set channel to Auto Range
-                self.interface.write('SENS:' + functionName + ':RANG:AUTO ON,(@' + str(chan) + ')'
+                self.interface.write('SENS:' + functionName + ':RANG:AUTO ON,(@' + str(chan) + ')')
         
         # Set NPLC for specified channels
         for chan in channelList:
             if self.NPLC.has_key(str(chan)):
                 # set NPLC to specified value
-                self.interface.write('SENS:' + functionName + ':NPLC ' + str(self.NPLC[str(chan)]) + ',(@' + str(chan) + ')'
+                self.interface.write('SENS:' + functionName + ':NPLC ' + str(self.NPLC[str(chan)]) + ',(@' + str(chan) + ')')
         
         # Setup scan list
         msg = 'ROUT:SCAN (@'
@@ -147,10 +152,11 @@ class Agilent34970a(IEC60488):
         self.status_enable_register.set(32)
         
         # Initiate scan and trigger Operation Complete event after completion
-        self.interface.write('INIT;*OPC')
+        self.interface.write('INIT')
         
         # Wait for Service Request (triggered by *OPC after the scan is complete)
-        self.interface.assert_trigger()
+        self.wait_till_completion_of_operations()
+        #self.interface.assert_trigger()
         self.interface.wait_for_srq()
         
         # Unassert SRQ
@@ -198,10 +204,10 @@ features = [
         function_name='TEMP'),
     Agilent34970aValue('ohm',
         doc='2-wire resistance',
-        function_name='RES')
+        function_name='RES'),
     Agilent34970aValue('ohm_4w',
         doc='4-wire resistance',
-        function_name='FRES')
+        function_name='FRES'),
     Agilent34970aValue('idc',
         doc='DC Current',
         function_name='CURR:DC')]
