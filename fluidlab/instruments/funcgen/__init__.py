@@ -9,6 +9,6 @@ Provides:
 
    tektronix_afg3022b
    agilent_33220a
-   hp_33120a
+   tti_tsx3510p
 
 """
