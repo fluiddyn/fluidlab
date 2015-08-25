@@ -53,38 +53,48 @@ class ModbusInterface(Interface):
 
 class MinimalModbusInterface(ModbusInterface):
 
-    def __init__(self, port, method='rtu', timeout=1):
+    def __init__(self, port, method='rtu', slave_adress=1, timeout=1):
         import minimalmodbus
-        self._modbus = minimalmodbus.Instrument(port)
+        self._modbus = minimalmodbus.Instrument(port, slave_adress, method)
 
-    def read_readonlybool(self, addresses):
+    def read_readonlybool(self, adresses):
         raise NotImplementedError
 
-    def read_bool(self, addresses):
-        if isinstance(addresses, (list, tuple)):
-            return self._modbus.read_coils(addresses)
-        elif isinstance(addresses, int):
-            return self._modbus.read_coil(addresses)
+    def read_bool(self, adresses):
+        if isinstance(adresses, (list, tuple)):
+            return self._modbus.read_coils(adresses)
+        elif isinstance(adresses, int):
+            return self._modbus.read_coil(adresses)
 
-    def write_bool(self, addresses, values):
+    def write_bool(self, adresses, values):
         raise NotImplementedError
 
-    def read_readonlyint16(self, addresses):
+    def read_readonlyint16(self, adresses):
         raise NotImplementedError
 
-    def read_int16(self, addresses):
+    def read_int16(self, adresses):
+        if isinstance(adresses, (list, tuple)) and len(adresses) == 2:
+            return self._modbus.read_registers(adresses[0], adresses[1])
+        elif isinstance(adresses, int):
+            return self._modbus.read_register(adresses)
+        else:
+            raise ValueError('Argument must be int or int list of length 2')
+
+    def write_int16(self, adress, values):
+        if isinstance(values, list):
+            self._modbus.write_registers(adress, values)
+        elif isinstance(values, int):
+            self._modbus.write_register(adress, values)
+        else:
+            raise ValueError('Argument must be int or list of ints')
+
+    def read_readonlyfloat32(self, adresses):
         raise NotImplementedError
 
-    def write_int16(self, addresses, values):
+    def read_float32(self, adresses):
         raise NotImplementedError
 
-    def read_readonlyfloat32(self, addresses):
-        raise NotImplementedError
-
-    def read_float32(self, addresses):
-        raise NotImplementedError
-
-    def write_float32(self, addresses, values):
+    def write_float32(self, adresses, values):
         raise NotImplementedError
 
 
