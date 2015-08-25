@@ -34,7 +34,6 @@ Provides:
 
 
 """
-
 from fluidlab.instruments.features import SuperValue
 
 
