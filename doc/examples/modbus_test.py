@@ -1,9 +1,9 @@
-import unittest
+import time
 from fluidlab.instruments.modbus.unidrive_sp import Unidrive_sp
 leroy = Unidrive_sp('/dev/tty.usbserial', 'rtu', 1, 'minimalmodbus')
 
-acc = 5
-leroy.acceleration_time.set(acc)
-resulting_acc = leroy.acceleration_time.get()
-print(acc)
-print(resulting_acc)
+leroy.enable_rotation()
+leroy.start_rotation(1)
+time.sleep(4)
+leroy.stop_rotation()
+leroy.disable_rotation()

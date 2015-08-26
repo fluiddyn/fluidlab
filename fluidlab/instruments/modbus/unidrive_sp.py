@@ -1,11 +1,11 @@
 """unidrive_sp
     =====================
-    
+
     .. autoclass:: Unidrive_sp
     :members:
     :private-members:
-    
-    
+
+
     """
 from fluidlab.instruments.modbus.driver import ModbusDriver
 from fluidlab.instruments.modbus.features import (
@@ -23,21 +23,31 @@ warnings.simplefilter('always', UserWarning)
 
 class Unidrive_sp(ModbusDriver):
     """Driver for the motor driver Unidrive sp
-        
-    
+
+
     """
     def autotune(self):
         raise NotImplementedError
-    
+
     def enable_rotation(self):
-        raise NotImplementedError
-    
+        self.unlock.set(1)
+
     def disable_rotation(self):
-        raise NotImplementedError
+        self.unlock.set(0)
 
-    def rotate(self, speed, direction):
-        raise NotImplementedError
+    def start_rotation(self, speed=None, direction=None):
+        """If speed is not None, set the motor speed (Hz) and start the rotation.
+        If speed is None, start the rotation with whatever speed the motor has"""
+        self.reference_selection.set("preset")
+        if speed != None:
+        # the real speed is acutally one forth of the speed value of the motor
+        # 4*speed is here to compensate for this
+            self.speed.set(4*speed)
+        self._rotate.set(1)
 
+    def stop_rotation(self):
+        self.reference_selection.set("preset")
+        self._rotate.set(0)
 
 class ModeError(Exception):
     """Some values are only useable in one mode (open_loop, closed_loop, servo)
@@ -138,11 +148,31 @@ class StringValue(Int16StringValue):
 
 
 
-int_dict = {1:'open_loop', 2:'closed_loop', 3:'servo', 4:'regen'}
+int_dict_mode = {1:'open_loop', 2:'closed_loop', 3:'servo', 4:'regen'}
+int_dict_ref ={0:'A1.A2', 1:'A1.pr', 2:'A2.pr', 3:'preset', 4:'pad', 5:'Prc'}
 Unidrive_sp._build_class_with_features([
 StringValue(name='mode',
             doc='The operating mode.',
-            int_dict=int_dict, mode='all', menu=0, parameter=48),
+            int_dict=int_dict_mode, mode='all', menu=0, parameter=48),
+
+StringValue(name='reference_selection',
+            doc=('This defines how the rotation speed is given to the motor.'
+            'preset is what we want here, '
+            'pad means it can be entered with the arrow keys of the motor pad'),
+            int_dict=int_dict_ref, mode='all', menu=0, parameter=5),
+
+Value(name='unlock',
+      doc=('While this is worth 0, the motor is inhibited, it displays Inh'
+      'While this is worth 1, the motor is ready to run, it displays Rdy'),
+      number_of_decimals=0, mode='all', menu=6, parameter=15),
+
+Value(name='_rotate',
+      doc='Set this to 1 to give an order of rotation',
+      number_of_decimals=0, mode='all', menu=6, parameter=34),
+
+Value(name='speed',
+      doc='Speed of rotation. The actual speed in a forth of this.',
+      number_of_decimals=1, mode='all', menu=0, parameter=24),
 
 Value(name='min_frequency_open_loop',
       doc='Minimum limit of frequency (Hz). Used in open loop.',
