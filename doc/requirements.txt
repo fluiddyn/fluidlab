@@ -2,6 +2,6 @@ ipython[notebook]>=3.0.0
 numpy
 matplotlib
 scipy
-fluiddyn>=0.0.10a7
+fluiddyn>=0.0.10a8
 Sphinx>=1.1
 numpydoc

@@ -14,40 +14,16 @@
 import sys
 import os
 
-import subprocess
-
 # to be able to build the doc without h5py with Read the docs
 on_rtd = os.environ.get('READTHEDOCS')
 if on_rtd:
     # this package comes from fluiddyn
     from fluidrtd import mock_modules
     mock_modules(['h5py'])
+    from fluidrtd.ipynb_maker import ipynb_to_rst
+    ipynb_to_rst()
 
 import fluidlab
-
-
-def call_bash(commands):
-    subprocess.call(['/bin/bash', '-c', commands])
-
-path_bin = os.path.split(sys.executable)[0]
-
-# call_bash(
-#     'source ' + path_bin + '/activate'
-#     """
-#     which python
-#     which ipython
-#     # pip install --upgrade --no-deps --ignore-installed ipython[notebook]
-#     ipython --version
-#     #echo ' cat ipython: '
-#     #echo ' '
-#     #cat $(which ipython)
-#     #echo ' '
-#     #cd ipynb && ipython nbconvert --to rst tuto_lab_user.ipynb
-#     """)
-
-if on_rtd:
-    import IPython
-    print('IPython.__version__', IPython.__version__)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
