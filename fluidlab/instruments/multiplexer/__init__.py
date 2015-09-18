@@ -1,6 +1,5 @@
-"""
-Multiplexers (:mod:'fluidlab.instruments.multiplexers')
-====================================================
+"""Multiplexers (:mod:`fluidlab.instruments.multiplexer`)
+=========================================================
 
 Provides:
 
