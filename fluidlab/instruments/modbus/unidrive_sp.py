@@ -1,11 +1,13 @@
 """Unidrive SP motor (Leroy Somer)
 ==================================
 
-.. autoclass:: Unidrive_sp
+.. autoclass:: UnidriveSP
    :members:
    :private-members:
 
 """
+
+from time import sleep
 
 from fluidlab.instruments.modbus.driver import ModbusDriver
 from fluidlab.instruments.modbus.features import Int16Value, Int16StringValue
@@ -21,37 +23,91 @@ warnings.formatwarning = custom_formatwarning
 warnings.simplefilter('always', UserWarning)
 
 
-class Unidrive_sp(ModbusDriver):
+class UnidriveSP(ModbusDriver):
     """Driver for the motor driver Unidrive SP
 
+    Parameters
+    ----------
+
+    port : {None, str}
+      The port where the motor is plugged.
+
+    timeout : {1, number}
+      Timeout for the communication with the motor (in s).
+
+    module : {'minimalmodbus', str}
+      Module used to communicate with the motor.
 
     """
-    def autotune(self):
-        raise NotImplementedError
+    _constant_nb_poles = 4
 
-    def enable_rotation(self):
-        self.unlock.set(1)
+    def __init__(self, port=None, timeout=1,
+                 module='minimalmodbus'):
 
-    def disable_rotation(self):
-        self.unlock.set(0)
+        if port is None:
+            from fluidlab.util import userconfig
+            try:
+                port = userconfig.port_unidrive_sp
+            except AttributeError:
+                raise ValueError(
+                    'If port is None, "port_unidrive_sp" has to be defined in'
+                    ' one of the FluidLab user configuration files.')
+
+        super(UnidriveSP, self).__init__(port=port, method='rtu',
+                                         timeout=timeout, module=module)
+
+    # def autotune(self):
+    #     raise NotImplementedError
+
+    def unlock(self):
+        """Unlock the motor (then rotation is possible)."""
+        self._unlocked.set(1)
+
+    def lock(self):
+        """Lock the motor (then rotation is not possible)."""
+        self._unlocked.set(0)
+
+    def set_target_rotation_rate(self, rotation_rate, check=False):
+        """Set the target rotation rate in Hz."""
+        # The value `_speed` is actually equal to _constant_nb_poles
+        # times the rotation rate in Hz.
+        self._speed.set(self._constant_nb_poles * rotation_rate,
+                        check=check)
+
+    def get_target_rotation_rate(self):
+        """Get the target rotation rate in Hz."""
+        # The value `_speed` is actually equal to _constant_nb_poles
+        # times the rotation rate in Hz.
+        raw_speeed = self._speed.get()
+        return raw_speeed / self._constant_nb_poles
 
     def start_rotation(self, speed=None, direction=None):
         """Start the motor rotation.
 
-        If speed is not None, set the motor speed (Hz) and start the
-        rotation.  If speed is None, start the rotation with whatever
-        speed the motor has
+        Parameters
+        ----------
+
+        speed : {None, number}
+          Rotation rate in Hz. If speed is None, start the rotation
+          with the speed that the motor has in memory.
+
+        direction : {None, number}
+          Direction (positive or negative).
 
         """
-        self.reference_selection.set("preset")
+        self._reference_selection.set("preset")
+
+        if not self._unlocked.get():
+            self._unlocked.set(1)
+
         if speed is not None:
-            # the real speed is acutally one forth of the speed value
-            # of the motor. 4*speed is here to compensate for this
-            self.speed.set(4*speed)
+            self.set_target_rotation_rate(speed)
+
         self._rotate.set(1)
 
     def stop_rotation(self):
-        self.reference_selection.set("preset")
+        """Stop the rotation."""
+        self._reference_selection.set('preset')
         self._rotate.set(0)
 
 
@@ -78,7 +134,13 @@ class Value(Int16Value):
     def get(self):
         if self._mode != 'all':
             self._check_mode()  # to do: integer case
-        return float(super(Value, self).get()) / 10 ** self._number_of_decimals
+
+        raw_value = super(Value, self).get()
+
+        if self._number_of_decimals == 0:
+            return raw_value
+        else:
+            return float(raw_value) / 10 ** self._number_of_decimals
 
     def set(self, value, check=True):
         """Set the Value to value.
@@ -161,84 +223,112 @@ int_dict_mode = {1: 'open_loop', 2: 'closed_loop', 3: 'servo', 4: 'regen'}
 int_dict_ref ={0: 'A1.A2', 1: 'A1.pr', 2: 'A2.pr', 3: 'preset',
                4: 'pad', 5: 'Prc'}
 
-Unidrive_sp._build_class_with_features([
+UnidriveSP._build_class_with_features([
     StringValue(name='mode',
                 doc='The operating mode.',
                 int_dict=int_dict_mode, mode='all', menu=0, parameter=48),
 
-    StringValue(name='reference_selection',
+    StringValue(name='_reference_selection',
                 doc=('Defines how the rotation speed is given to the motor.'
                      '"preset" is what we want here, '
                      '"pad" means it can be entered with the arrow keys '
                      'of the motor pad'),
                 int_dict=int_dict_ref, mode='all', menu=0, parameter=5),
 
-    Value(name='unlock',
-          doc=('When this is 0, the motor is inhibited, it displays Inh'
-               'When this is 1, the motor is ready to run, it displays Rdy'),
+    Value(name='_unlocked',
+          doc=('When this variable is equal to 0, '
+               'the motor is inhibited and displays "Inh". '
+               'When it is equal to 1, the motor is ready to run '
+               'and displays "Rdy".'),
           number_of_decimals=0, mode='all', menu=6, parameter=15),
 
     Value(name='_rotate',
           doc='Set this to 1 to give an order of rotation',
           number_of_decimals=0, mode='all', menu=6, parameter=34),
 
-    Value(name='speed',
-          doc='Speed of rotation. The actual speed in a forth of this.',
+    Value(name='_speed',
+          doc=('Speed of rotation. Warning: the actual speed in Hz is equal '
+               'to this value divided by the number of poles.'),
           number_of_decimals=1, mode='all', menu=0, parameter=24),
 
-    Value(name='min_frequency_open_loop',
+    Value(name='_min_frequency_open_loop',
           doc='Minimum limit of frequency (Hz). Used in open loop.',
           number_of_decimals=1, mode='open_loop', menu=0, parameter=1),
 
-    Value(name='min_speed_closed_loop',
+    Value(name='_min_speed_closed_loop',
           doc='Minimum limit of speed (rpm). Used in closed loop.',
           number_of_decimals=1, mode='closed_loop', menu=0, parameter=1),
 
-    Value(name='min_speed_servo',
+    Value(name='_min_speed_servo',
           doc='Minimum limit of speed (rpm). Used in servo.',
           number_of_decimals=1, mode='servo', menu=0, parameter=1),
 
     Value(name='acceleration_time',
-          doc='The time to go from 0Hz to 100Hz (s).',
+          doc='The time to go from 0 Hz to 100 Hz (s).',
           number_of_decimals=1, mode='all', menu=0, parameter=3),
 
     Value(name='deceleration_time',
-          doc='The time to go from 100Hz to 0Hz (s).',
+          doc='The time to go from 100 Hz to 0 Hz (s).',
           number_of_decimals=1, mode='all', menu=0, parameter=4),
 
-    Value(name='number_of_pairs_of_poles',
-          doc='The number of pairs of poles of the motor',
+    Value(name='_number_of_pairs_of_poles',
+          doc='The number of pairs of poles of the motor.',
           number_of_decimals=0, mode='all', menu=0, parameter=42),
 
-    Value(name='rated_voltage',
+    Value(name='_rated_voltage',
           doc='The Rated voltage of the motor (V).',
           number_of_decimals=0, mode='all', menu=0, parameter=44),
 
-    Value(name='rated_speed_open_loop',
+    Value(name='_rated_speed_open_loop',
           doc='Rated speed of the motor (rpm). Used in open loop.',
           number_of_decimals=0, mode='open_loop', menu=0, parameter=45),
 
-    Value(name='rated_speed_closed_loop',
+    Value(name='_rated_speed_closed_loop',
           doc='Rated speed of the motor (rpm). Used in closed loop.',
           number_of_decimals=0, mode='closed_loop', menu=0, parameter=45),
 
-    Value(name='thermal_time_constant_servo',
+    Value(name='_thermal_time_constant_servo',
           doc='Thermal time constant of the motor. Used in servo.',
           number_of_decimals=0, mode='servo', menu=0, parameter=45),
 
-    Value(name='rated_currant_open_loop',
+    Value(name='_rated_current_open_loop',
           doc='Rated current of the motor. Used in open loop.',
           number_of_decimals=2, mode='open_loop', menu=0, parameter=46),
 
-    Value(name='rated_currant_closed_loop',
+    Value(name='_rated_current_closed_loop',
           doc='Rated current of the motor. Used in closed loop.',
           number_of_decimals=2, mode='closed_loop', menu=0, parameter=46),
 
-    Value(name='rated_frequency_open_loop',
+    Value(name='_rated_frequency_open_loop',
           doc='Rated frequency of the motor. Used in open loop.',
           number_of_decimals=1, mode='open_loop', menu=0, parameter=47),
 
-    Value(name='rated_frequency_closed_loop',
+    Value(name='_rated_frequency_closed_loop',
           doc='Rated frequency of the motor. Used in closed loop.',
           number_of_decimals=1, mode='closed_loop', menu=0, parameter=47)
 ])
+
+
+def example_linear_ramps(motor, max_speed=3., duration=5., steps=30):
+    max_speed = float(max_speed)
+    duration = float(duration)
+    steps = int(steps)
+    t = 0.
+    speed = 0
+    start_speed = motor.get_target_rotation_rate()
+    motor.start_rotation(speed)
+    while t < duration/2:
+        sleep(duration/steps)
+        speed += 2*max_speed/steps
+        t += duration/steps
+        motor.set_target_rotation_rate(speed, check=False)
+    while t < duration:
+        sleep(duration/steps)
+        speed -= 2*max_speed/steps
+        t += duration/steps
+        if speed < 0:
+            speed=0.
+        motor.set_target_rotation_rate(speed, check=False)
+    motor.stop_rotation()
+    motor.set_target_rotation_rate(start_speed, check=False)
+    motor.lock()
