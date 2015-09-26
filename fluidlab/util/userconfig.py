@@ -6,22 +6,12 @@ configuration values as module attributes.
 
 """
 
-import os as _os
-from runpy import run_path as _run_path
+from fluiddyn.util.userconfig import load_user_conf_files
 
-conf_vars = {}
+config = load_user_conf_files('fluidlab')
+del load_user_conf_files
 
-home = _os.path.expanduser("~")
-
-possible_conf_files = [_os.path.join(home, '.fluidlab', 'config.py')]
-
-conf_files = []
-for _path in possible_conf_files:
-    if _os.path.isfile(_path):
-        conf_files.append(_path)
-        conf_vars = _run_path(_path, init_globals=conf_vars)
-
-conf_vars = {k: v for k, v in conf_vars.items() if not k.startswith('_')}
-
-for _k, _v in conf_vars.items():
-    globals()[_k] = _v
+glob = globals()
+for _k, _v in config.items():
+    glob[_k] = _v
+del glob
