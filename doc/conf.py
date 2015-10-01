@@ -50,7 +50,7 @@ extensions = [
     'docattributes',
     'numpydoc',
     'mathmacro',
-    'IPython.sphinxext.ipython_directive',
+    # 'IPython.sphinxext.ipython_directive',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
