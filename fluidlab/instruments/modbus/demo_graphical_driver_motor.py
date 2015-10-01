@@ -1,5 +1,5 @@
-"""Example of a tiny graphical driver.
-======================================
+"""Example of a tiny generic graphical driver.
+==============================================
 
 .. autoclass:: GraphicalDriver
    :members:
@@ -10,7 +10,8 @@
 
 import sys
 from PySide import QtGui
-import serial
+
+from serial import SerialException
 
 
 from fluidlab.instruments.modbus.unidrive_sp import (
@@ -41,9 +42,16 @@ class FalseMotor(object):
 
 
 class GraphicalDriver(QtGui.QWidget):
-    def __init__(self):
+    def __init__(self, class_motor=UnidriveSP):
         super(GraphicalDriver, self).__init__()
-        self.init_motor()
+
+        # initialization of the motor driver
+        try:
+            self.motor = class_motor()
+        except (OSError, SerialException):
+            self.motor = FalseMotor()
+
+        # initialization of the window
         self.initUI()
 
     def create_btn(self, name, function, x, y):
@@ -85,18 +93,12 @@ class GraphicalDriver(QtGui.QWidget):
         self.setWindowTitle('Leroy Somer driver')
         self.show()
 
-    def init_motor(self):
-        try:
-            self.motor = UnidriveSP()
-        except (OSError, serial.SerialException):
-            self.motor = FalseMotor()
-
     def show_set_speed_dialog(self):
         speed, ok = QtGui.QInputDialog.getText(
             self, 'Input Dialog',
             'Enter the motor speed in Hz:')
         if ok:
-            self.motor.set_target_rotation_rate(speed)
+            self.motor.set_target_rotation_rate(float(speed))
             self.lcd.display(self.motor.get_target_rotation_rate())
 
     def triangle_dialog(self):

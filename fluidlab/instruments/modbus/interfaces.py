@@ -18,6 +18,8 @@ Provides:
 
 """
 
+import collections
+
 from fluidlab.instruments.interfaces import Interface
 
 
@@ -53,48 +55,49 @@ class ModbusInterface(Interface):
 
 class MinimalModbusInterface(ModbusInterface):
 
-    def __init__(self, port, method='rtu', slave_adress=1, timeout=1):
+    def __init__(self, port, method='rtu', slave_address=1, timeout=1):
         import minimalmodbus
-        self._modbus = minimalmodbus.Instrument(port, slave_adress, method)
+        self._modbus = minimalmodbus.Instrument(port, slave_address, method)
 
-    def read_readonlybool(self, adresses):
+    def read_readonlybool(self, addresses):
         raise NotImplementedError
 
-    def read_bool(self, adresses):
-        if isinstance(adresses, (list, tuple)):
-            return self._modbus.read_coils(adresses)
-        elif isinstance(adresses, int):
-            return self._modbus.read_coil(adresses)
+    def read_bool(self, addresses):
+        if isinstance(addresses, collections.Iterable):
+            return self._modbus.read_coils(addresses)
+        elif isinstance(addresses, int):
+            return self._modbus.read_coil(addresses)
 
-    def write_bool(self, adresses, values):
+    def write_bool(self, addresses, values):
         raise NotImplementedError
 
-    def read_readonlyint16(self, adresses):
+    def read_readonlyint16(self, addresses):
         raise NotImplementedError
 
-    def read_int16(self, adresses):
-        if isinstance(adresses, (list, tuple)) and len(adresses) == 2:
-            return self._modbus.read_registers(adresses[0], adresses[1])
-        elif isinstance(adresses, int):
-            return self._modbus.read_register(adresses)
+    def read_int16(self, addresses):
+        if isinstance(addresses, collections.Iterable) and len(addresses) == 2:
+            return self._modbus.read_registers(addresses[0], addresses[1])
+        elif isinstance(addresses, int):
+            return self._modbus.read_register(addresses)
         else:
-            raise ValueError('Argument must be int or int list of length 2')
+            raise ValueError(
+                '`addresses` must be an int or an iterable of length 2')
 
-    def write_int16(self, adress, values):
-        if isinstance(values, list):
-            self._modbus.write_registers(adress, values)
+    def write_int16(self, address, values):
+        if isinstance(values, collections.Iterable):
+            self._modbus.write_registers(address, values)
         elif isinstance(values, int):
-            self._modbus.write_register(adress, values)
+            self._modbus.write_register(address, values)
         else:
-            raise ValueError('Argument must be int or list of ints')
+            raise ValueError('`values` must be an int or an iterable of ints')
 
-    def read_readonlyfloat32(self, adresses):
+    def read_readonlyfloat32(self, addresses):
         raise NotImplementedError
 
-    def read_float32(self, adresses):
+    def read_float32(self, addresses):
         raise NotImplementedError
 
-    def write_float32(self, adresses, values):
+    def write_float32(self, addresses, values):
         raise NotImplementedError
 
 

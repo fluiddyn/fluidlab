@@ -84,6 +84,7 @@ class Int16StringValue(SuperValue):
     def set(self, string):
         self._interface.write_int16(self._adress, self._string_dict[string])
 
+
 class ReadOnlyFloat32Value(Value):
     def get(self):
         return self._interface.read_readonlyfloat32(self._adress)

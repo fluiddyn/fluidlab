@@ -71,6 +71,10 @@ class UnidriveSP(ModbusDriver):
         """Set the target rotation rate in Hz."""
         # The value `_speed` is actually equal to _constant_nb_poles
         # times the rotation rate in Hz.
+
+        if not isinstance(rotation_rate, (int, float)):
+            rotation_rate = float(rotation_rate)
+
         self._speed.set(self._constant_nb_poles * rotation_rate,
                         check=check)
 
@@ -149,7 +153,14 @@ class Value(Int16Value):
         """
         if self._mode != 'all':
             self._check_mode()
-        super(Value, self).set(int(value * 10 ** self._number_of_decimals))
+
+        if self._number_of_decimals == 0:
+            raw_int = int(value)
+        else:
+            raw_int = int(value * 10 ** self._number_of_decimals)
+
+        super(Value, self).set(raw_int)
+
         if check:
             self._check_instrument_value(value)
 
