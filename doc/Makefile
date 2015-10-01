@@ -14,7 +14,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
-IPYNB_DIR = $(abspath ipynb)
+
 IPYTHON_NOTEBOOKS = $(wildcard ipynb/*.ipynb)
 IPYTHON_NOTEBOOKS_RST = $(IPYTHON_NOTEBOOKS:.ipynb=.rst)
 IPYTHON_NOTEBOOKS_DIR = $(IPYTHON_NOTEBOOKS:.ipynb=_files)
@@ -51,7 +51,7 @@ clean:
 cleanall: clean
 	rm -rf generated html.zip
 
-html: $(IPYTHON_NOTEBOOKS_RST)
+html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
@@ -164,6 +164,3 @@ doctest:
 
 zip: html
 	cd _build/html &&  zip -r html.zip * && mv html.zip ../../.
-
-%.rst: %.ipynb
-	cd $(IPYNB_DIR) && ipython nbconvert --to rst $(notdir $<)

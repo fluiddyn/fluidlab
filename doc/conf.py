@@ -31,23 +31,21 @@ def call_bash(commands):
 
 path_bin = os.path.split(sys.executable)[0]
 
-# call_bash(
-#     'source ' + path_bin + '/activate'
-#     """
-#     which python
-#     which ipython
-#     # pip install --upgrade --no-deps --ignore-installed ipython[notebook]
-#     ipython --version
-#     #echo ' cat ipython: '
-#     #echo ' '
-#     #cat $(which ipython)
-#     #echo ' '
-#     #cd ipynb && ipython nbconvert --to rst tuto_lab_user.ipynb
-#     """)
+call_bash(
+    'source ' + path_bin + '/activate'
+    """
+    which python
+    which ipython
+    which jupyter
+    ipython --version
+    jupyter --version
+    cd ipynb && jupyter nbconvert --to rst tuto_lab_user.ipynb
+    """)
 
 if on_rtd:
     import IPython
     print('IPython.__version__', IPython.__version__)
+
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
