@@ -1,11 +1,7 @@
-"""
-Modbus instruments (:mod:`fluidlab.instruments.modbus`)
+"""Modbus instruments (:mod:`fluidlab.instruments.modbus`)
 =======================================================
 
-.. todo:: Modbus interface, features, drivers...
-
-
-Provides:
+Provides some base modules:
 
 .. autosummary::
    :toctree:
@@ -14,5 +10,12 @@ Provides:
    features
    interfaces
 
+and some Modbus drivers for particular instruments:
+
+.. autosummary::
+   :toctree:
+
+   unidrive_sp
+   demo_graphical_driver_motor
 
 """

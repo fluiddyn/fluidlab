@@ -34,7 +34,6 @@ Provides:
 
 
 """
-
 from fluidlab.instruments.features import SuperValue
 
 
@@ -42,7 +41,6 @@ class Value(SuperValue):
     def __init__(self, name, doc='', adress=0):
         self._adress = adress
         super(Value, self).__init__(name, doc)
-
 
 class ReadOnlyBoolValue(Value):
     def get(self):
@@ -71,24 +69,20 @@ class Int16Value(Value):
 
 
 class Int16StringValue(SuperValue):
-    def __init__(self, name, doc='', interger_list=None, string_list=None, adress=0):
+    def __init__(self, name, doc='', int_dict=None, adress=0):
         self._adress = adress
-        self.interger_list = interger_list
-        self.string_list = string_list
-        super(Value, self).__init__(name, doc)
-    
+        self._int_dict = int_dict
+        string_dict = {}
+        for k in int_dict:
+            string_dict[int_dict[k]]=k
+        self._string_dict = string_dict
+        super(Int16StringValue, self).__init__(name, doc)
+
     def get(self):
-        integer = self._interface.read_int16(self._adress)
-        for j in range(len(self.interger_list)):
-            if self.interger_list[j] == integer:
-                string = self.string_list[j]
-        return string
-    
+        return self._int_dict[self._interface.read_int16(self._adress)]
+
     def set(self, string):
-        for j in range(len(self.string_list)):
-            if self.string_list[j] == string:
-                integer = self.integer_list[j]
-        self._interface.write_int16(self._adress, integer)
+        self._interface.write_int16(self._adress, self._string_dict[string])
 
 
 class ReadOnlyFloat32Value(Value):

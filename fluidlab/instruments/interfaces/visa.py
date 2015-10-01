@@ -26,8 +26,11 @@ class PyvisaInterface(QueryInterface):
         self.query = instr.query
         self.close = instr.close
         self.assert_trigger = instr.assert_trigger
-        self.wait_for_srq = instr.wait_for_srq
-
+        try:
+            self.wait_for_srq = instr.wait_for_srq
+        except AttributeError as e:
+            # with @py ?
+            print(e)
 
 if __name__ == '__main__':
     interface = PyvisaInterface('ASRL2::INSTR', backend='@sim')

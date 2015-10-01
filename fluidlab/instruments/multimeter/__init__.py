@@ -1,5 +1,5 @@
 """
-Multimeters (:mod:'fluidlab.instruments.multimeter')
+Multimeters (:mod:`fluidlab.instruments.multimeter`)
 ====================================================
 
 Provides:

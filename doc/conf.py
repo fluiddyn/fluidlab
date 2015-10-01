@@ -20,8 +20,9 @@ if on_rtd:
     # this package comes from fluiddyn
     from fluidrtd import mock_modules
     mock_modules(['h5py'])
-    from fluidrtd.ipynb_maker import ipynb_to_rst
-    ipynb_to_rst()
+
+from fluidrtd.ipynb_maker import ipynb_to_rst
+ipynb_to_rst()
 
 import fluidlab
 
