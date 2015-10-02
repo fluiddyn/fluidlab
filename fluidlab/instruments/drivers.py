@@ -149,8 +149,7 @@ class VISADriver(Driver):
                 backend='@ni'
 
         if isinstance(interface, str):
-            from fluidlab.instruments.interfaces.visa import (
-                PyvisaInterface)
+            from fluidlab.instruments.interfaces.visa import PyvisaInterface
             interface = PyvisaInterface(interface, backend=backend)
 
         super(VISADriver, self).__init__(interface)

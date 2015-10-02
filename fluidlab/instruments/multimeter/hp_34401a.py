@@ -8,11 +8,9 @@
 
 """
 
-from fluidlab.instruments.iec60488 import (
-    IEC60488)
+from fluidlab.instruments.iec60488 import IEC60488
 
-from fluidlab.instruments.features import (
-    FloatValue)
+from fluidlab.instruments.features import FloatValue
 
 class HP34401a(IEC60488):
     """Driver for the multimeter HP 34401a.

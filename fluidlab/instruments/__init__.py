@@ -43,6 +43,7 @@ packages:
 
    scope
    funcgen
+   powersupply
    multimeter
    multiplexer
 
