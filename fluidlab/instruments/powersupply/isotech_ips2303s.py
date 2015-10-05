@@ -59,8 +59,7 @@ for channel in [1, 2]:
 IsoTechIPS2303S._build_class_with_features(features)
 
 
-if __name__ == '__main__':
-
+def idn_with_serial():    
     import serial
     from serial.tools.list_ports import comports
 
@@ -79,6 +78,32 @@ if __name__ == '__main__':
 
     sp.readline()
 
-    sp.write('*IDN?\r\n'.encode())
+    sp.write('*IDN?\r\n')
 
     print(sp.readline())
+
+    return sp
+
+def idn_with_visa():
+    import visa
+
+    rm = visa.ResourceManager('@py')
+
+    # for r in rm.list_resources():
+    #     if 'ttyUSB' in r:
+    #         resource_name = r
+
+    # print(resource_name)
+
+    resource_name = 'ASRL/dev/ttyUSB0::INSTR'
+
+    instr = rm.open_resource(resource_name)
+
+    instr.write('*IDN?\r\n')
+
+    print(instr.read())
+
+
+if __name__ == '__main__':
+    sp = idn_with_serial()
+    # idn_with_visa()
