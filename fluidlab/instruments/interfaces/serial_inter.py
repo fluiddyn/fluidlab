@@ -34,23 +34,20 @@ class SerialInterface(QueryInterface):
 
         self.query('*IDN?\r\n')
 
-    def query(self, command, latence=0., method='line'):
+    def read(self):
+        result = self.serial_port.readline()
+        return '\n'.join(result.splitlines())
+
+    def query(self, command, latence=0.):
         self.write(command)
         sleep(latence)
-        if method == 'line':
-            result = self.serial_port.readline()
-        elif method == 'all':
-            result = self.serial_port.readall()
-        else:
-            raise ValueError()
-        return '\n'.join(result.splitlines())
+        return self.read()
 
 
 if __name__ == '__main__':
     interface = SerialInterface('/dev/ttyUSB0')
 
-    print(interface.query('*IDN?\r\n', 1))
+    print(interface.query('*IDN?\r\n', latence=1))
     print(interface.query('*IDN?\r\n'))
     print(interface.query('ISET1?\r\n'))
     print(interface.query('HELP?\r\n', latence=0))
-
