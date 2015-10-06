@@ -1,7 +1,7 @@
 """Interfaces with the instruments (:mod:`fluidlab.instruments.interfaces`)
 ===========================================================================
 
-Provides:
+Provides some classes:
 
 .. autoclass:: Interface
    :members:
@@ -14,6 +14,16 @@ Provides:
 .. autoclass:: FalseInterface
    :members:
    :private-members:
+
+
+Provides some modules:
+
+.. autosummary::
+   :toctree:
+
+   visa
+   linuxgpib
+   serial_inter
 
 """
 

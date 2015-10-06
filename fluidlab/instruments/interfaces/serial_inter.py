@@ -28,7 +28,6 @@ class SerialInterface(QueryInterface):
             xonxoff=xonxoff, rtscts=rtscts, dsrdtr=dsrdtr)
         self._lowlevel = self.serial_port = sp
         self.write = sp.write
-        self.read = sp.read
         self.readline = sp.readline
         self.close = sp.close
 

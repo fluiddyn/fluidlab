@@ -17,7 +17,8 @@ from fluidlab.instruments.features import (
     QueryCommand, FloatValue)
 
 
-class FloatValue2(FloatValue):
+class FloatValueIPS(FloatValue):
+    """Particular value for the driver IsoTechIPS2303S."""
     _fmt = '{:5.3f}'
 
     def __init__(self, name, doc='', command_set=None):
@@ -27,12 +28,12 @@ class FloatValue2(FloatValue):
 
         command_get = command_set + '?\r\n'
 
-        super(FloatValue2, self).__init__(
+        super(FloatValueIPS, self).__init__(
             name=name, doc=doc,
             command_set=command_set, command_get=command_get)
 
     def _convert_from_str(self, value):
-        return value.strip()
+        return float(value[:-1])
 
     def get(self):
         """Get the value from the instrument."""
@@ -54,8 +55,21 @@ class FloatValue2(FloatValue):
 class IsoTechIPS2303S(Driver):
     """Driver for the power supply IPS 2303S.
 
+    Parameters
+    ----------
+
+    baudrate : {9600, 57600, 115200}
+
+      The baud rate. Warning: in the documentation it is written that
+      the baudrate has to be equal to 57600 or 115200. Actually, it is
+      set at the beginning at 9600.
+
     """
-    def __init__(self):
+    def __init__(self, baudrate=115200):
+
+        if baudrate not in [9600, 57600, 115200]:
+            raise ValueError(
+                'baudrate has to be in [9600, 57600, 115200].')
 
         port = None
         for info_port in comports():
@@ -65,15 +79,116 @@ class IsoTechIPS2303S(Driver):
         if port is None:
             raise ValueError('The device does not seem to be plugged.')
 
-        interface = SerialInterface(port, baudrate=9600, bytesize=8,
+        interface = SerialInterface(port, baudrate=baudrate, bytesize=8,
                                     parity='N', stopbits=1, timeout=1)
 
         super(IsoTechIPS2303S, self).__init__(interface)
 
+    def set_beep(self, ok_for_beep=True):
+        """Set beep on or off."""
+        if ok_for_beep:
+            value = 1
+        else:
+            value = 0
+        self.interface.write('BEEP{}\n'.format(value))
+
+    def set_output_state(self, on=True):
+        """Set beep on or off."""
+        if on:
+            value = 1
+        else:
+            value = 0
+        self.interface.write('OUT{}\n'.format(value))
+
+    def set_operation_mode(self, tracking='independent'):
+        """Set the operation mode (tracking).
+
+        Parameters
+        ----------
+
+        tracking : {'independent', 'series', 'parallel'}
+
+          The tracking mode.
+
+        """
+
+        if tracking == 'independent':
+            value = 0
+        elif tracking == 'series':
+            value = 1
+        elif tracking == 'parallel':
+            value = 2
+        else:
+            raise ValueError(
+                "tracking has to be in ['independent', 'series', 'parallel']")
+
+        self.interface.write('TRACK{}\n'.format(value))
+
+    def set_baud(self, baud=115200):
+        """Set baud rate for the serial communication.
+
+        parameters
+        ----------
+
+        baud : {115200, 57600}
+          The baud rate (symbol per second).
+
+        """
+        if baud == 115200:
+            value = 0
+        elif baud == 57600:
+            value = 1
+        else:
+            raise ValueError(
+                'baud has to be in [115200, 57600]')
+
+        self.interface.write('BAUD{}\n'.format(value))
+        self.interface.serial_port.baudrate = baud
+
+    def print_device_help(self):
+        """Print internal help."""
+        print(
+            self._query_help() +
+            '\n\nMost of the command are implemented in this driver. '
+            'For them, you do not need to know the exact internal command.')
+
 
 def _parse_status_code(code):
+    status = {}
+    if code[0] == '0':
+        status['mode_CH1'] = 'CC'
+    else:
+        status['mode_CH1'] = 'CV'
+    if code[1] == '0':
+        status['mode_CH2'] = 'CC'
+    else:
+        status['mode_CH2'] = 'CV'
 
-    return code
+    tracking = code[2:4]
+    if tracking == '01':
+        status['tracking'] = 'independent'
+    elif tracking == '11':
+        status['tracking'] = 'series'
+    elif tracking == '10':
+        status['tracking'] = 'parallel'
+    else:
+        status['tracking'] = '?'
+
+    if code[4] == '0':
+        status['beep'] = 'off'
+    else:
+        status['beep'] = 'on'
+
+    if code[6] == '0':
+        status['output'] = 'off'
+    else:
+        status['output'] = 'on'
+
+    return status
+
+
+def _parse_to_float(s):
+    return float(s[:-1])
 
 
 features = [
@@ -85,32 +200,40 @@ features = [
         'Query status\n\n'
         'Return a dictionary containing information of the device.',
         command_str='STATUS?\r\n',
-        parse_result=_parse_status_code)]
+        parse_result=_parse_status_code),
+    QueryCommand(
+        '_query_help', 'Query help (list of commands).',
+        command_str='HELP?\r\n'),
+    QueryCommand(
+        'query_error_message', 'Query error message.',
+        command_str='ERR?\r\n')]
 
 for channel in [1, 2]:
     features.extend([
-        FloatValue2(
+        FloatValueIPS(
             'iset{}'.format(channel),
-            doc='Set the output current for channel {}.'.format(channel),
+            doc='Target output current for channel {} (A).'.format(channel),
             command_set='ISET{}'.format(channel)),
-        FloatValue2(
+        FloatValueIPS(
             'vset{}'.format(channel),
-            doc='Set the output voltage for channel {}.'.format(channel),
+            doc='Target output voltage for channel {} (V).'.format(channel),
             command_set='VSET{}'.format(channel)),
         QueryCommand(
             'get_iout{}'.format(channel),
-            'Get the actual output current for channel {}.'.format(channel),
-            'IOUT{}?\r\n'.format(channel)),
+            'Get the actual current for channel {} (A).'.format(channel),
+            'IOUT{}?\r\n'.format(channel),
+            parse_result=_parse_to_float),
         QueryCommand(
             'get_vout{}'.format(channel),
-            'Get the actual output voltage for channel {}.'.format(channel),
-            'VOUT{}?\r\n'.format(channel))])
+            'Get the actual voltage for channel {}. (V)'.format(channel),
+            'VOUT{}?\r\n'.format(channel),
+            parse_result=_parse_to_float)])
 
 
 IsoTechIPS2303S._build_class_with_features(features)
 
 
-def idn_with_serial():
+def for_dev_idn_with_serial():
     import serial
 
     port = None
@@ -127,15 +250,13 @@ def idn_with_serial():
         timeout=1, bytesize=8, parity='N', stopbits=1)
 
     sp.readline()
-
     sp.write('*IDN?\r\n')
-
     print(sp.readline())
 
     return sp
 
 
-def idn_with_visa():
+def for_dev_idn_with_visa():
     import visa
 
     rm = visa.ResourceManager('@py')
@@ -147,14 +268,13 @@ def idn_with_visa():
     # print(resource_name)
 
     resource_name = 'ASRL/dev/ttyUSB0::INSTR'
-
     instr = rm.open_resource(resource_name)
-
     instr.write('*IDN?\r\n')
-
     print(instr.read())
 
 
 if __name__ == '__main__':
-    sp = idn_with_serial()
-    # idn_with_visa()
+    # sp = for_dev_idn_with_serial()
+    # for_dev_idn_with_visa()
+
+    pwrsupp = IsoTechIPS2303S()
