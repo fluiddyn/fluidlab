@@ -61,8 +61,9 @@ class IsoTechIPS2303S(Driver):
     baudrate : {9600, 57600, 115200}
 
       The baud rate. Warning: in the documentation it is written that
-      the baudrate has to be equal to 57600 or 115200. Actually, it is
-      set at the beginning at 9600.
+      the baudrate has to be equal to 57600 or 115200. Actually, when
+      before I modify this parameter I was able to communicate with
+      the device only with a baud rate equal to 9600.
 
     """
     def __init__(self, baudrate=115200):
@@ -93,7 +94,11 @@ class IsoTechIPS2303S(Driver):
         self.interface.write('BEEP{}\n'.format(value))
 
     def set_output_state(self, on=True):
-        """Set beep on or off."""
+        """Set output state on or off.
+
+        If the output state is off, there is no output.
+
+        """
         if on:
             value = 1
         else:
