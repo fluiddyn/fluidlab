@@ -1,8 +1,8 @@
 .. FluidLab documentation master file, created by
    sphinx-quickstart on Sun Mar  2 12:15:31 2014.
 
-Welcome to FluidLab's documentation!
-====================================
+FluidLab documentation
+======================
 
 FluidLab is a framework for studying fluid dynamics by experiments
 using Python.  It is part of the wider project `FluidDyn
