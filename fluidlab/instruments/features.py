@@ -65,12 +65,6 @@ class Feature(object):
         self._name = name
         self.__doc__ = doc
 
-    # def __repr__(self):
-    #     if len(self.__doc__) > 0:
-    #         return (super(Feature, self).__repr__() + '\n' + self.__doc__)
-    #     else:
-    #         return super(Feature, self).__repr__()
-
 
 class WriteCommand(Feature):
     def __init__(self, name, doc='', command_str=''):
@@ -145,30 +139,20 @@ class Value(SuperValue):
     def _convert_as_str(self, value):
         return self._fmt.format(value)
 
-    def _build_driver_class(self, Driver):
-        name = self._name
-        command_get = self.command_get
-        command_set = self.command_set
+    def get(self):
+        """Get the value from the instrument."""
+        result = self._convert_from_str(
+            self._interface.query(self.command_get))
+        self._check_value(result)
+        return result
 
-        setattr(Driver, name, self)
-
-        def get(self):
-            """Get """ + name
-            result = self._convert_from_str(self._interface.query(command_get))
-            self._check_value(result)
-            return result
-
-        self.get = get.__get__(self, self.__class__)
-
-        def set(self, value, warn=True):
-            """Set """ + name
-            self._check_value(value)
-            self._interface.write(
-                command_set + ' ' + self._convert_as_str(value))
-            if warn:
-                self._check_instrument_value(value)
-
-        self.set = set.__get__(self, self.__class__)
+    def set(self, value, warn=True):
+        """Set the value in the instrument."""
+        self._check_value(value)
+        self._interface.write(
+            self.command_set + ' ' + self._convert_as_str(value))
+        if warn:
+            self._check_instrument_value(value)
 
 
 class BoolValue(Value):

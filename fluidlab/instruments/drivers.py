@@ -113,7 +113,8 @@ class VISADriver(Driver):
                 # ni-visa under Windows and Mac OS X
                 # and linuxgpib under Linux,
 
-                if platform.system() == 'Windows' or platform.system() == 'Darwin':
+                if (platform.system() == 'Windows' or
+                        platform.system() == 'Darwin'):
                     backend = '@ni'
                 else:
                     from fluidlab.instruments.interfaces.linuxgpib import (

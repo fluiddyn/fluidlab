@@ -14,12 +14,15 @@
 import sys
 import os
 
+from fluidrtd import mock_modules
+
 # to be able to build the doc without h5py with Read the docs
 on_rtd = os.environ.get('READTHEDOCS')
 if on_rtd:
     # this package comes from fluiddyn
-    from fluidrtd import mock_modules
     mock_modules(['h5py'])
+
+mock_modules(['gpib'])
 
 from fluidrtd.ipynb_maker import ipynb_to_rst
 ipynb_to_rst()
