@@ -28,17 +28,17 @@ def switch(channel):
 time_step = 2.
 total_time = 20.
 
-print('Loop during total_time = {:7.5}'.format(total_time))
+print('Loop during total_time = {:7.5} s'.format(total_time))
 t = 0.
 timer = Timer(time_step)
 tstart = timer.tstart
 while t < total_time:
-    print('time till start: {:7.5}'.format(t))
+    print('time till start: {:7.5} s'.format(t))
 
     switch(pwrsupply.vset1)
     switch(pwrsupply.vset2)
 
     t = timer.wait_tick()
 
-print('time at the end: {:7.5}'.format(time() - tstart))
+print('time at the end: {:7.5} s'.format(time() - tstart))
 pwrsupply.set_output_state(False)
