@@ -1,4 +1,4 @@
 Linux GPIB
 ==========
 
-blablabla
+.. todo:: Help install Linux GPIB

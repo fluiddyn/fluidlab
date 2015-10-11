@@ -60,10 +60,11 @@ class IsoTechIPS2303S(Driver):
 
     baudrate : {9600, 57600, 115200}
 
-      The baud rate. Warning: in the documentation it is written that
-      the baudrate has to be equal to 57600 or 115200. Actually, when
-      before I modify this parameter I was able to communicate with
-      the device only with a baud rate equal to 9600.
+      The baud rate (symbol per second). Warning: it is written in the
+      documentation of the device that the baudrate has to be equal to
+      57600 or 115200. Actually, before I modified this parameter I
+      was able to communicate with the device only with a baud rate of
+      9600 Bd.
 
     """
     def __init__(self, baudrate=115200):

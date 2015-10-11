@@ -2,12 +2,12 @@
 =====================
 
 .. _exp:
-.. currentmodule:: fluidlab.exp
 
 .. autosummary::
    :toctree:
 
    session
+   octavesession
 
 .. warning::
 
@@ -43,7 +43,6 @@ This package provides:
    base
    withtank
    withconductivityprobe
-   octavesession
 
 - a package with classes representing Taylor-Couette experiments:
 
