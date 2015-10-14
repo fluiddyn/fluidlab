@@ -15,7 +15,7 @@ from serial import SerialException
 
 
 from fluidlab.instruments.modbus.unidrive_sp import (
-    UnidriveSP, example_linear_ramps)
+    OpenLoopUnidriveSP, example_linear_ramps)
 
 
 class FalseMotor(object):
@@ -42,7 +42,7 @@ class FalseMotor(object):
 
 
 class GraphicalDriver(QtGui.QWidget):
-    def __init__(self, class_motor=UnidriveSP):
+    def __init__(self, class_motor=OpenLoopUnidriveSP):
         super(GraphicalDriver, self).__init__()
 
         # initialization of the motor driver

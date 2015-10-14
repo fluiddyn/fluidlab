@@ -16,6 +16,5 @@ and some Modbus drivers for particular instruments:
    :toctree:
 
    unidrive_sp
-   demo_graphical_driver_motor
 
 """
