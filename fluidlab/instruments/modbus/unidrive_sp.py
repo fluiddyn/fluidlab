@@ -1,6 +1,73 @@
 """Unidrive SP motor (Leroy Somer)
 ==================================
 
+How to setup and control the motor
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Pad, parameters and menus**
+
+The power drive has to be setup using its pad. There are arrow keys
+and two important buttons (a red button for reset, validate and stop
+the motor and a green one to start it). Using the arrow key, you can
+access many parameters organized in 23 menus.
+
+Menu 0 gathers important parameters from other menus. For a simple
+usage, it's the only one that matters.
+
+**Terminals**
+
+The power drive cannot be controlled only with the pad and terminals
+("bornes" in french) have to be linked. In particular, we have to use:
+
+- Terminal 22 gives 24 V.
+
+- Terminal 31 has to be plugged to 24 V to give a "drive
+  enable signal".
+
+- Terminal 26 has to be plugged to 24 V to give a "run signal".
+
+**Indications written on the drive**
+
+- "inh" stands for inhibited, it means the motor is locked.
+
+- "rdY" stands for ready.
+
+- "trip" means there is a problem, check section K of the manual for
+  solutions.
+
+**Control the motor with a computer**
+
+The value of the parameter 0.05 controls how the motor is driven.
+
+- 0.05 -> PAd : controlled by the pad on the power drive.
+
+- 0.05 -> Pr : controlled by other parameters (that can be set by the
+  computer). In particular the rotating rate of the motor in
+  proportional to the value of parameter 0.24. The "run signal" can be
+  given with the parameter 6.34.
+
+**Modes**
+
+The power drive can drive the motor in three modes,
+
+- Open loop,
+
+- close loop,
+
+- servo.
+
+The parameter 0.48 correspond to the modes. In order to change the
+mode, one need to change the parameter 0.48, to change the parameter
+0.00 and to reset the drive by pressing the red "reset" button. Then
+the user has to manually launch an auto-calibration process.
+Therefore, it is not possible to change mode only from the
+computer. Since some parameters correspond to different meaning in the
+different modes, we provide one class for each mode.
+
+The setup procedures for the different modes are described in the
+doc-string of the classes.
+
+
 .. autoclass:: UnidriveSP
    :members:
    :private-members:
@@ -38,8 +105,69 @@ class UnidriveSP(ModbusDriver):
     module : {'minimalmodbus', str}
       Module used to communicate with the motor.
 
+    Notes
+    -----
+
+    **Setup of the power drive in "open loop" mode**
+
+    See short guide (section 7.2) and long guide (chapter H1). Follow
+    the instructions.
+
+    *Example for LEGI*
+
+    Reset in open loop mode:
+
+    - 0.00 -> 1253,
+
+    - 0.48 -> OPEn.LP + reset.
+
+    In case of error br.th, 0.51 -> 8 + reset.
+
+    Main parameters:
+
+    - 0.02 -> 200 (Hz, 50 * 4 pairs of poles),
+
+    - 0.03 -> 5 (s, time of acceleration 0 to 100 Hz),
+
+    - 0.04 -> 10 (s, time of deceleration 100 to 0 Hz),
+
+    - 0.21 -> th.
+
+    Motor parameters (read on the motor):
+
+    - 0.44 -> 400 (V),
+
+    - 0.45 -> 3000 (rpm, max (?) rotation rate),
+
+    - 0.46 -> 1 (A, current),
+
+    - 0.47 -> 200 (Hz, 3000/60 (Hz) * 4 pairs of poles).
+
+    Warning: the parameters 0.45 (motor rated speed, min-1) and 0.47
+    (rated frequency, Hz) must be proportional: Rated frequency =
+    motor rated speed / 60 * number of pairs of poles.
+
+    Autocalibration
+
+    - 0.40 -> 2 (for rotating calibration, 1 for stationary calibration),
+
+    - Plug the terminals to send "drive enable signal" (link terminals
+      22 and 31) and "run signal" (link terminals 22 and 26),
+
+    - Remove the terminals,
+
+    - 0.00 - > 1000 (memorization of the parameters),
+
+    - Send "drive enable signal" (link terminals 22 and 31).
+
+    Other useful parameters:
+
+    - 6.15 -> 1 (unlock) or 0 (lock),
+
+    - 6.34 -> 1 (order of rotation) or 0 (no rotation).
+
     """
-    _constant_nb_poles = 4
+    _constant_nb_pairs_poles = 4
 
     def __init__(self, port=None, timeout=1,
                  module='minimalmodbus'):
@@ -69,21 +197,21 @@ class UnidriveSP(ModbusDriver):
 
     def set_target_rotation_rate(self, rotation_rate, check=False):
         """Set the target rotation rate in Hz."""
-        # The value `_speed` is actually equal to _constant_nb_poles
+        # The value `_speed` is actually equal to _constant_nb_pairs_poles
         # times the rotation rate in Hz.
 
         if not isinstance(rotation_rate, (int, float)):
             rotation_rate = float(rotation_rate)
 
-        self._speed.set(self._constant_nb_poles * rotation_rate,
+        self._speed.set(self._constant_nb_pairs_poles * rotation_rate,
                         check=check)
 
     def get_target_rotation_rate(self):
         """Get the target rotation rate in Hz."""
-        # The value `_speed` is actually equal to _constant_nb_poles
+        # The value `_speed` is actually equal to _constant_nb_pairs_poles
         # times the rotation rate in Hz.
         raw_speeed = self._speed.get()
-        return raw_speeed / self._constant_nb_poles
+        return raw_speeed / self._constant_nb_pairs_poles
 
     def start_rotation(self, speed=None, direction=None):
         """Start the motor rotation.
@@ -258,8 +386,8 @@ UnidriveSP._build_class_with_features([
           number_of_decimals=0, mode='all', menu=6, parameter=34),
 
     Value(name='_speed',
-          doc=('Speed of rotation. Warning: the actual speed in Hz is equal '
-               'to this value divided by the number of poles.'),
+          doc=('Speed of rotation.\n\nWarning: the actual speed in Hz '
+               'is equal to this value divided by the number of poles.'),
           number_of_decimals=1, mode='all', menu=0, parameter=24),
 
     Value(name='_min_frequency_open_loop',
