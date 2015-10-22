@@ -79,6 +79,25 @@ docstring of the classes.
    :members:
    :private-members:
 
+**How to read the commercial designation**
+
+At LEGI, we have a motor "055U2C300BAMRA063110". This name can be
+decomposed as 055-U-2-C-30-0-B-A-MR-A-063-110. The different part of
+the names mean:
+
+- 055: frame size
+- U: voltage (400 V)
+- 2: torque selection (std)
+- C: stator length
+- 30: winding speed (3000 rpm)
+- 0: brake (no brake)
+- B: connection type 
+- A: output shaft (std)
+- MR: Feedback device (Incremental encoder 2048 ppr)
+- A: inertial (std)
+- 063: PCD (std)
+- 110: Shaft diameter.
+
 """
 
 from time import sleep
@@ -312,6 +331,10 @@ class OpenLoopUnidriveSP(BaseUnidriveSP):
 
     - 0.48 -> OPEn.LP + reset.
 
+    For this to work, the parameter 0.48 has to be changed. If it is
+    already in open loop, you have to first to reset the motor in
+    another mode and then reset it in open loop.
+
     In case of error br.th, 0.51 -> 8 + reset.
 
     Main parameters:
@@ -431,37 +454,40 @@ class ServoUnidriveSP(BaseUnidriveSP):
 
     *Example for LEGI*
 
+    Drive enable signal and run signal are not given
+
     Reset in open loop mode:
 
     - 0.00 -> 1253,
 
-    - 0.48 -> ???? + reset.
+    - 0.48 -> ServO + reset.
 
     In case of error br.th, 0.51 -> 8 + reset.
 
-    Main parameters:
-
-    - 0.02 -> 200 (Hz, 50 * 4 pairs of poles),
-
-    - 0.03 -> 5 (s, time of acceleration 0 to 100 Hz),
-
-    - 0.04 -> 10 (s, time of deceleration 100 to 0 Hz),
+    Motor parameters (read on the motor and on 4146 documentation):
+    - 0.02 -> 3000 (rpm, maximum velocity),,
 
     - 0.21 -> th.
 
-    Motor parameters (read on the motor):
+    - 0.41 -> 12 (kHz, switching frequency)
 
-    - 0.44 -> 400 (V),
+    - 0.42 -> 8 (number of poles)
 
-    - 0.45 -> 3000 (rpm, max (?) rotation rate),
+    - 0.45 -> 42 (s, thermal time constant),
 
-    - 0.46 -> 1 (A, current),
+    - 0.46 -> 1 (A, stalling current),
 
     - 0.47 -> 200 (Hz, 3000/60 (Hz) * 4 pairs of poles).
 
-    Warning: the parameters 0.45 (motor rated speed, min-1) and 0.47
-    (rated frequency, Hz) must be proportional: Rated frequency =
-    motor rated speed / 60 * number of pairs of poles.
+    Coder parameters:
+
+    - 0.49 -> L2
+
+    - 3.34 -> 2048 (ppr)
+
+    - 3.36 -> 5 (V)
+
+    - 3.38 -> Ab.SErvo
 
     Autocalibration
 
@@ -470,7 +496,16 @@ class ServoUnidriveSP(BaseUnidriveSP):
     - Plug the terminals to send "drive enable signal" (link terminals
       22 and 31) and "run signal" (link terminals 22 and 26),
 
-    - Remove the terminals,
+    - Unplug the terminals when calibration is over,
+
+    - connect the motor to the load
+
+    - 0.40 -> 3
+
+    - Plug the terminals to send "drive enable signal" (link terminals
+      22 and 31) and "run signal" (link terminals 22 and 26)
+
+    - Unplug the terminals when calibration is over,
 
     - 0.00 - > 1000 (memorization of the parameters),
 
@@ -498,24 +533,12 @@ class ServoUnidriveSP(BaseUnidriveSP):
 
 ServoUnidriveSP._build_class_with_features([
     Value(name='_speed',
-          doc=('Frequency of the driving signal (Hz????).\n\n'
-               'Warning: the actual rotation rate in Hz '
-               'is equal to this value divided by the number of poles.'),
+          doc=('Rotation rate of the motor (rpm).'),
           parameter_str='0.24',
           number_of_decimals=1),
     Value(name='_min_frequency',
-          doc='Minimum limit of frequency (Hz). ???',
+          doc='Minimum limit of frequency (rpm).',
           parameter_str='0.01',
-          number_of_decimals=1),
-    Value(name='_rated_speed',
-          doc='Rated speed of the motor (rpm).',
-          parameter_str='0.45'),
-    Value(name='_rated_frequency',
-          doc=('Rated frequency of the driving signal of the motor (Hz ??).'
-               '\n\n'
-               'It has to be equal to '
-               '[rated speed / 60 * number of pairs of poles].'),
-          parameter_str='0.47',
           number_of_decimals=1)])
 
 
