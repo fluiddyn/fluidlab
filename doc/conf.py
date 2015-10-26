@@ -22,7 +22,7 @@ if on_rtd:
     # this package comes from fluiddyn
     mock_modules(['h5py'])
 
-mock_modules(['gpib'])
+mock_modules(['gpib', 'PyDAQmx'])
 
 from fluidrtd.ipynb_maker import ipynb_to_rst
 ipynb_to_rst()

@@ -60,7 +60,13 @@ For other instruments, the communication is done with libraries:
 .. autosummary::
    :toctree:
 
-   daqmx
    sound
+
+The drivers for the data acquisition boards are also gather in this package:
+
+.. autosummary::
+   :toctree:
+
+   daq
 
 """
