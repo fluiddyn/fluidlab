@@ -72,7 +72,8 @@ class Session(object):
     """
     def __init__(self, path=None, name=None, info=None,
                  save_in_dir=True,
-                 email_to=None, email_title=None, email_delay=None, email_server='localhost'):
+                 email_to=None, email_title=None, email_delay=None,
+                 email_server='localhost'):
 
         if not save_in_dir and path is None:
             path = './'
@@ -140,6 +141,10 @@ class Session(object):
 
         path_log_file = os.path.join(
             self.path, self._base_name_files + 'log.txt')
+
+        print('In session: email_to', email_to)
+
+
         self.logger = Logger(path=path_log_file,
                              email_to=email_to, email_title=email_title,
                              email_delay=email_delay, email_server=email_server)

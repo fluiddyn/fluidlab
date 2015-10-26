@@ -20,18 +20,17 @@ session = Session(
     path='Tests',
     name='False_exp',
     # email_to='experimentalist@lab.earth',
-    # email_title='False experiment without instrument',
-    # email_delay=30  # time in s
+    email_title='False experiment without instrument',
+    email_delay=30  # time in s
 )
 
 print = session.logger.print_log
-send_email_if_has_to = session.logger.send_email_if_has_to
 
 data_table = session.get_data_table(
     fieldnames=['U0', 'U1', 'T0', 'T1'])
 
 data_table.init_figure(['U0', 'U1'])
-
+data_table.init_figure(['T0', 'T1'])
 
 # initialization of the time loop
 t_last_print = 0.
@@ -51,7 +50,7 @@ while t < total_time:
         t_last_print = t
         print('time till start: {:8.5} s'.format(t))
         data_table.update_figures()
-        send_email_if_has_to()
+        session.logger.send_email_if_has_to(figures=data_table.figures)
 
     t = timer.wait_tick()
 

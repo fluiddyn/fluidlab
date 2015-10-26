@@ -65,7 +65,7 @@ if os.path.exists(path_PowerDAQ):
     ext_modules.append(ext_PowerDAQ)
 
 
-install_requires = ['fluiddyn >= 0.0.11a0', 'pyusb', 'minimalmodbus']
+install_requires = ['fluiddyn >= 0.0.12a0', 'pyusb', 'minimalmodbus']
 if has_cython:
     # Older versions of Cython cause setup.py to fail.
     # Rmq: Which version? The requirement >= 0.23 seems too strong.
