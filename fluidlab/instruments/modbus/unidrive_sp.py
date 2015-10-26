@@ -1,30 +1,124 @@
 """Unidrive SP motor (Leroy Somer)
 ==================================
 
-.. autoclass:: UnidriveSP
+How to setup and control the motor
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Pad, parameters and menus**
+
+The power drive has to be setup using its pad. There are arrow keys
+and two important buttons (a red button for reset, validate and stop
+the motor and a green one to start it). Using the arrow key, you can
+access many parameters organized in 23 menus.
+
+Menu 0 gathers important parameters from other menus. For a simple
+usage, it's the only one that matters.
+
+**Terminals**
+
+The power drive cannot be controlled only with the pad and terminals
+("bornes" in french) have to be linked. In particular, we have to use:
+
+- Terminal 22 gives 24 V.
+
+- Terminal 31 has to be plugged to 24 V to give a "drive
+  enable signal".
+
+- Terminal 26 has to be plugged to 24 V to give a "run signal".
+
+**Indications written on the drive**
+
+- "inh" stands for inhibited, it means the motor is locked.
+
+- "rdY" stands for ready.
+
+- "trip" means there is a problem, check section K of the manual for
+  solutions.
+
+**Control the motor with a computer**
+
+The value of the parameter 0.05 controls how the motor is driven.
+
+- 0.05 -> PAd : controlled by the pad on the power drive.
+
+- 0.05 -> Pr : controlled by other parameters (that can be set by the
+  computer). In particular the rotating rate of the motor in
+  proportional to the value of parameter 0.24. The "run signal" can be
+  given with the parameter 6.34.
+
+**Modes**
+
+The power drive can drive the motor in three modes,
+
+- Open loop,
+
+- close loop,
+
+- servo.
+
+The parameter 0.48 correspond to the modes. In order to change the
+mode, one need to change the parameter 0.48, to change the parameter
+0.00 and to reset the drive by pressing the red "reset" button. Then
+the user has to manually launch an auto-calibration process.
+Therefore, it is not possible to change mode only from the
+computer. Since some parameters have different meanings in the
+different modes, we provide one class for each mode.
+
+The setup procedures for the different modes are described in the
+docstring of the classes.
+
+.. autoclass:: BaseUnidriveSP
    :members:
    :private-members:
+
+.. autoclass:: OpenLoopUnidriveSP
+   :members:
+   :private-members:
+
+.. autoclass:: ServoUnidriveSP
+   :members:
+   :private-members:
+
+**How to read the commercial designation**
+
+At LEGI, we have a motor "055U2C300BAMRA063110". This name can be
+decomposed as 055-U-2-C-30-0-B-A-MR-A-063-110. The different part of
+the names mean:
+
+- 055: frame size
+- U: voltage (400 V)
+- 2: torque selection (std)
+- C: stator length
+- 30: winding speed (3000 rpm)
+- 0: brake (no brake)
+- B: connection type 
+- A: output shaft (std)
+- MR: Feedback device (Incremental encoder 2048 ppr)
+- A: inertial (std)
+- 063: PCD (std)
+- 110: Shaft diameter.
 
 """
 
 from time import sleep
 
-from fluidlab.instruments.modbus.driver import ModbusDriver
-from fluidlab.instruments.modbus.features import Int16Value, Int16StringValue
-
 import warnings
 
 
-def custom_formatwarning(message, category, filename, lineno, line=None):
-    return '{}:{}: {}: {}\n'.format(
-        filename, lineno, category.__name__, message)
-
-warnings.formatwarning = custom_formatwarning
-warnings.simplefilter('always', UserWarning)
+from fluidlab.instruments.modbus.driver import ModbusDriver
+from fluidlab.instruments.modbus.features import (
+    DecimalInt16Value, Int16StringValue)
 
 
-class UnidriveSP(ModbusDriver):
-    """Driver for the motor driver Unidrive SP
+class ModeError(Exception):
+    """Some values are only useable in one mode (open_loop, closed_loop, servo)
+    When a value is used, a function checks the current mode, and raises
+    a ModeError if it doesn't match.
+    """
+
+
+class BaseUnidriveSP(ModbusDriver):
+    """Base class for the driver for the motor driver Unidrive SP
 
     Parameters
     ----------
@@ -38,8 +132,14 @@ class UnidriveSP(ModbusDriver):
     module : {'minimalmodbus', str}
       Module used to communicate with the motor.
 
+    Notes
+    -----
+
+    This class can be used to write other classes for drivers of the
+    Unidrive SP.
+
     """
-    _constant_nb_poles = 4
+    _constant_nb_pairs_poles = 4
 
     def __init__(self, port=None, timeout=1,
                  module='minimalmodbus'):
@@ -53,11 +153,14 @@ class UnidriveSP(ModbusDriver):
                     'If port is None, "port_unidrive_sp" has to be defined in'
                     ' one of the FluidLab user configuration files.')
 
-        super(UnidriveSP, self).__init__(port=port, method='rtu',
-                                         timeout=timeout, module=module)
+        super(BaseUnidriveSP, self).__init__(port=port, method='rtu',
+                                             timeout=timeout, module=module)
 
-    # def autotune(self):
-    #     raise NotImplementedError
+        mode = self.mode.get()
+        if hasattr(self, '_mode') and self._mode_cls != mode:
+            raise ModeError(
+                'Instantiating a class for mode '
+                '{} but driver is in mode {}.'.format(self._mode_cls, mode))
 
     def unlock(self):
         """Unlock the motor (then rotation is possible)."""
@@ -66,24 +169,6 @@ class UnidriveSP(ModbusDriver):
     def lock(self):
         """Lock the motor (then rotation is not possible)."""
         self._unlocked.set(0)
-
-    def set_target_rotation_rate(self, rotation_rate, check=False):
-        """Set the target rotation rate in Hz."""
-        # The value `_speed` is actually equal to _constant_nb_poles
-        # times the rotation rate in Hz.
-
-        if not isinstance(rotation_rate, (int, float)):
-            rotation_rate = float(rotation_rate)
-
-        self._speed.set(self._constant_nb_poles * rotation_rate,
-                        check=check)
-
-    def get_target_rotation_rate(self):
-        """Get the target rotation rate in Hz."""
-        # The value `_speed` is actually equal to _constant_nb_poles
-        # times the rotation rate in Hz.
-        raw_speeed = self._speed.get()
-        return raw_speeed / self._constant_nb_poles
 
     def start_rotation(self, speed=None, direction=None):
         """Start the motor rotation.
@@ -114,88 +199,38 @@ class UnidriveSP(ModbusDriver):
         self._reference_selection.set('preset')
         self._rotate.set(0)
 
+    def set_target_rotation_rate(self, rotation_rate, check=False):
+        """Set the target rotation rate in Hz."""
+        raise NotImplementedError()
 
-class ModeError(Exception):
-    """Some values are only useable in one mode (open_loop, closed_loop, servo)
-    When a value is used, a function checks the current mode, and raises
-    a ModeError if it doesn't match.
-    """
-    pass
+    def get_target_rotation_rate(self):
+        """Get the target rotation rate in Hz."""
+        raise NotImplementedError()
 
 
-class Value(Int16Value):
-    def __init__(self, name, doc='', number_of_decimals=0, mode='all',
-                 menu=None, parameter=None):
-        if menu is None or parameter is None:
-            raise ValueError('menu and parameter should not be None.')
-        self._number_of_decimals = number_of_decimals
-        self._mode = mode
-        self._menu = menu
-        self._parameter = parameter
-        adress = 100 * menu + parameter - 1
-        super(Value, self).__init__(name, doc, adress)
+def _compute_from_param_str(parameter_str):
+    l = parameter_str.split('.')
+    menu = int(l[0])
+    parameter = int(l[1])
+    address = 100 * menu + parameter - 1
+    return menu, parameter, address
 
-    def get(self):
-        if self._mode != 'all':
-            self._check_mode()  # to do: integer case
 
-        raw_value = super(Value, self).get()
-
-        if self._number_of_decimals == 0:
-            return raw_value
-        else:
-            return float(raw_value) / 10 ** self._number_of_decimals
-
-    def set(self, value, check=True):
-        """Set the Value to value.
-
-        If check, checks that the value was properly set.
-        """
-        if self._mode != 'all':
-            self._check_mode()
-
-        if self._number_of_decimals == 0:
-            raw_int = int(value)
-        else:
-            raw_int = int(value * 10 ** self._number_of_decimals)
-
-        super(Value, self).set(raw_int)
-
-        if check:
-            self._check_instrument_value(value)
-
-    def _check_mode(self):
-        mode = self._driver.mode.get()
-        if self._mode == "all":
-            pass
-        elif mode != self._mode:
-            raise ModeError(
-                'value {} can only be used in mode {}, and the '
-                'current mode is {}'.format(self._name, self._mode, mode))
-
-    def _check_instrument_value(self, value):
-        """After a value is set, checks the instrument value and
-        sends a warning if it doesn't match."""
-        instr_value = self.get()
-        if instr_value != value:
-            msg = (
-                'Value {} could not be set to {} and was set to {} instead'
-            ).format(self._name, value, instr_value)
-            warnings.warn(msg, UserWarning)
+class Value(DecimalInt16Value):
+    def __init__(self, name, doc='', parameter_str='', number_of_decimals=0):
+        self._menu, self._parameter, address = \
+            _compute_from_param_str(parameter_str)
+        super(Value, self).__init__(
+            name, doc, address, number_of_decimals=number_of_decimals)
 
 
 class StringValue(Int16StringValue):
-    def __init__(self, name, doc='', int_dict=None,
-                 menu=None, parameter=None, mode='all'):
-        self._mode = mode
-        self._menu = menu
-        self._parameter = parameter
-        adress = 100 * menu + parameter - 1
-        super(StringValue, self).__init__(name, doc, int_dict, adress)
+    def __init__(self, name, doc='', int_dict=None, parameter_str=''):
+        self._menu, self._parameter, address = \
+            _compute_from_param_str(parameter_str)
+        super(StringValue, self).__init__(name, doc, int_dict, address)
 
     def get(self):
-        if self._mode != 'all':
-            self._check_mode()
         return super(StringValue, self).get()
 
     def set(self, value, check=True):
@@ -203,22 +238,11 @@ class StringValue(Int16StringValue):
         If check equals 1, checks that the value was properly set.
         To disable this function, enter check = 0
         """
-        if self._mode != 'all':
-            self._check_mode()
         super(StringValue, self).set(value)
         if check:
-            self._check_instrument_value(value)
+            self._check_value(value)
 
-    def _check_mode(self):
-        mode = self._driver.mode.get()
-        if self._mode == "all":
-            pass
-        elif mode != self._mode:
-            raise ModeError(
-                ('Value {} can only be used in mode {}, and the '
-                 'current mode is {}.').format(self._name, self._mode, mode))
-
-    def _check_instrument_value(self, value):
+    def _check_value(self, value):
         """After a value is set, checks the instrument value and
         sends a warning if it doesn't match."""
         instr_value = self.get()
@@ -234,90 +258,289 @@ int_dict_mode = {1: 'open_loop', 2: 'closed_loop', 3: 'servo', 4: 'regen'}
 int_dict_ref ={0: 'A1.A2', 1: 'A1.pr', 2: 'A2.pr', 3: 'preset',
                4: 'pad', 5: 'Prc'}
 
-UnidriveSP._build_class_with_features([
+
+BaseUnidriveSP._build_class_with_features([
     StringValue(name='mode',
                 doc='The operating mode.',
-                int_dict=int_dict_mode, mode='all', menu=0, parameter=48),
-
+                int_dict=int_dict_mode,
+                parameter_str='0.48'),
     StringValue(name='_reference_selection',
                 doc=('Defines how the rotation speed is given to the motor.'
-                     '"preset" is what we want here, '
-                     '"pad" means it can be entered with the arrow keys '
+                     '\n\n- "preset" is what we want here,\n'
+                     '- "pad" means it can be entered with the arrow keys '
                      'of the motor pad'),
-                int_dict=int_dict_ref, mode='all', menu=0, parameter=5),
-
+                int_dict=int_dict_ref,
+                parameter_str='0.05'),
     Value(name='_unlocked',
           doc=('When this variable is equal to 0, '
-               'the motor is inhibited and displays "Inh". '
+               'the motor is inhibited and displays "inh". '
                'When it is equal to 1, the motor is ready to run '
-               'and displays "Rdy".'),
-          number_of_decimals=0, mode='all', menu=6, parameter=15),
-
+               'and displays "rdY".'),
+          parameter_str='6.15'),
     Value(name='_rotate',
           doc='Set this to 1 to give an order of rotation',
-          number_of_decimals=0, mode='all', menu=6, parameter=34),
-
-    Value(name='_speed',
-          doc=('Speed of rotation. Warning: the actual speed in Hz is equal '
-               'to this value divided by the number of poles.'),
-          number_of_decimals=1, mode='all', menu=0, parameter=24),
-
-    Value(name='_min_frequency_open_loop',
-          doc='Minimum limit of frequency (Hz). Used in open loop.',
-          number_of_decimals=1, mode='open_loop', menu=0, parameter=1),
-
-    Value(name='_min_speed_closed_loop',
-          doc='Minimum limit of speed (rpm). Used in closed loop.',
-          number_of_decimals=1, mode='closed_loop', menu=0, parameter=1),
-
-    Value(name='_min_speed_servo',
-          doc='Minimum limit of speed (rpm). Used in servo.',
-          number_of_decimals=1, mode='servo', menu=0, parameter=1),
-
+          parameter_str='6.34'),
     Value(name='acceleration_time',
           doc='The time to go from 0 Hz to 100 Hz (s).',
-          number_of_decimals=1, mode='all', menu=0, parameter=3),
-
+          parameter_str='0.03',
+          number_of_decimals=1),
     Value(name='deceleration_time',
           doc='The time to go from 100 Hz to 0 Hz (s).',
-          number_of_decimals=1, mode='all', menu=0, parameter=4),
-
+          parameter_str='0.04',
+          number_of_decimals=1),
     Value(name='_number_of_pairs_of_poles',
           doc='The number of pairs of poles of the motor.',
-          number_of_decimals=0, mode='all', menu=0, parameter=42),
-
+          parameter_str='0.42'),
     Value(name='_rated_voltage',
           doc='The Rated voltage of the motor (V).',
-          number_of_decimals=0, mode='all', menu=0, parameter=44),
-
-    Value(name='_rated_speed_open_loop',
-          doc='Rated speed of the motor (rpm). Used in open loop.',
-          number_of_decimals=0, mode='open_loop', menu=0, parameter=45),
-
-    Value(name='_rated_speed_closed_loop',
-          doc='Rated speed of the motor (rpm). Used in closed loop.',
-          number_of_decimals=0, mode='closed_loop', menu=0, parameter=45),
-
-    Value(name='_thermal_time_constant_servo',
-          doc='Thermal time constant of the motor. Used in servo.',
-          number_of_decimals=0, mode='servo', menu=0, parameter=45),
-
+          parameter_str='0.44'),
     Value(name='_rated_current_open_loop',
           doc='Rated current of the motor. Used in open loop.',
-          number_of_decimals=2, mode='open_loop', menu=0, parameter=46),
+          parameter_str='0.46',
+          number_of_decimals=2)])
 
-    Value(name='_rated_current_closed_loop',
-          doc='Rated current of the motor. Used in closed loop.',
-          number_of_decimals=2, mode='closed_loop', menu=0, parameter=46),
 
-    Value(name='_rated_frequency_open_loop',
-          doc='Rated frequency of the motor. Used in open loop.',
-          number_of_decimals=1, mode='open_loop', menu=0, parameter=47),
+class OpenLoopUnidriveSP(BaseUnidriveSP):
+    """Driver for the motor driver Unidrive SP setup in open loop mode.
 
-    Value(name='_rated_frequency_closed_loop',
-          doc='Rated frequency of the motor. Used in closed loop.',
-          number_of_decimals=1, mode='closed_loop', menu=0, parameter=47)
-])
+    Parameters
+    ----------
+
+    port : {None, str}
+      The port where the motor is plugged.
+
+    timeout : {1, number}
+      Timeout for the communication with the motor (in s).
+
+    module : {'minimalmodbus', str}
+      Module used to communicate with the motor.
+
+    Notes
+    -----
+
+    **Setup of the power drive in "open loop" mode**
+
+    See short guide (section 7.2) and long guide (chapter H1). Follow
+    the instructions.
+
+    *Example for LEGI*
+
+    Reset in open loop mode:
+
+    - 0.00 -> 1253,
+
+    - 0.48 -> OPEn.LP + reset.
+
+    For this to work, the parameter 0.48 has to be changed. If it is
+    already in open loop, you have to first to reset the motor in
+    another mode and then reset it in open loop.
+
+    In case of error br.th, 0.51 -> 8 + reset.
+
+    Main parameters:
+
+    - 0.02 -> 200 (Hz, 50 * 4 pairs of poles),
+
+    - 0.03 -> 5 (s, time of acceleration 0 to 100 Hz),
+
+    - 0.04 -> 10 (s, time of deceleration 100 to 0 Hz),
+
+    - 0.21 -> th.
+
+    Motor parameters (read on the motor):
+
+    - 0.44 -> 400 (V),
+
+    - 0.45 -> 3000 (rpm, max (?) rotation rate),
+
+    - 0.46 -> 1 (A, current),
+
+    - 0.47 -> 200 (Hz, 3000/60 (Hz) * 4 pairs of poles).
+
+    Warning: the parameters 0.45 (motor rated speed, min-1) and 0.47
+    (rated frequency, Hz) must be proportional: Rated frequency =
+    motor rated speed / 60 * number of pairs of poles.
+
+    Autocalibration
+
+    - 0.40 -> 2 (for rotating calibration, 1 for stationary calibration),
+
+    - Plug the terminals to send "drive enable signal" (link terminals
+      22 and 31) and "run signal" (link terminals 22 and 26),
+
+    - Remove the terminals,
+
+    - 0.00 - > 1000 (memorization of the parameters),
+
+    - Send "drive enable signal" (link terminals 22 and 31).
+
+    Other useful parameters:
+
+    - 6.15 -> 1 (unlock) or 0 (lock),
+
+    - 6.34 -> 1 (order of rotation) or 0 (no rotation).
+
+    """
+    _constant_nb_pairs_poles = 4
+
+    _mode_cls = 'open_loop'
+
+    def set_target_rotation_rate(self, rotation_rate, check=False):
+        """Set the target rotation rate in Hz."""
+        # The value `_speed` is actually equal to _constant_nb_pairs_poles
+        # times the rotation rate in Hz.
+
+        if not isinstance(rotation_rate, (int, float)):
+            rotation_rate = float(rotation_rate)
+
+        self._speed.set(self._constant_nb_pairs_poles * rotation_rate,
+                        check=check)
+
+    def get_target_rotation_rate(self):
+        """Get the target rotation rate in Hz."""
+        # The value `_speed` is actually equal to _constant_nb_pairs_poles
+        # times the rotation rate in Hz.
+        raw_speeed = self._speed.get()
+        return raw_speeed / self._constant_nb_pairs_poles
+
+
+OpenLoopUnidriveSP._build_class_with_features([
+    Value(name='_speed',
+          doc=('Frequency of the driving signal (Hz).\n\n'
+               'Warning: the actual rotation rate in Hz '
+               'is equal to this value divided by the number of poles.'),
+          parameter_str='0.24',
+          number_of_decimals=1),
+    Value(name='_min_frequency',
+          doc='Minimum limit of frequency (Hz).',
+          parameter_str='0.01',
+          number_of_decimals=1),
+    Value(name='_rated_speed',
+          doc='Rated speed of the motor (rpm).',
+          parameter_str='0.45'),
+    Value(name='_rated_frequency',
+          doc=('Rated frequency of the driving signal of the motor (Hz).\n\n'
+               'It has to be equal to '
+               '[rated speed / 60 * number of pairs of poles].'),
+          parameter_str='0.47',
+          number_of_decimals=1)])
+
+
+class ServoUnidriveSP(BaseUnidriveSP):
+    """Driver for the motor driver Unidrive SP setup in "servo" mode.
+
+    Warning: NotImplemented the content of the class has to be adapted
+    to the mode.
+
+    Parameters
+    ----------
+
+    port : {None, str}
+      The port where the motor is plugged.
+
+    timeout : {1, number}
+      Timeout for the communication with the motor (in s).
+
+    module : {'minimalmodbus', str}
+      Module used to communicate with the motor.
+
+    Notes
+    -----
+
+    **Setup of the power drive in "servo" mode**
+
+    See short guide (section 7.2) and long guide (chapter H1). Follow
+    the instructions.
+
+    *Example for LEGI*
+
+    Drive enable signal and run signal are not given
+
+    Reset in open loop mode:
+
+    - 0.00 -> 1253,
+
+    - 0.48 -> ServO + reset.
+
+    In case of error br.th, 0.51 -> 8 + reset.
+
+    Motor parameters (read on the motor and on 4146 documentation):
+    - 0.02 -> 3000 (rpm, maximum velocity),,
+
+    - 0.21 -> th.
+
+    - 0.41 -> 12 (kHz, switching frequency)
+
+    - 0.42 -> 8 (number of poles)
+
+    - 0.45 -> 42 (s, thermal time constant),
+
+    - 0.46 -> 1 (A, stalling current),
+
+    - 0.47 -> 200 (Hz, 3000/60 (Hz) * 4 pairs of poles).
+
+    Coder parameters:
+
+    - 0.49 -> L2
+
+    - 3.34 -> 2048 (ppr)
+
+    - 3.36 -> 5 (V)
+
+    - 3.38 -> Ab.SErvo
+
+    Autocalibration
+
+    - 0.40 -> 2 (for rotating calibration, 1 for stationary calibration),
+
+    - Plug the terminals to send "drive enable signal" (link terminals
+      22 and 31) and "run signal" (link terminals 22 and 26),
+
+    - Unplug the terminals when calibration is over,
+
+    - connect the motor to the load
+
+    - 0.40 -> 3
+
+    - Plug the terminals to send "drive enable signal" (link terminals
+      22 and 31) and "run signal" (link terminals 22 and 26)
+
+    - Unplug the terminals when calibration is over,
+
+    - 0.00 - > 1000 (memorization of the parameters),
+
+    - Send "drive enable signal" (link terminals 22 and 31).
+
+    Other useful parameters:
+
+    - 6.15 -> 1 (unlock) or 0 (lock),
+
+    - 6.34 -> 1 (order of rotation) or 0 (no rotation).
+
+    """
+    _constant_nb_pairs_poles = 4
+
+    _mode_cls = 'servo'
+
+    def set_target_rotation_rate(self, rotation_rate, check=False):
+        """Set the target rotation rate in rpm."""
+        self._speed.set(rotation_rate, check=check)
+
+    def get_target_rotation_rate(self):
+        """Get the target rotation rate in rpm."""
+        return self._speed.get()
+
+
+ServoUnidriveSP._build_class_with_features([
+    Value(name='_speed',
+          doc=('Rotation rate of the motor (rpm).'),
+          parameter_str='0.24',
+          number_of_decimals=1),
+    Value(name='_min_frequency',
+          doc='Minimum limit of frequency (rpm).',
+          parameter_str='0.01',
+          number_of_decimals=1)])
+
 
 
 def example_linear_ramps(motor, max_speed=3., duration=5., steps=30):

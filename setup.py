@@ -34,8 +34,8 @@ lines = long_description.splitlines(True)
 long_description = ''.join(lines[8:])
 
 # Get the version from the relevant file
-d = {}
-execfile('fluidlab/_version.py', d)
+from runpy import run_path
+d = run_path('fluidlab/_version.py')
 __version__ = d['__version__']
 
 # Get the development status from the version string
@@ -66,6 +66,8 @@ if os.path.exists(path_PowerDAQ):
 
 
 install_requires = ['fluiddyn >= 0.0.12a0', 'pyusb', 'minimalmodbus']
+# Even though we also use scipy, we don't require its installation
+# because it can be heavy to install.
 if has_cython:
     # Older versions of Cython cause setup.py to fail.
     # Rmq: Which version? The requirement >= 0.23 seems too strong.
