@@ -28,6 +28,18 @@ _coupling_values = {
     'DC': DAQmx_Val_DC, 'AC': DAQmx_Val_AC, 'GND': DAQmx_Val_GND}
 
 
+def _parse_resource_names(resource_names):
+
+    if isinstance(resource_names, str):
+        resource_names = [resource_names]
+    elif not isinstance(resource_names, Iterable):
+        raise ValueError('resource_names has to be a string or an iterable.')
+
+    nb_resources = len(resource_names)
+
+    return resource_names, nb_resources
+
+
 def read_analog(resource_names, terminal_config, volt_min, volt_max,
                 samples_per_chan=1, sample_rate=1, coupling_types='DC',
                 output_filename=None):
@@ -38,7 +50,7 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
 
     resource_names: {str or iterable of str}
 
-      Analogic input identifier(s), eg. 'Dev1/ai0'
+      Analogic input identifier(s), e.g. 'Dev1/ai0'.
 
     terminal_config: {'Diff', 'PseudoDiff', 'RSE', 'NRSE'}
 
@@ -70,17 +82,11 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
       arrays.
 
     """
-
     if output_filename is not None:
         raise NotImplementedError()
 
     # prepare resource_names
-    if isinstance(resource_names, str):
-        resource_names = [resource_names]
-    elif not isinstance(resource_names, Iterable):
-        raise ValueError('resource_names has to be a string or an iterable.')
-
-    nb_resources = len(resource_names)
+    resource_names, nb_resources = _parse_resource_names(resource_names)
 
     # prepare terminal_config
     if terminal_config is None:
@@ -182,22 +188,106 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
     return data.reshape([nb_resources, samples_per_chan])
 
 
+def write_analog(resource_names, sample_rate, signals, blocking=True):
+    """Write analogic output
+
+    Parameters
+    ----------
+
+    resource_name:
+
+      Analogic input identifier(s), e.g. 'Dev1/ao0'.
+
+    sample_rate: number
+
+      Frequency rate for all channels (Hz).
+
+    signals: numpy.ndarray
+
+      The signals to be output.
+
+    blocking: bool
+
+      Specifies whether to wait until the task is done before
+      returning. If blocking=false, then a task object is
+      returned. To stop the task, ???.
+
+    """
+    # prepare resource_names
+    resource_names, nb_resources = _parse_resource_names(resource_names)
+
+    if signals.ndim == 1:
+        nb_samps_per_chan = len(signals)
+    elif signals.ndim == 2:
+        nb_samps_per_chan = signals.shape[1]
+    else:
+        raise ValueError('signals has to be an array of dimension 1 or 2.')
+
+    # create task
+    task = Task()
+
+    # create AO channels
+    for ir, resource in enumerate(resource_names):
+        task.CreateAOVoltageChan(
+            resource, '', -10., 10., DAQmx_Val_Volts, None)
+
+    # configure clock
+    task.CfgSampClkTiming(
+        '', sample_rate, DAQmx_Val_Rising,
+        DAQmx_Val_FiniteSamps, nb_samps_per_chan)
+
+    # write data
+    written = int32()
+    task.DAQmxWriteAnalogF64(
+        nb_samps_per_chan, 0, 10.0, DAQmx_Val_GroupByChannel,
+        signals.ravel(), byref(written), None)
+
+    task.StartTask()
+
+    if blocking:
+        task.DAQmxWaitUntilTaskDone(1.1*nb_samps_per_chan/sample_rate)
+        task.StopTask()
+    else:
+        return task
+
+
+def write_analog_end_task(task, timeout=0.):
+    """End task.
+
+    Parameters
+    ----------
+
+    task : PyDAQmx.Task
+
+      The task to end.
+
+    timeout : number
+
+      Time (in s) to wait before stopping the task if it is not done.
+
+    """
+
+    task.DAQmxWaitUntilTaskDone(timeout)
+    task.StopTask()
+    task.ClearTask()
+
+
 if __name__ == '__main__':
 
-    data = read_analog(resource_names='dev1/ai0',
-                       terminal_config='Diff',
-                       volt_min=-10,
-                       volt_max=10,
-                       samples_per_chan=10,
-                       sample_rate=10,
-                       coupling_types='DC')
+    # data = read_analog(
+    #     resource_names='dev1/ai0',
+    #     terminal_config='Diff',
+    #     volt_min=-10,
+    #     volt_max=10,
+    #     samples_per_chan=10,
+    #     sample_rate=10,
+    #     coupling_types='DC')
 
-    data = read_analog(resource_names=[
-        'dev1/ai{}'.format(ic) for ic in range(4)],
-                       terminal_config='Diff',
-                       volt_min=-10,
-                       volt_max=10,
-                       samples_per_chan=10,
-                       sample_rate=10,
-                       coupling_types='DC')
-    
+    data = read_analog(
+        resource_names=['dev1/ai{}'.format(ic) for ic in range(4)],
+        terminal_config='Diff',
+        volt_min=-10,
+        volt_max=10,
+        samples_per_chan=10,
+        sample_rate=10,
+        coupling_types='DC')
