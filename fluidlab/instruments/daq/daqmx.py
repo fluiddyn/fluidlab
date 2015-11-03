@@ -21,7 +21,8 @@ from PyDAQmx import (
     DAQmx_Val_Cfg_Default, DAQmx_Val_RSE, DAQmx_Val_NRSE, DAQmx_Val_Diff,
     DAQmx_Val_PseudoDiff, DAQmx_Val_Volts, DAQmx_AI_Coupling,
     DAQmx_Val_DC, DAQmx_Val_AC, DAQmx_Val_GND,
-    DAQmx_Val_Rising, DAQmx_Val_FiniteSamps, DAQmx_Val_GroupByChannel)
+    DAQmx_Val_Rising, DAQmx_Val_FiniteSamps, DAQmx_Val_GroupByChannel,
+    DAQmx_Val_Hz, DAQmx_Val_LowFreq1Ctr)
 
 
 _coupling_values = {
@@ -270,6 +271,44 @@ def write_analog_end_task(task, timeout=0.):
     task.DAQmxWaitUntilTaskDone(timeout)
     task.StopTask()
     task.ClearTask()
+
+
+def measure_freq(resource_name, freq_min=1, freq_max=1000):
+    """Write analogic output
+
+    Parameters
+    ----------
+
+    resource_name: str
+
+      Analogic input identifier, e.g. 'Dev1/ctr0'.
+
+    freq_min : number
+
+      The minimum frequency (Hz) that you expect to measure.
+
+    freq_max : number
+
+      The maximum frequency (Hz) that you expect to measure.
+
+    """
+    # create task
+    task = Task()
+
+    # it seems that this argument is actually not used with the method
+    # DAQmx_Val_LowFreq1Ctr.
+    measure_time = 0.5
+    task.CreateCIFreqChan(
+        resource_name, "", freq_min, freq_max, DAQmx_Val_Hz,
+        DAQmx_Val_Rising, DAQmx_Val_LowFreq1Ctr, measure_time, 1, "")
+
+    task.StartTask()
+
+    timeout = 10
+    result = float64()
+    task.ReadCounterScalarF64(timeout, byref(result), 0)
+
+    return result.value
 
 
 if __name__ == '__main__':
