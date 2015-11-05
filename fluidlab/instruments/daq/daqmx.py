@@ -8,6 +8,11 @@ Provides:
 
 .. autofunction:: read_analog
 
+.. autofunction:: write_analog
+
+.. autofunction:: measure_freq
+
+
 """
 
 from collections import Iterable
@@ -15,7 +20,9 @@ from numbers import Number
 
 import numpy as np
 
-from PyDAQmx import Task, byref, float64, int32
+import ctypes
+
+from PyDAQmx import Task, byref, float64, int32, uInt32
 
 from PyDAQmx import (
     DAQmx_Val_Cfg_Default, DAQmx_Val_RSE, DAQmx_Val_NRSE, DAQmx_Val_Diff,
@@ -239,14 +246,14 @@ def write_analog(resource_names, sample_rate, signals, blocking=True):
 
     # write data
     written = int32()
-    task.DAQmxWriteAnalogF64(
+    task.WriteAnalogF64(
         nb_samps_per_chan, 0, 10.0, DAQmx_Val_GroupByChannel,
         signals.ravel(), byref(written), None)
 
     task.StartTask()
 
     if blocking:
-        task.DAQmxWaitUntilTaskDone(1.1*nb_samps_per_chan/sample_rate)
+        task.WaitUntilTaskDone(1.1*nb_samps_per_chan/sample_rate)
         task.StopTask()
     else:
         return task
@@ -268,7 +275,7 @@ def write_analog_end_task(task, timeout=0.):
 
     """
 
-    task.DAQmxWaitUntilTaskDone(timeout)
+    task.WaitUntilTaskDone(timeout)
     task.StopTask()
     task.ClearTask()
 
@@ -306,7 +313,8 @@ def measure_freq(resource_name, freq_min=1, freq_max=1000):
 
     timeout = 10
     result = float64()
-    task.ReadCounterScalarF64(timeout, byref(result), 0)
+    null = ctypes.POINTER(ctypes.c_uint)()
+    task.ReadCounterScalarF64(timeout, byref(result), null)
 
     return result.value
 
@@ -322,11 +330,20 @@ if __name__ == '__main__':
     #     sample_rate=10,
     #     coupling_types='DC')
 
-    data = read_analog(
-        resource_names=['dev1/ai{}'.format(ic) for ic in range(4)],
-        terminal_config='Diff',
-        volt_min=-10,
-        volt_max=10,
-        samples_per_chan=10,
-        sample_rate=10,
-        coupling_types='DC')
+    # data = read_analog(
+    #     resource_names=['dev1/ai{}'.format(ic) for ic in range(4)],
+    #     terminal_config='Diff',
+    #     volt_min=-10,
+    #     volt_max=10,
+    #     samples_per_chan=10,
+    #     sample_rate=10,
+    #     coupling_types='DC')
+
+    # signals = np.cos(np.linspace(0, 2*np.pi, 100))
+    # write_analog('dev1/ao0', 10, signals, blocking=True)
+
+    signals = np.cos(np.linspace(0, 2*np.pi, 100))
+    signals = np.vstack((signals, signals + 2))
+    write_analog(['dev1/ao{}'.format(i) for i in (0, 2)], 10, signals,
+                 blocking=True)
+    

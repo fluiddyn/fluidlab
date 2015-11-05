@@ -103,6 +103,12 @@ the name mean:
 - 063: PCD (std)
 - 110: Shaft diameter.
 
+**Connection**
+
+RS485 (2 wires, half-duplex, differential) plugged to an RJ45: cable 2
+RJ45 is the + (or B) of the RS485 and cable 7 of the RJ45 is the - (or
+A) of the RS485.
+
 """
 
 from time import sleep
@@ -483,8 +489,6 @@ class ServoUnidriveSP(BaseUnidriveSP):
 
     - 0.46 -> 1 (A, stalling current),
 
-    - 0.47 -> 200 (Hz, 3000/60 (Hz) * 4 pairs of poles).
-
     Coder parameters:
 
     - 0.49 -> L2
@@ -585,15 +589,17 @@ def attempt(func, *args, **kwargs):
     count = 1
     while test:
         try:
-            func(*args, **kwargs)
+            result = func(*args, **kwargs)
             test = 0
         except (ValueError, IOError):
             if count <= maxattempt:
                 count += 1
             else:
                 break
-
-    return count
+    if result is None:    
+        return count
+    else:
+        return result, count
 
 
 class ServoUnidriveSPCaptureError(ServoUnidriveSP):
@@ -622,12 +628,14 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
 
     def get_target_rotation_rate(self):
         """Get the target rotation rate in rpm."""
-        count = attempt(
+        result, count = attempt(
             super(ServoUnidriveSPCaptureError, self).get_target_rotation_rate)
 
         if count > 1 and (self.isprint_error or self.isprintall):
             print_warning(
                 'got rotation at the ' + str(count) + 'th attempt')
+
+        return result
 
     def start_rotation(self, speed=None, direction=None):
         count = attempt(
