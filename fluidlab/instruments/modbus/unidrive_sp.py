@@ -79,11 +79,16 @@ docstring of the classes.
    :members:
    :private-members:
 
-**How to read the commercial designation**
+.. autoclass:: ServoUnidriveSPCaptureError
+   :members:
+   :private-members:
+
+
+**Note on how to read the commercial designation**
 
 At LEGI, we have a motor "055U2C300BAMRA063110". This name can be
-decomposed as 055-U-2-C-30-0-B-A-MR-A-063-110. The different part of
-the names mean:
+decomposed as 055-U-2-C-30-0-B-A-MR-A-063-110. The different parts of
+the name mean:
 
 - 055: frame size
 - U: voltage (400 V)
@@ -566,3 +571,119 @@ def example_linear_ramps(motor, max_speed=3., duration=5., steps=30):
     motor.stop_rotation()
     motor.set_target_rotation_rate(start_speed, check=False)
     motor.lock()
+
+
+def attempt(func, *args, **kwargs):
+    """Attempt to call a function."""
+
+    if 'maxattempt' in kwargs:
+        maxattempt = kwargs.pop('maxattempt')
+    else:
+        maxattempt = 100
+
+    test = 1
+    count = 1
+    while test:
+        try:
+            func(*args, **kwargs)
+            test = 0
+        except (ValueError, IOError):
+            if count <= maxattempt:
+                count += 1
+            else:
+                break
+
+    return count
+
+
+class ServoUnidriveSPCaptureError(ServoUnidriveSP):
+    """Robust ServoUnidriveSP class."""
+    isprintall = False
+    isprint_error = True
+
+    def set_target_rotation_rate(self, rotation_rate, check=False,
+                                 maxattempt=10):
+        """Set the target rotation rate in rpm."""
+
+        count = attempt(
+            super(ServoUnidriveSPCaptureError, self).set_target_rotation_rate,
+            rotation_rate, check, maxattempt=maxattempt)
+
+        if count == maxattempt + 1:
+            print_fail(
+                'set rotation at ' + str(rotation_rate) +
+                ' rpm aborted (number of attempt exceeds ' +
+                str(maxattempt) + ')')
+        elif count > 1 and (self.isprint_error or self.isprintall):
+            print_warning('set rotation to ' + str(rotation_rate) +
+                          ' rpm at the ' + str(count) + 'th attempt')
+        elif self.isprintall:
+            print('set rotation to ' + str(rotation_rate) + ' rpm')
+
+    def get_target_rotation_rate(self):
+        """Get the target rotation rate in rpm."""
+        count = attempt(
+            super(ServoUnidriveSPCaptureError, self).get_target_rotation_rate)
+
+        if count > 1 and (self.isprint_error or self.isprintall):
+            print_warning(
+                'got rotation at the ' + str(count) + 'th attempt')
+
+    def start_rotation(self, speed=None, direction=None):
+        count = attempt(
+            super(ServoUnidriveSPCaptureError, self).start_rotation,
+            speed, direction)
+
+        if count > 1 and (self.isprint_error or self.isprintall):
+            print_warning('start rotation at ' + str(speed) +
+                          ' rpm at the ' + str(count) + 'th attempt')
+        elif self.isprintall:
+            print('start rotation at ' + str(speed) + ' rpm')
+
+    def stop_rotation(self):
+        count = attempt(
+            super(ServoUnidriveSPCaptureError, self).stop_rotation)
+
+        if count > 1 and (self.isprint_error or self.isprintall):
+            print_warning('stop rotation at the ' + str(count) + 'th attempt')
+        elif self.isprintall:
+            print('stop rotation')
+
+    def unlock(self):
+        count = attempt(
+            super(ServoUnidriveSPCaptureError, self).unlock)
+
+        if count > 1 and (self.isprint_error or self.isprintall):
+            print_warning('unlocked at the ' + str(count) + 'th attempt')
+        elif self.isprintall:
+            print('unlocked')
+
+    def lock(self):
+        count = attempt(
+            super(ServoUnidriveSPCaptureError, self).lock)
+        if count > 1 and (self.isprint_error or self.isprintall):
+            print_warning('unlocked at the ' + str(count) + 'th attempt')
+        elif self.isprintall:
+            print('locked')
+
+    def set_acceleration_time(self, acc, check=False, maxattempt=10):
+        """Set the acceleration time XXs / 1000 rpm"""
+
+        count = attempt(
+            super(ServoUnidriveSPCaptureError, self).acceleration_time.set,
+            acc, check, maxattempt=maxattempt)
+
+        if count == maxattempt + 1:
+            print_fail(
+                'set acceleration at ' + str(acc) +
+                ' s / 1000 rpm aborted (number of attempt exceeds ' +
+                str(maxattempt) + ')')
+        elif count > 1 and (self.isprint_error or self.isprintall):
+            print_warning(
+                'set acceleration time to '
+                '{} s / 1000rpm at the {}th attempt.'.format(acc, count))
+        elif self.isprintall:
+            print('set acceleration time to ' + str(acc) +
+                  ' s / 1000 rpm')
+
+    
