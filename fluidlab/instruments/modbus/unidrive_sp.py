@@ -96,7 +96,7 @@ the name mean:
 - C: stator length
 - 30: winding speed (3000 rpm)
 - 0: brake (no brake)
-- B: connection type 
+- B: connection type
 - A: output shaft (std)
 - MR: Feedback device (Incremental encoder 2048 ppr)
 - A: inertial (std)
@@ -113,6 +113,7 @@ import warnings
 from fluidlab.instruments.modbus.driver import ModbusDriver
 from fluidlab.instruments.modbus.features import (
     DecimalInt16Value, Int16StringValue)
+from fluiddyn.util.terminal_colors import print_fail, print_warning
 
 
 class ModeError(Exception):
@@ -547,7 +548,6 @@ ServoUnidriveSP._build_class_with_features([
           number_of_decimals=1)])
 
 
-
 def example_linear_ramps(motor, max_speed=3., duration=5., steps=30):
     max_speed = float(max_speed)
     duration = float(duration)
@@ -566,7 +566,7 @@ def example_linear_ramps(motor, max_speed=3., duration=5., steps=30):
         speed -= 2*max_speed/steps
         t += duration/steps
         if speed < 0:
-            speed=0.
+            speed = 0.
         motor.set_target_rotation_rate(speed, check=False)
     motor.stop_rotation()
     motor.set_target_rotation_rate(start_speed, check=False)
@@ -685,5 +685,3 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
         elif self.isprintall:
             print('set acceleration time to ' + str(acc) +
                   ' s / 1000 rpm')
-
-    

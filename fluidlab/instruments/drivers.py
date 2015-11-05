@@ -79,15 +79,15 @@ class Driver(object):
     def _get_value_from_name(self, name):
         try:
             value = getattr(self, name)
-            Error = None
+            error_class = None
         except AttributeError:
-            Error = AttributeError
+            error_class = AttributeError
         else:
             if not isinstance(value, SuperValue):
-                Error = ValueError
+                error_class = ValueError
 
-        if Error:
-            raise Error(name + ' is not a value of this instrument')
+        if error_class:
+            raise error_class(name + ' is not a value of this instrument')
 
         return value
 

@@ -21,11 +21,24 @@ from PyDAQmx import (
     DAQmx_Val_Cfg_Default, DAQmx_Val_RSE, DAQmx_Val_NRSE, DAQmx_Val_Diff,
     DAQmx_Val_PseudoDiff, DAQmx_Val_Volts, DAQmx_AI_Coupling,
     DAQmx_Val_DC, DAQmx_Val_AC, DAQmx_Val_GND,
-    DAQmx_Val_Rising, DAQmx_Val_FiniteSamps, DAQmx_Val_GroupByChannel)
+    DAQmx_Val_Rising, DAQmx_Val_FiniteSamps, DAQmx_Val_GroupByChannel,
+    DAQmx_Val_Hz, DAQmx_Val_LowFreq1Ctr)
 
 
 _coupling_values = {
     'DC': DAQmx_Val_DC, 'AC': DAQmx_Val_AC, 'GND': DAQmx_Val_GND}
+
+
+def _parse_resource_names(resource_names):
+
+    if isinstance(resource_names, str):
+        resource_names = [resource_names]
+    elif not isinstance(resource_names, Iterable):
+        raise ValueError('resource_names has to be a string or an iterable.')
+
+    nb_resources = len(resource_names)
+
+    return resource_names, nb_resources
 
 
 def read_analog(resource_names, terminal_config, volt_min, volt_max,
@@ -38,7 +51,7 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
 
     resource_names: {str or iterable of str}
 
-      Analogic input identifier(s), eg. 'Dev1/ai0'
+      Analogic input identifier(s), e.g. 'Dev1/ai0'.
 
     terminal_config: {'Diff', 'PseudoDiff', 'RSE', 'NRSE'}
 
@@ -70,17 +83,11 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
       arrays.
 
     """
-
     if output_filename is not None:
         raise NotImplementedError()
 
     # prepare resource_names
-    if isinstance(resource_names, str):
-        resource_names = [resource_names]
-    elif not isinstance(resource_names, Iterable):
-        raise ValueError('resource_names has to be a string or an iterable.')
-
-    nb_resources = len(resource_names)
+    resource_names, nb_resources = _parse_resource_names(resource_names)
 
     # prepare terminal_config
     if terminal_config is None:
@@ -147,10 +154,12 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         # check volt range
         task.GetAIRngHigh(resource, byref(actual_volt_max))
         task.GetAIRngLow(resource, byref(actual_volt_min))
-        if actual_volt_min != volt_min or actual_volt_max != volt_max:
+        actual_vmin = actual_volt_min.value
+        actual_vmax = actual_volt_max.value
+        if actual_vmin != volt_min[ir] or actual_vmax != volt_max[ir]:
             print('DAQmx: Actual range for ' + resource +
                   ' is actually [{:6.2f} V, {:6.2f} V].'.format(
-                      actual_volt_min, actual_volt_max))
+                      actual_vmin, actual_vmax))
 
         # set coupling
         coupling_value = _coupling_values[coupling_types[ir]]
@@ -178,3 +187,146 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         buffer_size_in_samps, byref(samples_per_chan_read), None)
 
     return data.reshape([nb_resources, samples_per_chan])
+
+
+def write_analog(resource_names, sample_rate, signals, blocking=True):
+    """Write analogic output
+
+    Parameters
+    ----------
+
+    resource_name:
+
+      Analogic input identifier(s), e.g. 'Dev1/ao0'.
+
+    sample_rate: number
+
+      Frequency rate for all channels (Hz).
+
+    signals: numpy.ndarray
+
+      The signals to be output.
+
+    blocking: bool
+
+      Specifies whether to wait until the task is done before
+      returning. If blocking=false, then a task object is
+      returned. To stop the task, ???.
+
+    """
+    # prepare resource_names
+    resource_names, nb_resources = _parse_resource_names(resource_names)
+
+    if signals.ndim == 1:
+        nb_samps_per_chan = len(signals)
+    elif signals.ndim == 2:
+        nb_samps_per_chan = signals.shape[1]
+    else:
+        raise ValueError('signals has to be an array of dimension 1 or 2.')
+
+    # create task
+    task = Task()
+
+    # create AO channels
+    for ir, resource in enumerate(resource_names):
+        task.CreateAOVoltageChan(
+            resource, '', -10., 10., DAQmx_Val_Volts, None)
+
+    # configure clock
+    task.CfgSampClkTiming(
+        '', sample_rate, DAQmx_Val_Rising,
+        DAQmx_Val_FiniteSamps, nb_samps_per_chan)
+
+    # write data
+    written = int32()
+    task.DAQmxWriteAnalogF64(
+        nb_samps_per_chan, 0, 10.0, DAQmx_Val_GroupByChannel,
+        signals.ravel(), byref(written), None)
+
+    task.StartTask()
+
+    if blocking:
+        task.DAQmxWaitUntilTaskDone(1.1*nb_samps_per_chan/sample_rate)
+        task.StopTask()
+    else:
+        return task
+
+
+def write_analog_end_task(task, timeout=0.):
+    """End task.
+
+    Parameters
+    ----------
+
+    task : PyDAQmx.Task
+
+      The task to end.
+
+    timeout : number
+
+      Time (in s) to wait before stopping the task if it is not done.
+
+    """
+
+    task.DAQmxWaitUntilTaskDone(timeout)
+    task.StopTask()
+    task.ClearTask()
+
+
+def measure_freq(resource_name, freq_min=1, freq_max=1000):
+    """Write analogic output
+
+    Parameters
+    ----------
+
+    resource_name: str
+
+      Analogic input identifier, e.g. 'Dev1/ctr0'.
+
+    freq_min : number
+
+      The minimum frequency (Hz) that you expect to measure.
+
+    freq_max : number
+
+      The maximum frequency (Hz) that you expect to measure.
+
+    """
+    # create task
+    task = Task()
+
+    # it seems that this argument is actually not used with the method
+    # DAQmx_Val_LowFreq1Ctr.
+    measure_time = 0.5
+    task.CreateCIFreqChan(
+        resource_name, "", freq_min, freq_max, DAQmx_Val_Hz,
+        DAQmx_Val_Rising, DAQmx_Val_LowFreq1Ctr, measure_time, 1, "")
+
+    task.StartTask()
+
+    timeout = 10
+    result = float64()
+    task.ReadCounterScalarF64(timeout, byref(result), 0)
+
+    return result.value
+
+
+if __name__ == '__main__':
+
+    # data = read_analog(
+    #     resource_names='dev1/ai0',
+    #     terminal_config='Diff',
+    #     volt_min=-10,
+    #     volt_max=10,
+    #     samples_per_chan=10,
+    #     sample_rate=10,
+    #     coupling_types='DC')
+
+    data = read_analog(
+        resource_names=['dev1/ai{}'.format(ic) for ic in range(4)],
+        terminal_config='Diff',
+        volt_min=-10,
+        volt_max=10,
+        samples_per_chan=10,
+        sample_rate=10,
+        coupling_types='DC')
