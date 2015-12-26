@@ -593,7 +593,8 @@ def attempt(func, *args, **kwargs):
                 count += 1
             else:
                 break
-    if result is None:    
+
+    if result is None:
         return count
     else:
         return result, count
