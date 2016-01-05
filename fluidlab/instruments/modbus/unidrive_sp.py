@@ -242,9 +242,6 @@ class StringValue(Int16StringValue):
             _compute_from_param_str(parameter_str)
         super(StringValue, self).__init__(name, doc, int_dict, address)
 
-    def get(self):
-        return super(StringValue, self).get()
-
     def set(self, value, check=True):
         """Set the Value to value.
         If check equals 1, checks that the value was properly set.
@@ -596,7 +593,8 @@ def attempt(func, *args, **kwargs):
                 count += 1
             else:
                 break
-    if result is None:    
+
+    if result is None:
         return count
     else:
         return result, count

@@ -1,4 +1,4 @@
-"""agilent_33220a
+"""Agilent 33220a
 =================
 
 .. autoclass:: Agilent33220a
@@ -12,18 +12,12 @@ from fluidlab.instruments.iec60488 import (
     IEC60488, PowerOn, Calibration, Trigger, ObjectIdentification,
     StoredSetting)
 
+
 from fluidlab.instruments.features import (
-    BoolValue, FloatValue, StringValue, SuperValue, QueryCommand)
+    SuperValue, QueryCommand)
 
 import re
 
-class Agilent33220a(IEC60488, PowerOn, Calibration,
-                    Trigger, ObjectIdentification, StoredSetting):
-    """
-    A driver for the function generator Agilent 33220A
-
-
-    """
 
 class Agilent33220a_Vdc(SuperValue):
     def __init__(self):
@@ -42,6 +36,7 @@ class Agilent33220a_Vdc(SuperValue):
         valeurs = self._driver.get_generator_state()
         return valeurs[3]
 
+
 class Agilent33220a_Vrms(SuperValue):
     def __init__(self):
         super(Agilent33220a_Vrms, self).__init__(
@@ -52,7 +47,8 @@ class Agilent33220a_Vrms(SuperValue):
         self._interface.write('VOLT:UNIT VRMS')
         if value != 0.0:
             (iFunc, iFreq, iAmpl, iOffset) = self._driver.get_generator_state()
-            self._interface.write('APPLY:SIN ' + str(iFreq) + ', ' + str(value) + ', ' + str(iOffset))
+            self._interface.write('APPLY:SIN ' + str(iFreq) + ', ' +
+                                  str(value) + ', ' + str(iOffset))
             self._interface.write('OUTP ON')
         else:
             self._interface.write('OUTP OFF')
@@ -61,6 +57,7 @@ class Agilent33220a_Vrms(SuperValue):
         valeurs = self._driver.get_generator_state()
         return valeurs[2]
 
+
 class Agilent33220a_Frequency(SuperValue):
     def __init__(self):
         super(Agilent33220a_Frequency, self).__init__(
@@ -68,15 +65,18 @@ class Agilent33220a_Frequency(SuperValue):
 
     def set(self, value):
         (iFunc, iFreq, iAmpl, iOffset) = self._driver.get_generator_state()
-        self._interface.write('APPLY:SIN ' + str(value) + ', ' + str(iAmpl) + ', ' + str(iOffset))
+        self._interface.write('APPLY:SIN ' + str(value) + ', ' +
+                              str(iAmpl) + ', ' + str(iOffset))
 
     def get(self):
         valeurs = self._driver.get_generator_state()
         return valeurs[1]
-        
+
+
 def parse_agilent33220a_configuration_str(str):
-    """ Parse the Agilent 33220A configuration string.
-Returns 4 elements: function name, frequency, amplitude, offset """
+    """Parse the Agilent 33220A configuration string.
+
+    Returns 4 elements: function name, frequency, amplitude, offset """
     valeurs = re.split(',', str)
     function_frequency = valeurs[0]
     amplitude = valeurs[1]
@@ -85,8 +85,19 @@ Returns 4 elements: function name, frequency, amplitude, offset """
     valeurs = re.split(' ', function_frequency)
     function = valeurs[0]
     frequency = valeurs[1]
-    return (function[1::], float(frequency), float(amplitude), float(offset[0:(Nchars-2)]))
-    
+    return (function[1::], float(frequency),
+            float(amplitude), float(offset[0:(Nchars-2)]))
+
+
+class Agilent33220a(IEC60488, PowerOn, Calibration,
+                    Trigger, ObjectIdentification, StoredSetting):
+    """
+    A driver for the function generator Agilent 33220A
+
+
+    """
+
+
 features = [
     QueryCommand(
         'get_generator_state',
