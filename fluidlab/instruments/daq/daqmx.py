@@ -314,7 +314,7 @@ def measure_freq(resource_name, freq_min=1, freq_max=1000):
     timeout = 10
     result = float64()
     null = ctypes.POINTER(ctypes.c_uint)()
-    task.ReadCounterScalarF64(timeout, byref(result), null)
+    task.ReadCounterScalarF64(timeout, byref(result), None)
 
     return result.value
 

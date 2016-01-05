@@ -75,7 +75,7 @@ class IsoTechIPS2303S(Driver):
 
         port = None
         for info_port in comports():
-            if '0403:6001' in info_port[2]:
+            if '0403' in info_port[2] and '6001' in info_port[2]:
                 port = info_port[0]
 
         if port is None:
