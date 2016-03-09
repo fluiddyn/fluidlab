@@ -108,48 +108,6 @@ class VISADriver(Driver):
     def __init__(self, interface=None, backend='@py'):
 
         if isinstance(interface, str):
-            if interface.startswith('GPIB') and backend == '@py':
-                # pyvisa-py does not yet support GPIB so we use
-                # ni-visa under Windows and Mac OS X
-                # and linuxgpib under Linux,
-
-                if (platform.system() == 'Windows' or
-                        platform.system() == 'Darwin'):
-                    backend = '@ni'
-                else:
-                    from fluidlab.instruments.interfaces.linuxgpib import (
-                        GPIBInterface)
-
-                    # we have to parse the resource string (I don't
-                    # know how to do that cleanly)
-                    resource_bits = re.split(r'(\d+)', interface)
-                    tmp = []
-                    for resource_bit in resource_bits:
-                        try:
-                            i = int(resource_bit)
-                        except ValueError:
-                            pass
-                        else:
-                            tmp.append(i)
-
-                    if len(tmp) == 0:
-                        raise ValueError('Incorrect GPIB resource string.')
-                    elif len(tmp) == 1:
-                        board_adress = 0
-                        instrument_adress = tmp[1]
-                    elif len(tmp) == 2:
-                        board_adress = tmp[0]
-                        instrument_adress = tmp[1]
-                    else:
-                        raise ValueError(
-                            'GPIB resource string not understood.')
-
-                    interface = GPIBInterface(board_adress, instrument_adress)
-
-            elif interface.startswith('USB') and platform.system() == 'Darwin':
-                backend='@ni'
-
-        if isinstance(interface, str):
             from fluidlab.instruments.interfaces.visa import PyvisaInterface
             interface = PyvisaInterface(interface, backend=backend)
 
