@@ -66,7 +66,7 @@ features = [
     TTIFloatValue(
         'idc',
         doc='set current setup value in Amps, reads the current output',
-        unit_str='W',
+        unit_str='A',
         command_set='I',
         command_get='IO?'),
     TTIFloatValue(

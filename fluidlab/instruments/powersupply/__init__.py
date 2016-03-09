@@ -10,3 +10,5 @@ Provides:
    isotech_ips2303s
 
 """
+
+__all__ = ('isotech_ips2303s', 'tdk_lambda')
