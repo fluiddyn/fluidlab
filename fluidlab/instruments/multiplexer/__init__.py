@@ -9,3 +9,4 @@ Provides:
    agilent_34970a
 
 """
+__all__ = ["agilent_34970a"]
