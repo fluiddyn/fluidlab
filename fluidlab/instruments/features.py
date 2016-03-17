@@ -118,12 +118,18 @@ class SuperValue(Feature):
 class Value(SuperValue):
     _fmt = '{}'
 
-    def __init__(self, name, doc='', command_set=None, command_get=None, check_instrument_value=True, pause_instrument=0.0):
+    def __init__(self, name, doc='', command_set=None, command_get=None, check_instrument_value=True, pause_instrument=0.0, channel_argument=False):
         super(Value, self).__init__(name, doc)
         self.command_set = command_set
         self.check_instrument_value_after_set = check_instrument_value
+
         self.pause_instrument = pause_instrument
         # certains appareils plantent si on leur parle sans faire de pauses
+        
+        self.channel_argument = channel_argument
+        # if true, then get() and set() needs a channel argument
+        # in that case, command_get and command_set strings are provided
+        # with python string format arguments {channel} and {value}
 
         if command_get is None and command_set is not None:
             command_get = command_set + '?'
@@ -142,22 +148,34 @@ class Value(SuperValue):
     def _convert_as_str(self, value):
         return self._fmt.format(value)
 
-    def get(self):
-        """Get the value from the instrument."""
+    def get(self, channel=0):
+        """Get the value from the instrument.
+           Optional argument 'channel' is used for multichannel instrument.
+           Then command_get should include '%d'
+        """
         if self.pause_instrument > 0:
             time.sleep(self.pause_instrument)
+        command = self.command_get
+        if(self.channel_argument):
+            command = command.format(channel=channel)
         result = self._convert_from_str(
-            self._interface.query(self.command_get))
+            self._interface.query(command))
         self._check_value(result)
         return result
 
-    def set(self, value):
-        """Set the value in the instrument."""
+    def set(self, value, channel=0):
+        """Set the value in the instrument.
+           Optional argument 'channel' is used for multichannel instrument.
+           Then command_set argument should include '%d'
+        """
         if self.pause_instrument > 0:
             time.sleep(self.pause_instrument)
         self._check_value(value)
-        self._interface.write(
-            self.command_set + ' ' + self._convert_as_str(value))
+        if self.channel_argument:
+            command = self.command_set.format(channel=channel, value=value)
+        else:
+            command = self.command_set + ' ' + self._convert_as_str(value)
+        self._interface.write(command)
         if self.check_instrument_value_after_set:
             self._check_instrument_value(value)
 
@@ -187,9 +205,9 @@ class BoolValue(Value):
 
 class StringValue(Value):
     def __init__(self, name, doc='', command_set=None, command_get=None,
-                 valid_values=None, check_instrument_value=True, pause_instrument=0.0):
+                 valid_values=None, check_instrument_value=True, pause_instrument=0.0, channel_argument=False):
         super(StringValue, self).__init__(
-            name, doc, command_set=command_set, command_get=command_get, check_instrument_value=check_instrument_value, pause_instrument=pause_instrument)
+            name, doc, command_set=command_set, command_get=command_get, check_instrument_value=check_instrument_value, pause_instrument=pause_instrument, channel_argument=channel_argument)
         self.valid_values = valid_values
 
     def _check_value(self, value):
@@ -212,9 +230,9 @@ class StringValue(Value):
 
 class NumberValue(Value):
     def __init__(self, name, doc='', command_set=None, command_get=None,
-                 limits=None, check_instrument_value=True, pause_instrument=0.0):
+                 limits=None, check_instrument_value=True, pause_instrument=0.0, channel_argument=False):
         super(NumberValue, self).__init__(
-            name, doc, command_set=command_set, command_get=command_get, check_instrument_value=check_instrument_value, pause_instrument=pause_instrument)
+            name, doc, command_set=command_set, command_get=command_get, check_instrument_value=check_instrument_value, pause_instrument=pause_instrument, channel_argument=channel_argument)
 
         if limits is not None and len(limits) != 2:
             raise ValueError(
@@ -264,7 +282,7 @@ class IntValue(NumberValue):
 
 class RegisterValue(NumberValue):
     def __init__(self, name, doc='', command_set=None, command_get=None,
-                 keys=None, default_value=0, check_instrument_value=True, pause_instrument=0.0):
+                 keys=None, default_value=0, check_instrument_value=True, pause_instrument=0.0, channel_argument=False):
 
         if keys is None:
             raise ValueError('Keys has to contain the keys of the register.')
@@ -276,7 +294,7 @@ class RegisterValue(NumberValue):
 
         super(RegisterValue, self).__init__(
             name, doc, command_set=command_set, command_get=command_get,
-            limits=limits, check_instrument_value=check_instrument_value, pause_instrument=pause_instrument)
+            limits=limits, check_instrument_value=check_instrument_value, pause_instrument=pause_instrument, channel_argument=channel_argument)
 
         if isinstance(default_value, int):
             self.default_value = self.compute_dict_from_number(default_value)
