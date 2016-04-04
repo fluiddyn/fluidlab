@@ -1,5 +1,11 @@
 
+import os
+import sys
+import subprocess
+
 from setuptools import setup, find_packages
+
+from runpy import run_path
 
 try:
     from Cython.Distutils.extension import Extension
@@ -7,14 +13,8 @@ try:
     has_cython = True
 except ImportError:
     from setuptools import Extension
-    from distutils.command import build_ext
+    from distutils.command.build_ext import build_ext
     has_cython = False
-
-import os
-import sys
-import subprocess
-
-here = os.path.abspath(os.path.dirname(__file__))
 
 if sys.version_info[:2] < (2, 7) or (3, 0) <= sys.version_info[0:2] < (3, 2):
     raise RuntimeError("Python version 2.7 or >= 3.2 required.")
@@ -28,13 +28,13 @@ else:
         f.write('hg_rev = "{}"\n'.format(hg_rev))
 
 # Get the long description from the relevant file
+here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.rst')) as f:
     long_description = f.read()
 lines = long_description.splitlines(True)
 long_description = ''.join(lines[8:])
 
 # Get the version from the relevant file
-from runpy import run_path
 d = run_path('fluidlab/_version.py')
 __version__ = d['__version__']
 
@@ -48,10 +48,9 @@ else:
 
 ext_modules = []
 
-import numpy as np
-
 path_PowerDAQ = r'C:\Program Files (x86)\UEI\PowerDAQ\SDK'
 if os.path.exists(path_PowerDAQ):
+    import numpy as np
     path_sources = 'fluiddyn/lab/boards/PowerDAQ'
     ext_PowerDAQ = Extension(
         'fluiddyn.lab.boards.powerdaq',
@@ -61,7 +60,7 @@ if os.path.exists(path_PowerDAQ):
             np.get_include()],
         libraries=["pwrdaq32"],
         library_dirs=[os.path.join(path_PowerDAQ, r'x64\lib')],
-        sources=[path_sources+'/powerdaq.pyx'])
+        sources=[path_sources + '/powerdaq.pyx'])
     ext_modules.append(ext_PowerDAQ)
 
 
@@ -81,7 +80,7 @@ if not on_rtd:
 
 setup(name='fluidlab',
       version=__version__,
-      description=('Framework for studying fluid dynamics by experiments.'),
+      description='Framework for studying fluid dynamics by experiments.',
       long_description=long_description,
       keywords='Fluid dynamics, research',
       author='Pierre Augier',
@@ -110,13 +109,10 @@ setup(name='fluidlab',
           # 'Programming Language :: Python :: 3',
           # 'Programming Language :: Python :: 3.3',
           # 'Programming Language :: Python :: 3.4',
-          'Programming Language :: Cython',
-          'Programming Language :: C',
-      ],
+          'Programming Language :: Cython'],
       packages=find_packages(exclude=['doc', 'digiflow', 'examples']),
       install_requires=install_requires,
-      extras_require=dict(
-          doc=['Sphinx>=1.1', 'numpydoc']),
+      extras_require={'doc': ['Sphinx>=1.1', 'numpydoc']},
       scripts=['bin/fluid_stop_pumps.py'],
       cmdclass={"build_ext": build_ext},
       ext_modules=ext_modules)
