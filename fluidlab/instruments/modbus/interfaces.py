@@ -83,11 +83,11 @@ class MinimalModbusInterface(ModbusInterface):
             raise ValueError(
                 '`addresses` must be an int or an iterable of length 2')
 
-    def write_int16(self, address, values):
+    def write_int16(self, address, values, signed=False):
         if isinstance(values, collections.Iterable):
-            self._modbus.write_registers(address, values)
+            self._modbus.write_registers(address, values, signed=signed)
         elif isinstance(values, int):
-            self._modbus.write_register(address, values)
+            self._modbus.write_register(address, values, signed=signed)
         else:
             raise ValueError('`values` must be an int or an iterable of ints')
 
