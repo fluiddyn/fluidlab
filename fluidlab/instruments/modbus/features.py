@@ -76,8 +76,8 @@ class Int16Value(Value):
     def get(self):
         return self._interface.read_int16(self._adress)
 
-    def set(self, value):
-        self._interface.write_int16(self._adress, value)
+    def set(self, value, signed=False):
+        self._interface.write_int16(self._adress, value, signed)
 
 
 class DecimalInt16Value(Int16Value):
@@ -93,7 +93,7 @@ class DecimalInt16Value(Int16Value):
         else:
             return float(raw_value) / 10 ** self._number_of_decimals
 
-    def set(self, value, check=True):
+    def set(self, value, check=True, signed=False):
         """Set the Value to value.
 
         If check, checks that the value was properly set.
@@ -103,7 +103,7 @@ class DecimalInt16Value(Int16Value):
         else:
             raw_int = int(value * 10 ** self._number_of_decimals)
 
-        super(DecimalInt16Value, self).set(raw_int)
+        super(DecimalInt16Value, self).set(raw_int, signed)
 
         if check:
             self._check_value(value)

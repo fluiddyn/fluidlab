@@ -154,7 +154,9 @@ class BaseUnidriveSP(ModbusDriver):
     _constant_nb_pairs_poles = 4
 
     def __init__(self, port=None, timeout=1,
-                 module='minimalmodbus'):
+                 module='minimalmodbus', signed=False):
+
+        self.signed = signed
 
         if port is None:
             from fluidlab.util import userconfig
@@ -529,9 +531,9 @@ class ServoUnidriveSP(BaseUnidriveSP):
 
     _mode_cls = 'servo'
 
-    def set_target_rotation_rate(self, rotation_rate, check=False):
+    def set_target_rotation_rate(self, rotation_rate, check=False, signed=False):
         """Set the target rotation rate in rpm."""
-        self._speed.set(rotation_rate, check=check)
+        self._speed.set(rotation_rate, check=check, signed=signed)
 
     def get_target_rotation_rate(self):
         """Get the target rotation rate in rpm."""
@@ -584,6 +586,7 @@ def attempt(func, *args, **kwargs):
 
     test = 1
     count = 1
+    result = None
     while test:
         try:
             result = func(*args, **kwargs)
@@ -611,7 +614,7 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
 
         count = attempt(
             super(ServoUnidriveSPCaptureError, self).set_target_rotation_rate,
-            rotation_rate, check, maxattempt=maxattempt)
+            rotation_rate, check, maxattempt=maxattempt, signed=self.signed)
 
         if count == maxattempt + 1:
             print_fail(
