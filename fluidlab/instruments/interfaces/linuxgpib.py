@@ -23,16 +23,31 @@ class GPIBInterface(QueryInterface):
         self.instrument_adress = instrument_adress
         self.handle = gpib.dev(board_adress, instrument_adress)
 
-    def read(self, numbytes=100):
+    def read(self, numbytes=None):
         if verbose:
             sys.stdout.write('* <- ' + str(self.instrument_adress) + ' ')
             sys.stdout.flush()
-        try:
-            data = gpib.read(self.handle, numbytes)
-        except gpib.GpibError as ge:
-            if verbose:
-                sys.stdout.write("FAILED\n")
-            raise
+        if numbytes is not None:
+            try:
+                data = gpib.read(self.handle, numbytes)
+            except gpib.GpibError as ge:
+                if verbose:
+                    sys.stdout.write("FAILED\n")
+                raise
+        else:
+            try:
+                done = False
+                data = ''
+                while not done:
+                    chunk_size = 100
+                    chunk = gpib.read(self.handle, chunk_size)
+                    if len(chunk) < chunk_size:
+                        done = True
+                    data = data + chunk
+            except gpib.GpibError as ge:
+                if verbose:
+                    sys.stdout.write("FAILED\n")
+                raise
         if verbose:
             sys.stdout.write(data.strip())
             sys.stdout.write("\n")
@@ -44,7 +59,7 @@ class GPIBInterface(QueryInterface):
             print '* ->', self.instrument_adress, command
         gpib.write(self.handle, command)
 
-    def query(self, command, numbytes=100, time_delay=0.1):
+    def query(self, command, numbytes=None, time_delay=0.1):
         self.write(command)
         time.sleep(time_delay)
         return self.read(numbytes)
