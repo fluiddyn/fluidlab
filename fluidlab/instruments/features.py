@@ -172,7 +172,7 @@ class Value(SuperValue):
             time.sleep(self.pause_instrument)
         self._check_value(value)
         if self.channel_argument:
-            command = self.command_set.format(channel=channel, value=value)
+            command = self.command_set.format(channel=channel, value=self._convert_as_str(value))
         else:
             command = self.command_set + ' ' + self._convert_as_str(value)
         self._interface.write(command)
