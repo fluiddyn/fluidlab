@@ -17,6 +17,8 @@ Provides:
 
 from collections import Iterable
 from numbers import Number
+from platform import platform
+import time
 
 import numpy as np
 
@@ -50,7 +52,7 @@ def _parse_resource_names(resource_names):
 
 def read_analog(resource_names, terminal_config, volt_min, volt_max,
                 samples_per_chan=1, sample_rate=1, coupling_types='DC',
-                output_filename=None):
+                output_filename=None, verbose=False):
     """Read from the analog input subdevice.
 
     Parameters
@@ -89,6 +91,10 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
       If specified data is output into this file instead of output
       arrays.
 
+    verbose: {False, boolean}
+
+      If True, print more verbose message
+
     """
     if output_filename is not None:
         raise NotImplementedError()
@@ -98,19 +104,24 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
 
     # prepare terminal_config
     if terminal_config is None:
-        print('DAQmx: Default terminal configuration will be used.')
+        if verbose:
+            print('DAQmx: Default terminal configuration will be used.')
         terminal_config = DAQmx_Val_Cfg_Default
     elif terminal_config == 'RSE':
-        print('DAQmx: Referenced single-ended mode')
+        if verbose:
+            print('DAQmx: Referenced single-ended mode')
         terminal_config = DAQmx_Val_RSE
     elif terminal_config == 'NRSE':
-        print('DAQmx: Non-referenced single-ended mode')
+        if verbose:
+            print('DAQmx: Non-referenced single-ended mode')
         terminal_config = DAQmx_Val_NRSE
     elif terminal_config == 'Diff':
-        print('DAQmx: Differential mode')
+        if verbose:
+            print('DAQmx: Differential mode')
         terminal_config = DAQmx_Val_Diff
     elif terminal_config == 'PseudoDiff':
-        print('DAQmx: Pseudodifferential mode')
+        if verbose:
+            print('DAQmx: Pseudodifferential mode')
         terminal_config = DAQmx_Val_PseudoDiff
     else:
         raise ValueError('DAQmx: Unrecognized terminal mode')
@@ -148,12 +159,16 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
             raise ValueError(
                 'Bad value in coupling_types, got: {}'.format(coupling))
 
+    if verbose:
+        print('DAQmx: Create Task')
     task = Task()
 
     actual_volt_min = float64()
     actual_volt_max = float64()
 
     for ir, resource in enumerate(resource_names):
+        if verbose:
+            print('DAQmx: Create AI Voltage Chan (' + resource + ' [' + str(volt_min[ir]) + 'V;' + str(volt_max[ir]) + 'V])')
         task.CreateAIVoltageChan(
             resource, '', terminal_config, volt_min[ir], volt_max[ir],
             DAQmx_Val_Volts, None)
@@ -170,17 +185,50 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
 
         # set coupling
         coupling_value = _coupling_values[coupling_types[ir]]
+        if verbose:
+            for name, value in _coupling_values.iteritems():
+                if value == coupling_value:
+                    print('DAQmx: Setting AI channel coupling (' + resource + '): ' + name)
         task.SetChanAttribute(resource, DAQmx_AI_Coupling, coupling_value)
 
     # configure clock and DMA input buffer
     if samples_per_chan > 1:
+        verbose_text = 'DAQmx: Configure clock timing ('
+        if verbose:
+            if samples_per_chan < 1000:
+                verbose_text = verbose_text + str(samples_per_chan) + " samp/chan @ "
+            elif samples_per_chan < 1000000:
+                verbose_text = verbose_text + str(samples_per_chan/1000) + " kSamp/chan @ "
+            else:
+                verbose_text = verbose_text + str(samples_per_chan/1000000) + " MSamp/chan @ "
+            if sample_rate < 1000:
+                verbose_text = verbose_text + ("%.2f Hz using OnboardClock)" % sample_rate)
+            elif sample_rate < 1000000:
+                verbose_text = verbose_text + ("%.2f kHz using OnboardClock)" % (sample_rate/1000.0))
+            else:
+                verbose_text = verbose_text + ("%.2f MHz using OnboardClock)" % (sample_rate/1e6))
+            print(verbose_text)
         task.CfgSampClkTiming(
             'OnboardClock', sample_rate, DAQmx_Val_Rising,
             DAQmx_Val_FiniteSamps, samples_per_chan)
-
+        if verbose:
+            print("DAQmx: Configure DMA input buffer")
         task.CfgInputBuffer(samples_per_chan)
 
     # start task
+    if verbose:
+        if platform().startswith('Windows'):
+            dateformat = '%A %d %B %Y - %X (%z)'
+        else:
+            dateformat = '%A %e %B %Y - %H:%M:%S (UTC%z)'
+        starttime = time.time()
+        starttime_str = time.strftime(dateformat, time.localtime(starttime))
+        endtime = starttime+samples_per_chan/sample_rate
+        endtime_str = time.strftime(dateformat, time.localtime(endtime))
+        print("DAQmx: Starting acquisition: " + starttime_str)
+        print("       Expected duration: %.2f min" % (samples_per_chan/(60.0*sample_rate)))
+        print("       Expected end time: " + endtime_str)
+
     task.StartTask()
 
     # read data
@@ -192,6 +240,9 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
     task.ReadAnalogF64(
         samples_per_chan, timeout, DAQmx_Val_GroupByChannel, data,
         buffer_size_in_samps, byref(samples_per_chan_read), None)
+
+    if verbose:
+        print("DAQmx: %d samples read." % samples_per_chan_read.value)
 
     return data.reshape([nb_resources, samples_per_chan])
 
