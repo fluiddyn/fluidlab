@@ -26,11 +26,11 @@ class StanfordSR830SenseValue(FloatValue):
                                                  command_set="SENS")
     
     def get(self):
-        value = super(StanfordSR830Value, self).get()
-        return sense_values[value]
+        value = super(StanfordSR830SenseValue, self).get()
+        return self.sense_values[int(value)]
 
     def set(self, value):
-        super(StanfordSR830Value, self).set(sense_values.index(value))
+        super(StanfordSR830SenseValue, self).set(sense_values.index(value))
   
 class StanfordSR830TCValue(FloatValue):
     tc_values = [10e-6,  30e-6, 100e-6, 300e-6, 1e-3, 3e-3, 10e-3, 30e-3,
@@ -44,7 +44,7 @@ class StanfordSR830TCValue(FloatValue):
 
     def get(self):
         value = super(StanfordSR830TCValue, self).get()
-        return tc_values[value]
+        return self.tc_values[int(value)]
 
     def set(self, value):
         super(StanfordSR830TCValue, self).set(tc_values.index(value))
