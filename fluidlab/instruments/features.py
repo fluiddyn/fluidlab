@@ -181,18 +181,23 @@ class Value(SuperValue):
 
 
 class BoolValue(Value):
+    def __init__(self, name, doc='', command_set=None, command_get=None, check_instrument_value=True, pause_instrument=0.0, channel_argument=False, true_string='1', false_string='0'):
+        super(BoolValue, self).__init__(name, doc, command_set, command_get, check_instrument_value, pause_instrument, channel_argument)
+        self.true_string = true_string
+        self.false_string = false_string
+
     def _convert_from_str(self, value):
         value = value.strip()
-        if value == '0':
+        if value == self.false_string:
             return False
         else:
-            return bool(value)
+            return True
 
     def _convert_as_str(self, value):
         if value:
-            return '1'
+            return self.true_string
         else:
-            return '0'
+            return self.false_string
 
     def _check_instrument_value(self, value):
         instr_value = self.get()

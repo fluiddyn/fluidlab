@@ -7,6 +7,7 @@
 
 """
 
+__all__ = ['Agilent33500b']
 
 from fluidlab.instruments.funcgen.agilent_33220a import Agilent33220a
 

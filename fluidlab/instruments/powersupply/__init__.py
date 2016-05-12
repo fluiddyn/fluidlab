@@ -11,4 +11,4 @@ Provides:
 
 """
 
-__all__ = ('isotech_ips2303s', 'tdk_lambda')
+__all__ = ('agilent_6030a', 'isotech_ips2303s', 'tdk_lambda', 'tti_cpx400dp')

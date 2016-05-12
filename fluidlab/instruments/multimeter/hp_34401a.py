@@ -8,8 +8,9 @@
 
 """
 
-from fluidlab.instruments.iec60488 import IEC60488
+__all__ = ["HP34401a"]
 
+from fluidlab.instruments.iec60488 import IEC60488
 from fluidlab.instruments.features import FloatValue
 
 class HP34401a(IEC60488):

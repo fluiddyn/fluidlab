@@ -11,6 +11,8 @@
 
 """
 
+__all__ = ['StanfordSR830']
+
 from fluidlab.instruments.iec60488 import IEC60488
 from fluidlab.instruments.features import FloatValue
 

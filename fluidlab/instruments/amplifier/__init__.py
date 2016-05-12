@@ -9,4 +9,4 @@ Provides:
    stanford_830
 
 """
-__all__ = ["stanford_830"]
+__all__ = ["stanford_sr830"]

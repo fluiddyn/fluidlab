@@ -8,6 +8,8 @@
 
 """
 
+__all__ = ['TtiTsx3510p']
+
 from fluidlab.instruments.iec60488 import (
     IEC60488, PowerOn, Calibration, Trigger, ObjectIdentification,
     StoredSetting)

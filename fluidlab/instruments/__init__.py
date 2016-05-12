@@ -46,6 +46,7 @@ packages:
    powersupply
    multimeter
    multiplexer
+   sourcemeter
 
 Other very common communication standards are Modbus and Firewire:
 
@@ -70,3 +71,6 @@ The drivers for the data acquisition boards are also gather in this package:
    daq
 
 """
+
+# Only real instruments in *, not features or iec60488, etc.
+__all__ = ["amplifier", "multiplexer", "multimeter", "sourcemeter", "powersupply", "funcgen"]

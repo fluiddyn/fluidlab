@@ -7,8 +7,12 @@ Provides:
 .. autosummary::
    :toctree:
 
-   tektronix_afg3022b
    agilent_33220a
+   agilent_33500b
+   hp_33120a
+   tektronix_afg3022b
    tti_tsx3510p
 
 """
+
+__all__ = ['agilent_33220a', 'agilent_33500b', 'hp_33120a', 'tektronix_afg3022b', 'tti_tsx3510p']

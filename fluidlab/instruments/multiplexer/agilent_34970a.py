@@ -7,6 +7,8 @@
 
 """
 
+__all__ = ["Agilent34970a"]
+
 import numpy as np
 
 from fluidlab.instruments.iec60488 import (
