@@ -45,6 +45,18 @@ features = [
         doc="""Read output voltage/set voltage setpoint""",
         command_get=':FUNC:CONC 0\n:FUNC "VOLT"\n:FORM:ELEM VOLT\n:READ?',
         command_set=':SOUR:FUNC VOLT\n:SOUR:VOLT:MODE FIX\n:SOUR:VOLT:LEVEL',
+        check_instrument_value=False),
+    FloatValue(
+        'compliance_idc',
+        doc="""Set compliance current level""",
+        command_set=':SENS:CURR:DC:PROT:LEV',
+        command_get=':SENS:CURR:DC:PROT:LEV?',
+        check_instrument_value=False),
+    FloatValue(
+        'compliance_vdc',
+        doc="""Set compliance voltage level""",
+        command_set=':SENS:VOLT:DC:PROT:LEV',
+        command_get=':SENS:VOLT:DC:PROT:LEV?',
         check_instrument_value=False)]
 
 Keithley2400._build_class_with_features(features)
