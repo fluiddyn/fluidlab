@@ -28,11 +28,16 @@ from PyDAQmx import Task, byref, float64, int32, uInt32
 
 from PyDAQmx import (
     DAQmx_Val_Cfg_Default, DAQmx_Val_RSE, DAQmx_Val_NRSE, DAQmx_Val_Diff,
-    DAQmx_Val_PseudoDiff, DAQmx_Val_Volts, DAQmx_AI_Coupling,
+    DAQmx_Val_Volts, DAQmx_AI_Coupling,
     DAQmx_Val_DC, DAQmx_Val_AC, DAQmx_Val_GND,
     DAQmx_Val_Rising, DAQmx_Val_FiniteSamps, DAQmx_Val_GroupByChannel,
     DAQmx_Val_Hz, DAQmx_Val_LowFreq1Ctr)
 
+try:
+    from PyDAQmx import DAQmx_Val_PseudoDiff
+except ImportError:
+    DAQmx_Val_PseudoDiff = None
+    pass
 
 _coupling_values = {
     'DC': DAQmx_Val_DC, 'AC': DAQmx_Val_AC, 'GND': DAQmx_Val_GND}
