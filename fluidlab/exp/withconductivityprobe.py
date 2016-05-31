@@ -47,7 +47,7 @@ from fluidlab.objects.probes import MovingConductivityProbe
 import fluiddyn.output.figs as figs
 
 
-from fluiddyn.util.deamons import DaemonThread as Daemon
+from fluiddyn.util.daemons import DaemonThread as Daemon
 
 
 class DaemonMeasureProfiles(Daemon):

@@ -32,7 +32,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.rst')) as f:
     long_description = f.read()
 lines = long_description.splitlines(True)
-long_description = ''.join(lines[8:])
+long_description = ''.join(lines[14:])
 
 # Get the version from the relevant file
 d = run_path('fluidlab/_version.py')
