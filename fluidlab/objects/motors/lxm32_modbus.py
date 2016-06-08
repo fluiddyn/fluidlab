@@ -60,10 +60,20 @@ states = {
     8: 'Fault Reaction Active (8)',
     9: 'Fault (9)'}
 
+modes = {1: 'Profile Position',
+         3: 'Profile Velocity',
+         4: 'Profile Torque',
+         6: 'Homing',
+         0x1f: 'Jog',
+         0x1e: 'Electronic Gear',
+         0x1d: 'Motion Sequence'}
+
 
 class Motor(object):
-    def __init__(self, disable_scan_timeout=False):
-        self.client = ModbusClient('192.168.28.21')
+    def __init__(self, ip_modbus='192.168.28.21',
+                 disable_scan_timeout=False, disable_limit_switches=False):
+        self._is_scanning = False
+        self.client = ModbusClient(ip_modbus)
         if self.client.connect():
             print('connection ok')
         else:
@@ -74,8 +84,9 @@ class Motor(object):
             if ret.registers == [0, 20]:
                 self.write_registers(17498, [0, 0])
 
-        # disable fins de course (power stage must be disabled)
-        self.write_registers(1566, [0]*4)
+        if disable_limit_switches:
+            # disable limit switches (power stage must be disabled)
+            self.write_registers(1566, [0]*4)
 
         self.ramp_v = self.read_ramp_v()
 
@@ -150,7 +161,14 @@ class Motor(object):
         dm_control = self.dm_control
 
         if mode is not None:
-            dm_control = 0x23
+            if not isinstance(mode, str):
+                mode = str(mode)
+            if mode.startswith('pos'):
+                dm_control = 0x1
+            elif mode.startswith('homing'):
+                dm_control = 0x6
+            else:
+                dm_control = 0x23
 
         if enable:  # enable the power stage
             dm_control |= 1 << 9
@@ -262,12 +280,23 @@ class Motor(object):
     def read_v_target(self):
         return self.read_param(6938)
 
+    def read_position_target(self):
+        return self.read_param(6940)
+
     def set_target_rotation_rate(self, i32):
         if self.state == 'Fault (9)':
             print('self.state == "Fault (9)"')
         if not isinstance(i32, int):
             i32 = int(round(i32))
         self.ref_a = list(split_int32(i32))
+        self._pingpong()
+
+    def set_target_position(self, i32):
+        if self.state == 'Fault (9)':
+            print('self.state == "Fault (9)"')
+        if not isinstance(i32, int):
+            i32 = int(round(i32))
+        self.ref_b = list(split_int32(i32))
         self._pingpong()
 
     def stop_rotation(self):
@@ -277,8 +306,8 @@ class Motor(object):
         self.set_target_rotation_rate(0)
         self.set_dm_control()
 
-    def enable(self):
-        self.set_dm_control(mode=1, enable=1)
+    def enable(self, mode=1):
+        self.set_dm_control(mode=mode, enable=1)
         self.set_target_rotation_rate(0)
 
     def run_quick_stop(self):
@@ -295,3 +324,7 @@ class Motor(object):
             a = uint16max
         self.ramp_v = [0, a] * 2
         self._pingpong()
+
+    def get_position_actual(self):
+        self._pingpong()
+        return (self._p_act[0] << 16) + self._p_act[1]
