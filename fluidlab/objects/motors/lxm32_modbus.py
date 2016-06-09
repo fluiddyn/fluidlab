@@ -117,6 +117,16 @@ class Motor(object):
     def __del__(self):
         self.close()
 
+    def _disable_limit_switches(self):
+        """disable limit switches (power stage must be disabled)"""
+        self.disable()
+        self.write_registers(1566, [0]*4)
+
+    def _enable_limit_switches(self):
+        """disable limit switches (power stage must be disabled)"""
+        self.disable()
+        self.write_registers(1566, [0, 1, 0, 1])
+
     def _build_output_scan(self):
         outscan = [0] * 4
         outscan[0] = 0x2 << 8
