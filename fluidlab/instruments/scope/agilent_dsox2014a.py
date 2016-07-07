@@ -16,6 +16,7 @@ from fluidlab.instruments.iec60488 import (
 from fluidlab.instruments.features import (
     WriteCommand, BoolValue, IntValue, FloatValue, StringValue)
 
+__all__ = ["AgilentDSOX2014a"]
 
 class AgilentDSOX2014a(IEC60488, Trigger, ObjectIdentification,
                        StoredSetting, Learn):

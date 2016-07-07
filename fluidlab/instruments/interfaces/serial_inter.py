@@ -15,7 +15,6 @@ from time import sleep
 
 from fluidlab.instruments.interfaces import QueryInterface
 
-
 class SerialInterface(QueryInterface):
     def __init__(self, port, baudrate=9600, bytesize=8,
                  parity='N', stopbits=1, timeout=1, xonxoff=False,
@@ -30,8 +29,6 @@ class SerialInterface(QueryInterface):
         self.write = sp.write
         self.readline = sp.readline
         self.close = sp.close
-
-        self.query('*IDN?\r\n')
 
     def read(self):
         result = self.serial_port.readline()
