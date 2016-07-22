@@ -42,14 +42,15 @@ class StanfordSR830TCValue(FloatValue):
         super(StanfordSR830TCValue, self).__init__('tc',
                                                    doc="""Time constant""",
                                                    command_get="OFLT ?",
-                                                   command_set="OFLT")
+                                                   command_set="OFLT",
+                                                   check_instrument_value=False)
 
     def get(self):
         value = super(StanfordSR830TCValue, self).get()
         return self.tc_values[int(value)]
 
     def set(self, value):
-        super(StanfordSR830TCValue, self).set(tc_values.index(value))
+        super(StanfordSR830TCValue, self).set(self.tc_values.index(value))
 
 class StanfordSR830(IEC60488):
     """Driver for Lock-in Amplifier Stanford 830.
