@@ -23,6 +23,7 @@ import time
 import numpy as np
 
 import ctypes
+import six
 
 from PyDAQmx import Task, byref, float64, int32, uInt32
 
@@ -45,7 +46,7 @@ _coupling_values = {
 
 def _parse_resource_names(resource_names):
 
-    if isinstance(resource_names, str):
+    if isinstance(resource_names, six.string_types):
         resource_names = [resource_names]
     elif not isinstance(resource_names, Iterable):
         raise ValueError('resource_names has to be a string or an iterable.')
@@ -146,16 +147,16 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         volt_max = [volt_max] * nb_resources
 
     # check samples_per_chan
-    if not isinstance(samples_per_chan, int) or samples_per_chan <= 0:
+    if not isinstance(samples_per_chan, six.integer_types) or samples_per_chan <= 0:
         raise ValueError('samples_per_chan has to be a positive integer.')
 
     # prepare coupling_types
-    if (not isinstance(coupling_types, str) and
+    if (not isinstance(coupling_types, six.string_types) and
             len(coupling_types) != nb_resources):
         raise ValueError(
             'coupling_types has to be a number or an iterable '
             'of the same length as resource_names')
-    if isinstance(coupling_types, str):
+    if isinstance(coupling_types, six.string_types):
         coupling_types = [coupling_types] * nb_resources
 
     possible_keys_coupling = _coupling_values.keys()

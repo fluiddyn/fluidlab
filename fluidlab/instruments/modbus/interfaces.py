@@ -19,6 +19,7 @@ Provides:
 """
 
 import collections
+import six
 
 from fluidlab.instruments.interfaces import Interface
 
@@ -65,7 +66,7 @@ class MinimalModbusInterface(ModbusInterface):
     def read_bool(self, addresses):
         if isinstance(addresses, collections.Iterable):
             return self._modbus.read_coils(addresses)
-        elif isinstance(addresses, int):
+        elif isinstance(addresses, six.integer_types):
             return self._modbus.read_coil(addresses)
 
     def write_bool(self, addresses, values):
@@ -77,7 +78,7 @@ class MinimalModbusInterface(ModbusInterface):
     def read_int16(self, addresses):
         if isinstance(addresses, collections.Iterable) and len(addresses) == 2:
             return self._modbus.read_registers(addresses[0], addresses[1])
-        elif isinstance(addresses, int):
+        elif isinstance(addresses, six.integer_types):
             return self._modbus.read_register(addresses)
         else:
             raise ValueError(
@@ -86,7 +87,7 @@ class MinimalModbusInterface(ModbusInterface):
     def write_int16(self, address, values, signed=False):
         if isinstance(values, collections.Iterable):
             self._modbus.write_registers(address, values, signed=signed)
-        elif isinstance(values, int):
+        elif isinstance(values, six.integer_types):
             self._modbus.write_register(address, values, signed=signed)
         else:
             raise ValueError('`values` must be an int or an iterable of ints')

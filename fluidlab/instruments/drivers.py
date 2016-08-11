@@ -18,6 +18,7 @@ Provides:
 
 import re
 import platform
+import six
 
 from fluidlab.instruments.interfaces import (
     Interface, FalseInterface)
@@ -107,7 +108,7 @@ class VISADriver(Driver):
     """
     def __init__(self, interface=None, backend='@py'):
 
-        if isinstance(interface, str) or isinstance(interface, unicode):
+        if isinstance(interface, six.string_types):
             from fluidlab.instruments.interfaces.visa import PyvisaInterface
             interface = PyvisaInterface(interface, backend=backend)
 

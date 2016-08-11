@@ -47,7 +47,7 @@ Provides:
 
 """
 import warnings, time
-
+import six
 
 def custom_formatwarning(message, category, filename, lineno, line=None):
     return '{}:{}: {}: {}\n'.format(
@@ -301,7 +301,7 @@ class RegisterValue(NumberValue):
             name, doc, command_set=command_set, command_get=command_get,
             limits=limits, check_instrument_value=check_instrument_value, pause_instrument=pause_instrument, channel_argument=channel_argument)
 
-        if isinstance(default_value, int):
+        if isinstance(default_value, six.integer_types):
             self.default_value = self.compute_dict_from_number(default_value)
         elif isinstance(default_value, dict):
             for k in default_value.keys():

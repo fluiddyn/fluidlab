@@ -71,6 +71,7 @@ following mixin classes.
 
 """
 
+import six
 from fluidlab.instruments.features import (
     WriteCommand, QueryCommand, BoolValue, StringValue, RegisterValue)
 
@@ -131,7 +132,7 @@ class IEC60488(VISADriver):
         super(IEC60488, self).__init__(interface, backend=backend)
         identification = self.query_identification()
 
-        if isinstance(identification, str):
+        if isinstance(identification, six.string_types):
             identification = identification.strip()
 
         print('Initialization driver for device: {}'.format(identification))
