@@ -107,7 +107,7 @@ class VISADriver(Driver):
     """
     def __init__(self, interface=None, backend='@py'):
 
-        if isinstance(interface, str):
+        if isinstance(interface, str) or isinstance(interface, unicode):
             from fluidlab.instruments.interfaces.visa import PyvisaInterface
             interface = PyvisaInterface(interface, backend=backend)
 
