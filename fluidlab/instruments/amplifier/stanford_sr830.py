@@ -52,6 +52,16 @@ class StanfordSR830TCValue(FloatValue):
     def set(self, value):
         super(StanfordSR830TCValue, self).set(self.tc_values.index(value))
 
+class StanfordSR830OffsetValue(FloatValue):
+    def _convert_from_str(self,value):
+        values = value.split(',')
+        return float(values[0])
+
+class StanfordSR830ExpandValue(FloatValue):
+    def _convert_from_str(self,value):
+        values = value.split(',')
+        return float(values[1])
+
 class StanfordSR830(IEC60488):
     """Driver for Lock-in Amplifier Stanford 830.
 
@@ -71,9 +81,15 @@ features = [
         'mag',
         doc="""Magnitude of the demodulated signal""",
         command_get="OUTP ? 3"),
-    FloatValue(
+    StanfordSR830OffsetValue(
         'offset',
-        doc="""Channel offset in % of Sen""",
+        doc="""Channel offset in % of Sen (channel value is 1 or 2)""",
+        command_get="OEXP ? {channel}",
+        command_set="OEXP {channel},{value},0",
+        channel_argument=True),
+    StanfordSR830ExpandValue(
+        'expand',
+        doc="""Channel expand coefficient (channel value is 1 or 2)""",
         command_get="OEXP ? {channel}",
         command_set="OEXP {channel},{value},0",
         channel_argument=True),
