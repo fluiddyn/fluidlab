@@ -66,6 +66,7 @@ class Agilent34970a(IEC60488):
         # Range will be set to ON otherwise
         self.NPLC = dict()
         self.Range = dict()
+        self.TkType = dict()
 
     def set_range(self, channelNumber, manualRange=False, rangeValue=None):
         if not manualRange and str(channelNumber) in self.Range:
@@ -75,6 +76,12 @@ class Agilent34970a(IEC60488):
 
     def set_nplc(self, channelNumber, nplcValue):
         self.NPLC[str(channelNumber)] = nplcValue
+
+    def set_tk_type(self, channelNumber, tkType):
+        if tkType in ('B', 'E', 'J', 'K', 'N', 'R', 'S'):
+            self.TkType[str(channelNumber)] = tkType
+        else:
+            raise ValueError("Unknown TK type")
 
     def scan(self, channelList, functionName, samplesPerChan, sampleRate):
         """ Initiates a scan """
@@ -136,6 +143,14 @@ class Agilent34970a(IEC60488):
                 self.interface.write(
                     'SENS:' + functionName + ':NPLC ' +
                     str(self.NPLC[str(chan)]) + ',(@' + str(chan) + ')')
+
+        # Set TK Type for specified channels (if TK channel and TkType defined)
+        if functionName == 'TEMP':
+            for chan in channelList:
+                if str(chan) in self.TkType:
+                    # set Tk type to specified value
+                    self.interface.write(
+                        'SENS:TEMP:TRAN:TC:TYPE ' + str(self.TkType[str(chan)]) +',(@' + str(chan) + ')')
 
         # Setup scan list
         msg = 'ROUT:SCAN (@'
