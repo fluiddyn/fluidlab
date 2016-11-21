@@ -11,4 +11,4 @@ Provides:
 
 """
 
-__all__ = ['furness_fco318']
+__all__ = ['furness_fco318', 'pfeiffer_maxigauge']
