@@ -70,12 +70,14 @@ class PfeifferMaxiGaugeOnOffValue(PfeifferMaxiGaugeValue):
 
 
 class PfeifferMaxiGauge(Driver):
-    def __init__(self, serialPort):
+    def __init__(self, serialPort, debug=False):
         interface = SerialInterface(serialPort, baudrate=9600, bytesize=8,
                                     parity='N', stopbits=1, timeout=1, xonxoff=False,
                                     rtscts=False, dsrdtr=False)
         super(PfeifferMaxiGauge, self).__init__(interface)
-        print self.program_version()
+        self.debug = debug
+        self.clear_interface()
+        print 'Pfeiffer MaxiGauge:', self.program_version()
         long_description = {'TPR/PCR': 'Pirani Gauge or Pirani Capacitance Gauge',
                             'IKR9': 'Cold cathode to 1e-9 mbar',
                             'IKR11': 'Cold cathode to 1e-11 mbar',
@@ -92,21 +94,35 @@ class PfeifferMaxiGauge(Driver):
                 desc = ""
             print i+1, sensor, desc
 
-
+    def clear_interface(self):
+        if self.debug:
+            print '-> ETX'
+        self.interface.write(codes['ETX'])
+        
     def transmission(self, mnemonics, parameters=""):
         """
         Transmission protocol:
         -> Mnemonics [and parameters] <CR>[<LF>]
         <- <ACK><CR><LF>
         """
-        msg = self.interface.query(mnemonics+parameters)
-        ack_positif = codes['ACK']+codes['CR']+codes['LF']
-        ack_negatif = codes['NAK']+codes['CR']+codes['LF']
+        msg = self.interface.query(mnemonics+parameters+'\r')
+        if self.debug:
+            print '->', mnemonics+parameters
+        ack_positif = codes['ACK']
+        ack_negatif = codes['NAK']
         if msg == ack_positif:
-            pass
+            if self.debug:
+                print '<- ACK'
         elif msg == ack_negatif:
+            if self.debug:
+                print '<- ANK'
             raise ValueError('Negative report signal received.')
         else:
+            if self.debug:
+                if len(msg) == 1:
+                    print '<- ' + ('0x%x' % ord(msg))
+                else:
+                    print '<- ' + msg
             raise ValueError('Unknown return value: "' + msg + '"')
 
     def reception(self, mnemonics, parameters=""):
@@ -118,7 +134,11 @@ class PfeifferMaxiGauge(Driver):
         <- Measurement values or parameters <CR><LF>
         """
         self.transmission(mnemonics, parameters)
+        if self.debug:
+            print '-> ENQ'
         data = self.interface.query(codes['ENQ'])
+        if self.debug:
+            print '<-', data
         return data
 
     def error_status(self):
@@ -179,5 +199,6 @@ features = [PfeifferMaxiGaugeOnOffValue('onoff',
 PfeifferMaxiGauge._build_class_with_features(features)
 
 if __name__ == '__main__':
-    pass
+    gauge = PfeifferMaxiGauge('COM1', debug=False)
+    
     
