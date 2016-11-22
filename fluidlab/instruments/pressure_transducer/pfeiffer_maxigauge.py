@@ -26,6 +26,9 @@ codes = {'ETX': '\x03', # End of text (reset the interface)
          'NAK': '\x15', # Negative acknowledge (negative report signal)
          'ESC': '\x1B'} # Escape
 
+class PfeifferMaxiGaugeException(Exception):
+    pass
+    
 class PfeifferMaxiGaugeValue(Value):
     def __init__(self, name, doc='', mnemonic=''):
         super(PfeifferMaxiGaugeValue, self).__init__(name, doc, command_set=None,
@@ -34,10 +37,10 @@ class PfeifferMaxiGaugeValue(Value):
         self.mnemonic = mnemonic
 
     def set(self, value):
-        self._driver.transmission(mnemonic, value)
+        self._driver.transmission(self.mnemonic, value)
 
     def get(self, parameter=""):
-        return self._driver.reception(mnemonic, parameter)
+        return self._driver.reception(self.mnemonic, parameter)
 
 class PfeifferMaxiGaugePressureValue(PfeifferMaxiGaugeValue):
     def get(self, sensor):
@@ -55,6 +58,7 @@ class PfeifferMaxiGaugePressureValue(PfeifferMaxiGaugeValue):
             print colored.red('No sensor on channel ' + sensor)
         elif status == 6:
             print colored.red('Identification error on channel ' + sensor)
+        return value
 
 
 class PfeifferMaxiGaugeOnOffValue(PfeifferMaxiGaugeValue):
@@ -62,7 +66,10 @@ class PfeifferMaxiGaugeOnOffValue(PfeifferMaxiGaugeValue):
         if len(booleans) != 6:
             raise ValueEror('6 booleans are expected')
         msg = reduce(lambda a,b: a+b, [',2' if b else ',1' for b in booleans])
-        super(PfeifferMaxiGaugeOnOffValue, self).set(msg)
+        try:
+            super(PfeifferMaxiGaugeOnOffValue, self).set(msg)
+        except PfeifferMaxiGaugeException:
+            pass
 
     def get(self):
         msg = super(PfeifferMaxiGaugeOnOffValue, self).get(parameter=",0,0,0,0,0,0")
@@ -115,15 +122,15 @@ class PfeifferMaxiGauge(Driver):
                 print '<- ACK'
         elif msg == ack_negatif:
             if self.debug:
-                print '<- ANK'
-            raise ValueError('Negative report signal received.')
+                print '<- NAK'
+            raise PfeifferMaxiGaugeException('Negative report signal received.')
         else:
             if self.debug:
                 if len(msg) == 1:
                     print '<- ' + ('0x%x' % ord(msg))
                 else:
                     print '<- ' + msg
-            raise ValueError('Unknown return value: "' + msg + '"')
+            raise PfeifferMaxiGaugeException('Unknown return value: "' + msg + '"')
 
     def reception(self, mnemonics, parameters=""):
         """
