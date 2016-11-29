@@ -46,6 +46,8 @@ class PfeifferMaxiGaugePressureValue(PfeifferMaxiGaugeValue):
     def get(self, sensor):
         if isinstance(sensor, six.integer_types):
             sensor = str(sensor)
+        elif isinstance(sensor, (list, tuple, np.ndarray) ):
+            return [self.get(sen) for sen in sensor]
         msg = super(PfeifferMaxiGaugePressureValue, self).get(parameter=sensor)
         p = msg.split(',')
         status = int(p[0])
