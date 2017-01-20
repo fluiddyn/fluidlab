@@ -196,7 +196,7 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         actual_vmin = actual_volt_min.value
         actual_vmax = actual_volt_max.value
         if actual_vmin != volt_min[ir] or actual_vmax != volt_max[ir]:
-            print('DAQmx: Actual range for ' + resource +
+            print('DAQmx: Actual range for ' + str(resource) +
                   ' is actually [{:6.2f} V, {:6.2f} V].'.format(
                       actual_vmin, actual_vmax))
 
