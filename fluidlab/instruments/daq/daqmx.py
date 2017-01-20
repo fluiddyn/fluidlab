@@ -186,6 +186,10 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
             resource, '', terminal_config, volt_min[ir], volt_max[ir],
             DAQmx_Val_Volts, None)
 
+    # Attention SetChanAttribute doit être dans une deuxième boucle car dans le cas d'une acquisition
+    # multi-cartes, DAQmx impose que toutes les voies soient ajouté à la task avant
+    # de changer quelque paramètre
+    for ir, resource in enumerate(resource_names):
         # check volt range
         task.GetAIRngHigh(resource, byref(actual_volt_max))
         task.GetAIRngLow(resource, byref(actual_volt_min))
