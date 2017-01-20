@@ -15,6 +15,8 @@ Provides:
 
 """
 
+from __future__ import print_function
+
 from collections import Iterable
 from numbers import Number
 from platform import platform
@@ -47,8 +49,13 @@ _coupling_values = {
 def _parse_resource_names(resource_names):
 
     if isinstance(resource_names, six.string_types):
+        if six.PY3 and isinstance(resource_names, str):
+            resource_names = resource_names.encode('ascii')
         resource_names = [resource_names]
-    elif not isinstance(resource_names, Iterable):
+    elif isinstance(resource_names, Iterable):
+        if six.PY3 and isinstance(resource_names[0], str):
+            resource_names = [r.encode('ascii') for r in resource_names]
+    else:
         raise ValueError('resource_names has to be a string or an iterable.')
 
     nb_resources = len(resource_names)
@@ -174,7 +181,7 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
 
     for ir, resource in enumerate(resource_names):
         if verbose:
-            print('DAQmx: Create AI Voltage Chan (' + resource + ' [' + str(volt_min[ir]) + 'V;' + str(volt_max[ir]) + 'V])')
+            print('DAQmx: Create AI Voltage Chan (' + str(resource) + ' [' + str(volt_min[ir]) + 'V;' + str(volt_max[ir]) + 'V])')
         task.CreateAIVoltageChan(
             resource, '', terminal_config, volt_min[ir], volt_max[ir],
             DAQmx_Val_Volts, None)
@@ -192,9 +199,9 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         # set coupling
         coupling_value = _coupling_values[coupling_types[ir]]
         if verbose:
-            for name, value in _coupling_values.iteritems():
+            for name, value in _coupling_values.items():
                 if value == coupling_value:
-                    print('DAQmx: Setting AI channel coupling (' + resource + '): ' + name)
+                    print('DAQmx: Setting AI channel coupling (' + str(resource) + '): ' + name)
         task.SetChanAttribute(resource, DAQmx_AI_Coupling, coupling_value)
 
     # configure clock and DMA input buffer

@@ -8,6 +8,8 @@
 
 """
 
+from __future__ import print_function
+
 __all__ = ["HP34401a"]
 
 from fluidlab.instruments.iec60488 import IEC60488
@@ -71,7 +73,7 @@ class HP34401a(IEC60488):
         N=len(s)
         s=s[1:(N-1)].split(' ')
         t=s[1].split(",")
-        print 'function=' + s[0] + ', range=' + t[0] + ', resolution=' + t[1]
+        print('function=' + s[0] + ', range=' + t[0] + ', resolution=' + t[1])
 
 features = [
     HP34401aValue(

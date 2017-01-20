@@ -8,6 +8,8 @@
 
 """
 
+from __future__ import print_function
+
 __all__ = ["Lauda"]
 
 from fluidlab.instruments.drivers import Driver
@@ -25,7 +27,7 @@ class LaudaValue(Value):
     def get(self):
         result = super(LaudaValue, self).get()
         if len(result) < 3:
-            print result
+            print(result)
             raise LaudaException("Erreur de communication")
         elif result.startswith('ERR'):
             raise LaudaException("Erreur Lauda: " + result)
@@ -38,7 +40,7 @@ class LaudaValue(Value):
         sleep(self.pause_instrument)
         confirmation = self._interface.read()
         if confirmation != 'OK':
-            print confirmation
+            print(confirmation)
             raise LaudaException("Erreur de communication")
 
 class LaudaOnOffValue(LaudaValue):
@@ -70,7 +72,7 @@ class LaudaStatValue(Value):
         elif result.startswith("ERR"):
             raise LaudaException("Erreur Lauda: " + result)
         else:
-            print result
+            print(result)
             return {'overheat': True if (result[0] == '1') else False,
                     'lowlevel': True if (result[1] == '1') else False,
                     'pumperr': True if (result[2] == '1') else False,
@@ -101,7 +103,7 @@ class Lauda(Driver):
                 raise LaudaException("Cannot communicate with Lauda on " + str(serialPort))
         else:
             self.rom = Lauda.Models[identification]
-            print 'Identification: ' + identification 
+            print('Identification: ' + identification)
 
 features = [
     LaudaValue(
@@ -126,7 +128,7 @@ if __name__ == '__main__':
     lauda.setpoint.set(15.0)
     try:
         while True:
-            print lauda.temperature.get()
+            print(lauda.temperature.get())
             sleep(1.0)
     except KeyboardInterrupt:
         pass
