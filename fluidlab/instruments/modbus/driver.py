@@ -27,6 +27,9 @@ class ModbusDriver(Driver):
             from fluidlab.instruments.modbus.interfaces import \
                 PyModbusInterface as Interface
 
+        else:
+            raise ValueError
+            
         interface = Interface(port, method, timeout)
 
         super(ModbusDriver, self).__init__(interface)
