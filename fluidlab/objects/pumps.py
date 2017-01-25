@@ -103,7 +103,7 @@ class MasterFlexPumps(object):
 
         self.pumps = range(1, nb_pumps+1)
 
-        port = 2  # Serial port to which the pump(s) are connected (COM3)
+        port = 'COM3'  # Serial port to which the pump(s) are connected (COM3)
 
         # configure the serial connections (the parameters differs on
         # the device you are connecting to)
@@ -122,11 +122,11 @@ class MasterFlexPumps(object):
 
         except serial.serialutil.SerialException as exc:
             self.serial = None
-            _write_warning('Warning: SerialException\n    '+exc.message)
+            _write_warning('Warning: SerialException\n    ' + str(exc))
 
         except OSError as exc:
             self.serial = None
-            _write_warning('Warning: OSError\n    '+exc.message)
+            _write_warning('Warning: OSError\n    ' + str(message))
 
         else:
             self.stop(pumps=99)
