@@ -28,7 +28,7 @@ from fluiddyn.io import txt
 try:
     import serial
 except ImportError as exc:
-    _write_warning('Warning: ImportError\n    '+exc.message)
+    _write_warning('Warning: ImportError\n    ' + str(exc))
 
 
 here = os.path.abspath(os.path.dirname(__file__))

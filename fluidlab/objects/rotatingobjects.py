@@ -41,7 +41,7 @@ from fluiddyn.io import txt
 
 import fluiddyn.output.figs as figs
 
-from fluiddyn.util.deamons import DaemonThread
+from fluiddyn.util.daemons import DaemonThread
 #  , DaemonProcess
 # We can use either a deamon thread or a deamon process...
 Daemon = DaemonThread

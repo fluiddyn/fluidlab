@@ -7,7 +7,7 @@ from __future__ import division, print_function
 
 import numpy as np
 
-from str_path_working_exp import str_path
+from .str_path_working_exp import str_path
 
 import fluiddyn as fld
 

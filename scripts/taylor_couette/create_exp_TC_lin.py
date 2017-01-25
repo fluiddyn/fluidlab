@@ -9,13 +9,14 @@ stratified fluid (Initially Linear Stratification).
 
 """
 from __future__ import division, print_function
-
-import params_creation_TC_lin as p
-reload(p)
+import importlib
 
 from fluidlab.exp.taylorcouette.linearprofile import ILSTaylorCouetteExp
 
 from fluiddyn.util.query import query_yes_no
+
+from . import params_creation_TC_lin as p
+importlib.reload(p)
 
 if __name__ == '__main__':
 
@@ -30,14 +31,13 @@ if __name__ == '__main__':
 
     print(
         'Create experiment with\n'
-        'exp.name_dir:\n    '+exp.name_dir+
-        '\nexp.path_save:\n    '+exp.path_save)
+        'exp.name_dir:\n    ' + exp.name_dir +
+        '\nexp.path_save:\n    ' + exp.path_save)
 
     ok = query_yes_no("""
     Do you want to add a "str_path=..." in str_path_working_exp.py
     in order to set this experiment as the working experiment?
-    """
-    )
+    """)
     if ok:
         with open('str_path_working_exp.py', 'a') as f:
             f.write("""
