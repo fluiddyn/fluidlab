@@ -32,7 +32,7 @@ class SerialInterface(QueryInterface):
 
     def read(self):
         result = self.serial_port.readline()
-        return '\n'.join(result.splitlines())
+        return b'\n'.join(result.splitlines())
 
     def query(self, command, latence=0.):
         self.write(command)
@@ -43,7 +43,7 @@ class SerialInterface(QueryInterface):
 if __name__ == '__main__':
     interface = SerialInterface('/dev/ttyUSB0')
 
-    print(interface.query('*IDN?\r\n', latence=1))
-    print(interface.query('*IDN?\r\n'))
-    print(interface.query('ISET1?\r\n'))
-    print(interface.query('HELP?\r\n', latence=0))
+    print(interface.query(b'*IDN?\r\n', latence=1))
+    print(interface.query(b'*IDN?\r\n'))
+    print(interface.query(b'ISET1?\r\n'))
+    print(interface.query(b'HELP?\r\n', latence=0))

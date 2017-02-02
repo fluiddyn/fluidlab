@@ -8,7 +8,7 @@
 
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals, division
 
 __all__ = ["PfeifferMaxiGauge"]
 
@@ -19,20 +19,21 @@ from time import sleep
 import numpy as np
 import six
 from clint.textui import colored
+from functools import reduce
 
-codes = {'ETX': '\x03', # End of text (reset the interface)
-         'CR': '\x0D',  # Carriage return (go to beginning of line)
-         'LF': '\x0A',  # Line feed (advance by one line)
-         'ENQ': '\x05', # Enquiry (request data transmission)
-         'ACK': '\x06', # Acknowledge (positive report signal)
-         'NAK': '\x15', # Negative acknowledge (negative report signal)
-         'ESC': '\x1B'} # Escape
+codes = {'ETX': b'\x03', # End of text (reset the interface)
+         'CR': b'\x0D',  # Carriage return (go to beginning of line)
+         'LF': b'\x0A',  # Line feed (advance by one line)
+         'ENQ': b'\x05', # Enquiry (request data transmission)
+         'ACK': b'\x06', # Acknowledge (positive report signal)
+         'NAK': b'\x15', # Negative acknowledge (negative report signal)
+         'ESC': b'\x1B'} # Escape
 
 class PfeifferMaxiGaugeException(Exception):
     pass
     
 class PfeifferMaxiGaugeValue(Value):
-    def __init__(self, name, doc='', mnemonic=''):
+    def __init__(self, name, doc='', mnemonic=b''):
         super(PfeifferMaxiGaugeValue, self).__init__(name, doc, command_set=None,
                                                      command_get=None, check_instrument_value=False,
                                                      pause_instrument=0.5, channel_argument=False)
@@ -41,27 +42,27 @@ class PfeifferMaxiGaugeValue(Value):
     def set(self, value):
         self._driver.transmission(self.mnemonic, value)
 
-    def get(self, parameter=""):
+    def get(self, parameter=b""):
         return self._driver.reception(self.mnemonic, parameter)
 
 class PfeifferMaxiGaugePressureValue(PfeifferMaxiGaugeValue):
     def get(self, sensor):
         if isinstance(sensor, six.integer_types):
-            sensor = str(sensor)
+            sensor = str(sensor).encode('ascii')
         elif isinstance(sensor, (list, tuple, np.ndarray) ):
             return [self.get(sen) for sen in sensor]
         msg = super(PfeifferMaxiGaugePressureValue, self).get(parameter=sensor)
-        p = msg.split(',')
+        p = msg.split(b',')
         status = int(p[0])
         value = float(p[1])
         if status == 3:
-            print(colored.red('Sensor error on channel ' + sensor))
+            print(colored.red('Sensor error on channel ' + sensor.decode('ascii')))
         elif status == 4:
-            print(colored.red('Sensor is off on channel ' + sensor))
+            print(colored.red('Sensor is off on channel ' + sensor.decode('ascii')))
         elif status == 5:
-            print(colored.red('No sensor on channel ' + sensor))
+            print(colored.red('No sensor on channel ' + sensor.decode('ascii')))
         elif status == 6:
-            print(colored.red('Identification error on channel ' + sensor))
+            print(colored.red('Identification error on channel ' + sensor.decode('ascii')))
         return value
 
 
@@ -69,15 +70,15 @@ class PfeifferMaxiGaugeOnOffValue(PfeifferMaxiGaugeValue):
     def set(self, booleans):
         if len(booleans) != 6:
             raise ValueEror('6 booleans are expected')
-        msg = reduce(lambda a,b: a+b, [',2' if b else ',1' for b in booleans])
+        msg = reduce(lambda a,b: a+b, [b',2' if b else b',1' for b in booleans])
         try:
             super(PfeifferMaxiGaugeOnOffValue, self).set(msg)
         except PfeifferMaxiGaugeException:
             pass
 
     def get(self):
-        msg = super(PfeifferMaxiGaugeOnOffValue, self).get(parameter=",0,0,0,0,0,0")
-        return [s == '1' for s in msg]
+        msg = super(PfeifferMaxiGaugeOnOffValue, self).get(parameter=b",0,0,0,0,0,0")
+        return [s == b'1' for s in msg]
 
 
 class PfeifferMaxiGauge(Driver):
@@ -88,16 +89,16 @@ class PfeifferMaxiGauge(Driver):
         super(PfeifferMaxiGauge, self).__init__(interface)
         self.debug = debug
         self.clear_interface()
-        print('Pfeiffer MaxiGauge:', self.program_version())
-        long_description = {'TPR/PCR': 'Pirani Gauge or Pirani Capacitance Gauge',
-                            'IKR9': 'Cold cathode to 1e-9 mbar',
-                            'IKR11': 'Cold cathode to 1e-11 mbar',
-                            'PKR': 'FullRange CC',
-                            'APR/CMR': 'Linear sensor',
-                            'IMR': 'Pirani / High Pressure',
-                            'PBR': 'FullRange BA',
-                            'no Sensor': 'No sensor',
-                            'no Ident': 'No identification'}
+        print('Pfeiffer MaxiGauge:', self.program_version().decode('ascii'))
+        long_description = {b'TPR/PCR': 'Pirani Gauge or Pirani Capacitance Gauge',
+                            b'IKR9': 'Cold cathode to 1e-9 mbar',
+                            b'IKR11': 'Cold cathode to 1e-11 mbar',
+                            b'PKR': 'FullRange CC',
+                            b'APR/CMR': 'Linear sensor',
+                            b'IMR': 'Pirani / High Pressure',
+                            b'PBR': 'FullRange BA',
+                            b'no Sensor': 'No sensor',
+                            b'no Ident': 'No identification'}
         for i,sensor in enumerate(self.sensor_id()):
             try:
                 desc = "(" + long_description[sensor] + ")"
@@ -110,13 +111,13 @@ class PfeifferMaxiGauge(Driver):
             print('-> ETX')
         self.interface.write(codes['ETX'])
         
-    def transmission(self, mnemonics, parameters=""):
+    def transmission(self, mnemonics, parameters=b""):
         """
         Transmission protocol:
         -> Mnemonics [and parameters] <CR>[<LF>]
         <- <ACK><CR><LF>
         """
-        msg = self.interface.query(mnemonics+parameters+'\r')
+        msg = self.interface.query(mnemonics+parameters+b'\r')
         if self.debug:
             print('->', mnemonics+parameters)
         ack_positif = codes['ACK']
@@ -134,9 +135,9 @@ class PfeifferMaxiGauge(Driver):
                     print('<- ' + ('0x%x' % ord(msg)))
                 else:
                     print('<- ' + msg)
-            raise PfeifferMaxiGaugeException('Unknown return value: "' + msg + '"')
+            raise PfeifferMaxiGaugeException('Unknown return value: "' + msg.decode('ascii') + '"')
 
-    def reception(self, mnemonics, parameters=""):
+    def reception(self, mnemonics, parameters=b""):
         """
         Reception protocol:
         -> Mnemonics [and parameters] <CR>[<LF>]
@@ -153,8 +154,8 @@ class PfeifferMaxiGauge(Driver):
         return data
 
     def error_status(self):
-        msg = self.reception('ERR')
-        p = msg.split(',')
+        msg = self.reception(b'ERR')
+        p = msg.split(b',')
         status_1 = int(p[0])
         status_2 = int(p[1])
         if status_1 & 1:
@@ -190,11 +191,11 @@ class PfeifferMaxiGauge(Driver):
             print('No error')
 
     def program_version(self):
-        return self.reception('PNR')
+        return self.reception(b'PNR')
 
     def sensor_id(self):
-        msg = self.reception('TID')
-        data = msg.split(',')
+        msg = self.reception(b'TID')
+        data = msg.split(b',')
         return data
 
 
@@ -202,10 +203,10 @@ class PfeifferMaxiGauge(Driver):
 
 features = [PfeifferMaxiGaugeOnOffValue('onoff',
                                         'Switch ON/OFF sensors',
-                                        mnemonic='SEN'),
+                                        mnemonic=b'SEN'),
             PfeifferMaxiGaugePressureValue('pressure',
                                         'Pressure measurement',
-                                        mnemonic='PR')]
+                                        mnemonic=b'PR')]
 
 PfeifferMaxiGauge._build_class_with_features(features)
 
