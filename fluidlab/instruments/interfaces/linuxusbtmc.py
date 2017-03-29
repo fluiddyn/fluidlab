@@ -11,7 +11,7 @@ This module is much simpler and merely rely on os.open and ioctl.
 
 Provides:
 
-.. autoclass:: SerialInterface
+.. autoclass:: LinuxUSBTMCInterface
    :members:
    :private-members:
 
@@ -21,6 +21,7 @@ import os
 from pathlib import Path
 from time import sleep
 from fluidlab.instruments.interfaces import QueryInterface
+
 
 class LinuxUSBTMCInterface(QueryInterface):
     def __init__(self, device=0):
@@ -83,4 +84,3 @@ class LinuxUSBTMCInterface(QueryInterface):
         self.write(command)
         sleep(latence)
         return self.read()
-

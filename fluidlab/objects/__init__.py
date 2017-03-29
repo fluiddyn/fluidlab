@@ -24,5 +24,6 @@ and two packages to control acquisition boards and Raspberry Pi:
 
    boards
    raspberrypi
+   position_sensors
 
 """

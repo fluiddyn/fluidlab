@@ -23,7 +23,7 @@ if on_rtd:
     mock_modules(['h5py', 'scipy', 'scipy.interpolate',
                   'scipy.misc', 'scipy.ndimage'])
 
-mock_modules(['gpib', 'PyDAQmx', 'pyvisa'])
+mock_modules(['gpib', 'PyDAQmx', 'pyvisa', 'u3', 'rpyc', 'rpyc.utils.server'])
 
 from fluidrtd.ipynb_maker import ipynb_to_rst
 ipynb_to_rst()

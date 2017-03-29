@@ -1,6 +1,12 @@
 #! /usr/bin/env python
+"""Position sensor server
+=========================
+
+
+"""
+
 import rpyc
-from pos_sensor import PositionSensor
+from .pos_sensor import PositionSensor
 
 
 class PositionSensorService(rpyc.Service):
