@@ -1,8 +1,6 @@
 """
 Experiments with a tank (:mod:`fluidlab.exp.withtank`)
-==========================================================
-
-.. currentmodule:: fluidlab.exp.withtank
+======================================================
 
 Provides:
 
@@ -171,12 +169,12 @@ class ExperimentWithTank(Experiment):
 
         """
         if 'H' in self.params:
-            H = dict_tank['H']
+            H = self.params['H']
         else:
             H = 460
 
         if 'S' in self.params:
-            S = dict_tank['S']
+            S = self.params['S']
         else:
             S = 80**2
 
@@ -187,7 +185,7 @@ class ExperimentWithTank(Experiment):
             zs = [0, H]
             rhos = [1.2, 1.]
 
-        self.tank = StratifiedTank(H=450, S=80**2, z=zs, rho=rhos)
+        self.tank = StratifiedTank(H=450, S=S, z=zs, rho=rhos)
 
     def _save_tank(self):
         """Save the object representing the tank."""
@@ -211,20 +209,7 @@ class ExperimentWithTank(Experiment):
 """WithTank experiment without tank.h5 file. path_save:
 """+self.path_save)
 
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
-
 
     def test_fill_tank():
 
@@ -236,7 +221,6 @@ if __name__ == '__main__':
         zs = z_max*np.array([0, 1./6, 5./6, 1])
         rhos = rho_min + Delta_rho*np.array([1., 0.5, 0.5, 0.])
 
-
         exp = ExperimentWithTank(
             description='Test fill tank.', params={},
             str_path='Test'
@@ -244,10 +228,7 @@ if __name__ == '__main__':
 
         exp.tank.fill()
 
-        return tank
-
-
-
+        return exp.tank
 
     # exp = ExperimentWithTank(
     #     rhos=[1.1, 1], zs=[0, 200],
