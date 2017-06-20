@@ -53,7 +53,7 @@ class PositionSensor(object):
     """
 
     def __init__(self, port=4):
-
+        print('start init position sensor')
         self.daq_u3 = u3.U3()
         self.daq_u3.configIO(TimerCounterPinOffset=port,
                              NumberOfTimersEnabled=2, FIOAnalog=0)
@@ -69,8 +69,11 @@ class PositionSensor(object):
 
         atexit.register(self.save)
         signal.signal(signal.SIGTERM, sig_handler)
+        print(time_as_str() + ': position sensor initialized.')
+        sys.stdout.flush()
 
     def get_value_counter(self):
+        print('get_value_counter')
         return self.daq_u3.getFeedback(u3.QuadratureInputTimer())[0]
 
     def get_relative_position(self):

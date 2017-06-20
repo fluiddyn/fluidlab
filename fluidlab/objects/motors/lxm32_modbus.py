@@ -7,8 +7,12 @@ import atexit
 import sys
 import signal
 
-from pymodbus.client.sync import ModbusTcpClient as ModbusClient
-from pymodbus.pdu import ExceptionResponse
+if sys.version_info.major == 2:
+    from pymodbus.client.sync import ModbusTcpClient as ModbusClient
+    from pymodbus.pdu import ExceptionResponse
+else:
+    from pymodbus3.client.sync import ModbusTcpClient as ModbusClient
+    from pymodbus3.pdu import ExceptionResponse
 
 
 def get_bit(number, idx):
@@ -76,6 +80,7 @@ class Motor(object):
         self.client = ModbusClient(ip_modbus)
         if self.client.connect():
             print('connection ok')
+            sys.stdout.flush()
         else:
             raise ValueError('bad modbus connection.')
 
