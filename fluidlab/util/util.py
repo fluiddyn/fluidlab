@@ -72,3 +72,14 @@ str_path: {}).""".format(io.FLUIDLAB_PATH, str_path))
     Exp = module_exp.__dict__[class_name]  # .decode("utf-8")]
 
     return Exp(*args, str_path=path, **kwargs)
+
+def make_ip_as_str(ip_modbus):
+    list_ip = ip_modbus.split('.')
+    ip_as_str = list_ip[0] + '_'
+    for index in range(1, len(list_ip)):
+        ip_as_str += list_ip[index] + '_'
+    return ip_as_str
+
+if __name__ == '__main__':
+    ip_modbus = '192.168.28.11'
+    ip_as_str = make_ip_as_str(ip_modbus)
