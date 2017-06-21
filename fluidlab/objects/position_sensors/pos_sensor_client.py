@@ -1,3 +1,8 @@
+"""Position sensor client
+=========================
+
+
+"""
 
 import rpyc
 import socket

@@ -20,9 +20,10 @@ from fluidrtd import mock_modules
 on_rtd = os.environ.get('READTHEDOCS')
 if on_rtd:
     # this package comes from fluiddyn
-    mock_modules(['h5py'])
+    mock_modules(['h5py', 'scipy', 'scipy.interpolate',
+                  'scipy.misc', 'scipy.ndimage'])
 
-mock_modules(['gpib', 'PyDAQmx'])
+mock_modules(['gpib', 'PyDAQmx', 'pyvisa', 'u3', 'rpyc', 'rpyc.utils.server'])
 
 from fluidrtd.ipynb_maker import ipynb_to_rst
 ipynb_to_rst()

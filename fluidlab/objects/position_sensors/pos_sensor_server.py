@@ -1,4 +1,10 @@
 #! /usr/bin/env python
+"""Position sensor server
+=========================
+
+
+"""
+
 import rpyc
 from .pos_sensor import PositionSensor
 

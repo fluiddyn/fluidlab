@@ -15,8 +15,6 @@ import h5py
 
 from fluiddyn import io
 
-import fluiddyn as fld
-
 
 def load_exp(str_path=None, *args, **kwargs):
     """Load an experiment from the disk."""
@@ -43,7 +41,7 @@ You can try to increase the value of the constant depth_path_max
 (FLUIDLAB_PATH: {}
 str_path: {}).""".format(io.FLUIDLAB_PATH, str_path))
 
-    path_h5_file = path+'/params.h5'
+    path_h5_file = path + '/params.h5'
 
     # temporary... for compatibility
     with h5py.File(path_h5_file, 'r+') as f:
@@ -61,15 +59,12 @@ str_path: {}).""".format(io.FLUIDLAB_PATH, str_path))
         class_name = class_name[0]
         module_exp = module_exp[0]
 
-    module_exp = fld._verif_names_modules(
-        module_exp, path_h5_file, key_file='module_exp')
-
     # fromlist has to be a not-empty so that __import__('A.B',
     # ...)  returns B rather than A.
     # module_exp = __import__(module_exp, fromlist=['not empty str'])
 
-    module_exp = import_module(module_exp)  # .decode("utf-8"))
-    Exp = module_exp.__dict__[class_name]  # .decode("utf-8")]
+    module_exp = import_module(module_exp)
+    Exp = module_exp.__dict__[class_name]
 
     return Exp(*args, str_path=path, **kwargs)
 

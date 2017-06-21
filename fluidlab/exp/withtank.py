@@ -1,8 +1,6 @@
 """
 Experiments with a tank (:mod:`fluidlab.exp.withtank`)
-==========================================================
-
-.. currentmodule:: fluidlab.exp.withtank
+======================================================
 
 Provides:
 
@@ -18,37 +16,23 @@ from __future__ import division, print_function
 import numpy as np
 import os
 
-import datetime
-import time
-
-import glob
-import json
-import h5py
-import inspect
-from importlib import import_module
-
 import fluiddyn
 from fluiddyn.io.hdf5 import H5File
-
-from fluiddyn.util import query
-from fluiddyn.util.timer import Timer
 
 from fluidlab.objects.tanks import StratifiedTank
 
 from fluidlab.exp.base import Experiment
 
-import fluiddyn.output.figs as figs
-
-nu_pure_water = fluiddyn.constants.nu_pure_water
-
-
-
 import sys
+
 if sys.platform.startswith('win'):
-    import win32api, thread
+    import thread
+
     def handler(sig, hook=thread.interrupt_main):
         hook()
         return 1
+
+nu_pure_water = fluiddyn.constants.nu_pure_water
 
 
 class ExperimentWithTank(Experiment):
@@ -133,7 +117,7 @@ class ExperimentWithTank(Experiment):
 
             # verify if enough params have been given for the first creation
             self._verify_params_first_creation(
-                params, 
+                params,
                 keys_needed=['rhos', 'zs']
             )
 
@@ -149,14 +133,6 @@ class ExperimentWithTank(Experiment):
             self._save_tank()
         else:
             self._load_tank()
-
-
-
-
-
-
-
-
 
     def _create_self_params(self, params):
         r"""Calculate some parameters.
@@ -181,13 +157,9 @@ class ExperimentWithTank(Experiment):
         Delta_rho = rhos[0] - rhos[-1]
 
         self.params.update({
-            'nu':nu_pure_water,
-            'Delta_rho':Delta_rho
+            'nu': nu_pure_water,
+            'Delta_rho': Delta_rho
         })
-
-
-
-
 
     def _create_tank(self):
         """Create the instance variable representing the tank.
@@ -197,12 +169,12 @@ class ExperimentWithTank(Experiment):
 
         """
         if 'H' in self.params:
-            H = dict_tank['H']
+            H = self.params['H']
         else:
             H = 460
 
         if 'S' in self.params:
-            S = dict_tank['S']
+            S = self.params['S']
         else:
             S = 80**2
 
@@ -213,8 +185,7 @@ class ExperimentWithTank(Experiment):
             zs = [0, H]
             rhos = [1.2, 1.]
 
-        self.tank = StratifiedTank(H=450, S=80**2, z=zs, rho=rhos)
-
+        self.tank = StratifiedTank(H=450, S=S, z=zs, rho=rhos)
 
     def _save_tank(self):
         """Save the object representing the tank."""
@@ -222,12 +193,11 @@ class ExperimentWithTank(Experiment):
         path_h5_file = self.path_save+'/params.h5'
         with H5File(path_h5_file, 'r+') as f:
             f.update_dict(
-                'classes', 
+                'classes',
                 dicttosave={'tank': self.tank.__class__.__name__})
             f.update_dict(
-                'modules', 
+                'modules',
                 dicttosave={'tank': self.tank.__module__})
-
 
     def _load_tank(self, verbose=False):
         """Load the object representing the tank."""
@@ -239,20 +209,7 @@ class ExperimentWithTank(Experiment):
 """WithTank experiment without tank.h5 file. path_save:
 """+self.path_save)
 
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
-
 
     def test_fill_tank():
 
@@ -264,22 +221,18 @@ if __name__ == '__main__':
         zs = z_max*np.array([0, 1./6, 5./6, 1])
         rhos = rho_min + Delta_rho*np.array([1., 0.5, 0.5, 0.])
 
-
         exp = ExperimentWithTank(
-            description='Test fill tank.', params={}, 
+            description='Test fill tank.', params={},
             str_path='Test'
             )
 
         exp.tank.fill()
 
-        return tank
-
-
-
+        return exp.tank
 
     # exp = ExperimentWithTank(
     #     rhos=[1.1, 1], zs=[0, 200],
-    #     description='Test fill tank.', params={'a':2}, 
+    #     description='Test fill tank.', params={'a':2},
     #     )
 
     # test_fill_tank()

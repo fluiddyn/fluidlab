@@ -24,6 +24,7 @@ Provides some modules:
    visa
    linuxgpib
    serial_inter
+   linuxusbtmc
 
 """
 

@@ -8,11 +8,6 @@ FluidLab is a framework for studying fluid dynamics by experiments
 using Python.  It is part of the wider project `FluidDyn
 <http://fluiddyn.readthedocs.org>`_.
 
-The project is still in a planning stage so it is still pretty
-unstable and many of its planned features have not yet been
-implemented.
-
-
 User Guide
 ----------
 

@@ -24,20 +24,13 @@ except ImportError:  # Python 2
 import time
 import datetime as dt
 
-
 from fluiddyn._version import __version__
-from fluiddyn.util.deamons import DaemonThread as Daemon
-
+# from fluiddyn.util.daemons import DaemonThread as Daemon
 
 from fluidlab.objects.rotatingobjects import (
     create_rotating_objects_kepler,
     DaemonRunningRotatingObject,
     RotatingObject)
-
-
-
-
-
 
 
 class ElapsedTimeClock(ttk.Label):
