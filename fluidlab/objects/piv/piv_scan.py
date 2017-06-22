@@ -89,7 +89,7 @@ class PIVScan(object):
 
         scanRate = ljm.eStreamStart(
             handle, int(scansPerRead), TOTAL_NUM_CHANNELS, aScanList,
-            int(scanRate))
+            scanRate)
         print('Stream started')
 
         t7.wait_before_stop(total_time, dt)
@@ -148,6 +148,8 @@ class PIVScan(object):
         #     vmin=vmin, vmax=vmax, tup=tup, Nlevel=Nlevel, dt=dt)
         volt, frequency, dt, t = double_saw_tooth2(
             vmin=vmin, vmax=vmax, time_expo=time_expo, Nlevel=Nlevel, dt=dt)
+        print('volt = {}'.format(volt))
+        print('frequency = {}'.format(frequency))
         tup = t[volt[0].argmax()]
         scansPerRead = frequency
         scanRate = frequency
@@ -186,7 +188,7 @@ class PIVScan(object):
             for i in range(Ncouples):
                 scanRate = ljm.eStreamStart(
                     handle, int(scansPerRead), TOTAL_NUM_CHANNELS, aScanList,
-                    int(scanRate))
+                    scanRate)
                 print('\r{}/{}'.format(i+1, Ncouples), end='')
                 sys.stdout.flush()
                 time.sleep(2*dt)
@@ -503,6 +505,11 @@ def double_saw_tooth2(vmin, vmax, time_expo, Nlevel, dt):
     #         "dt / time_expo has to be an integer larger than Nlevel !")
 
     Ndown = N - Nlevel
+    # print('Ndown = {}'.format(Ndown))
+
+    Ndown = int(Ndown)
+
+    print(Ndown)
 
     # first channel
     volttemp = np.hstack([np.linspace(vmin, vmax, Nlevel+1)[0:-1],

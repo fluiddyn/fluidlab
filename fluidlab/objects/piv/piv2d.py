@@ -6,6 +6,7 @@ from __future__ import print_function, division
 
 import os
 import time
+import sys
 from glob import glob
 from math import ceil
 
@@ -16,6 +17,7 @@ from labjack import ljm
 from fluiddyn.util.query import query_yes_no
 from fluidlab.instruments.daq.streaming_t7 import T7
 
+from fluidlab.exp import Timer
 from .signal_double_frame import make_signal_double_frame
 from .util import wait_for_file, save_exp, serial_numbers
 
@@ -72,8 +74,8 @@ class PIV2D(object):
         aScanList = t7.prepare_stream_loop(
             IN_NAMES=IN_NAMES, OUT_NAMES=OUT_NAMES, volt=volt)
 
-        scansPerRead = 2.0 / dt
-        scanRate = 2.0 / dt
+        scanRate = len(OUT_NAMES) / dt
+        scansPerRead = scanRate  # It should be an integer
         TOTAL_NUM_CHANNELS = len(IN_NAMES) + len(OUT_NAMES)
 
         print(
@@ -96,14 +98,13 @@ class PIV2D(object):
         save_exp(t, volt, dt=dt, rootname='piv2d_single_frame')
 
         scanRate = ljm.eStreamStart(
-            handle, int(scansPerRead), TOTAL_NUM_CHANNELS, aScanList,
-            int(scanRate))
+            handle, int(scansPerRead), TOTAL_NUM_CHANNELS, aScanList, scanRate)
         print('Stream started')
 
         t7.wait_before_stop(total_time, dt)
 
     def double_frame_2d(self, time_between_pairs, time_expo, delta_t,
-                        total_time=None, n=256,
+                        nb_couples, nb_nodes=256,
                         wait_file=False, nb_period_to_wait=1.):
         """
         Double frame 2D PIV.
@@ -118,12 +119,9 @@ class PIV2D(object):
         """
 
         times_signal, volts_signal, time_expo, delta_t, time_between_nodes = \
-            make_signal_double_frame(time_between_pairs, time_expo, delta_t, n)
-
-        if total_time is not None:
-            time_between_pairs = times_signal[-1] + time_between_nodes
-            nb_periods = ceil(total_time/time_between_pairs)
-            total_time = nb_periods * time_between_pairs
+            make_signal_double_frame(
+                time_between_pairs, time_expo, delta_t, nb_nodes)
+        # print(volts_signal)
 
         print(
             'New values for the variables:\n' +
@@ -138,13 +136,21 @@ class PIV2D(object):
         OUT_NAMES = ['DAC0']
 
         a = [v for v in volts_signal]
-        volts = np.array([np.array(a*12)])  # To do: which integer, 12??
-
-        aScanList = t7.prepare_stream_loop(
+        # To do: which integer. 12 solves problems with the buffer
+        # size encoding??
+        volts = np.array([np.array(a)])
+        # print(volts)
+        aScanList = t7.prepare_stream(
             IN_NAMES=IN_NAMES, OUT_NAMES=OUT_NAMES, volt=volts)
 
-        scansPerRead = 1./time_between_nodes
-        scanRate = 1./time_between_nodes
+        scanRate = len(OUT_NAMES)/time_between_nodes  # scans/s
+        # scans for each call of the function eStreamRead. It should
+        # be an integer
+        scansPerRead = scanRate
+
+        print('scanRate = {}'.format(scanRate))
+        print('ScansPerRead = {}'.format(scansPerRead))
+
         TOTAL_NUM_CHANNELS = len(IN_NAMES) + len(OUT_NAMES)
 
         print(
@@ -168,12 +174,22 @@ class PIV2D(object):
                  time_between_pairs=time_between_pairs,
                  rootname='piv2d_double_frame')
 
-        scanRate = ljm.eStreamStart(
-            handle, int(scansPerRead), TOTAL_NUM_CHANNELS, aScanList,
-            int(scanRate))
-        print('Stream started')
+        timer = Timer(time_between_pairs)
+        try:
+            for i in range(nb_couples):
+                scanRate = ljm.eStreamStart(
+                    handle, int(scansPerRead), TOTAL_NUM_CHANNELS,
+                    aScanList, scanRate)
+                print('\r{}/{}'.format(i+1, nb_couples), end='')
+                sys.stdout.flush()
+                time.sleep(2 * delta_t)
+                t7.write_out_buffer('STREAM_OUT0_BUFFER_F32', volts[0])
+                timer.wait_tick()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            t7.stop_stream()
 
-        t7.wait_before_stop(total_time, time_between_nodes)
 
     def set_voltage(self, volt):
         ljm.eWriteName(self.t7.handle, 'DAC0', volt)

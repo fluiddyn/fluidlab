@@ -7,6 +7,8 @@ import time
 
 import numpy as np
 
+import sys
+
 from labjack import ljm
 
 from fluiddyn.util.query import query_yes_no
@@ -184,12 +186,23 @@ class T7(object):
 
         return aScanList
 
-    def wait_before_stop(self, total_time, dt=0.2):
+    def wait_before_stop(self, total_time=None, dt=None):
         try:
             if total_time is not None:
+                if dt is not None:
+                    nb_ticks = int(round(total_time / dt))
+                    i = 1
+                sys.stdout.flush()
                 t0 = time.time()
-                while time.time()-t0 <= total_time:
+                t = 0.
+                while t <= total_time:
+                    if dt is not None:
+                        print('\r{}/{}; time ~= {:.3f} s'.format(
+                            i, nb_ticks, t), end='')
+                        sys.stdout.flush()
+                        i += 1
                     time.sleep(dt)
+                    t = time.time()-t0
                 self.stop_stream()
             else:
                 while True:

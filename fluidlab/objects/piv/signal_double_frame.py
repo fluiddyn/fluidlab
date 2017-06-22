@@ -4,7 +4,8 @@ from math import ceil
 import numpy as np
 
 
-def make_signal_double_frame(time_between_pairs, time_expo, delta_t, n=256):
+def make_signal_double_frame(
+        time_between_pairs, time_expo, delta_t, nb_nodes=256):
 
     """
 
@@ -43,18 +44,12 @@ def make_signal_double_frame(time_between_pairs, time_expo, delta_t, n=256):
       Time between the time nodes.
 
     """
+    assert nb_nodes > 8
 
     # Compute time interval
-    time_between_nodes = time_between_pairs/n
+    time_between_nodes = (time_expo + delta_t) / (nb_nodes - 1)
 
     # Check potential errors
-    if time_expo < time_between_nodes or \
-       (delta_t - time_expo) < time_between_nodes:
-        raise ValueError('time_expo < time_between_nodes or '
-                         'delta_t - time_expo < time_between_nodes. \n'
-                         'Increase the exposure time or increase the '
-                         'time between two frames.')
-
     if delta_t - time_expo < 0:
         raise ValueError('No double frame possible. \n'
                          'Choose lower exposure time')
@@ -70,7 +65,7 @@ def make_signal_double_frame(time_between_pairs, time_expo, delta_t, n=256):
     delta_t = t_0 + time_expo
 
     # Arrays
-    times = time_between_nodes * np.arange(n)
+    times = time_between_nodes * np.arange(nb_nodes)
     volts = np.zeros_like(times)
 
     # Trigger on. Frame 1
@@ -86,8 +81,7 @@ def make_signal_double_frame(time_between_pairs, time_expo, delta_t, n=256):
     volts[cond] = 5.
 
     # Trigger off
-    cond = times >= delta_t + time_expo
-    volts[cond] = 0.
+    volts[-1] = 0.
 
     return times, volts, time_expo, delta_t, time_between_nodes
 
@@ -110,4 +104,4 @@ if __name__ == '__main__':
     ax.set_ylabel('volts (V)')
     ax.plot(times1, volts1)
 
-    plt.show(block=False)
+    plt.show()
