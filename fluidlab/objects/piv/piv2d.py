@@ -8,7 +8,6 @@ import os
 import time
 import sys
 from glob import glob
-from math import ceil
 
 import numpy as np
 
@@ -44,7 +43,7 @@ class PIV2D(object):
     def __init__(self):
         self.t7 = T7(identifier=serial_numbers['vert'])
 
-    def single_frame_2d(self, dt, volt=5., total_time=None,
+    def single_frame_2d(self, time_between_frames, volt=5., total_time=None,
                         wait_file=False, nb_period_to_wait=1.):
         ''' Single frame 2D PIV.
 
@@ -53,7 +52,7 @@ class PIV2D(object):
         Parameters
         ----------
 
-        dt:
+        time_between_frames:
           time between 2 images (in s)
 
         volt:
@@ -64,8 +63,8 @@ class PIV2D(object):
 
         '''
         volt = np.asarray([[0, 5]*6])
-        t = np.arange(12) * dt / 2.0
-        dt = t[2]
+        t = np.arange(12) * time_between_frames / 2.0
+        time_between_frames = t[2]
         IN_NAMES = []
         OUT_NAMES = ['DAC0']
 
@@ -74,7 +73,7 @@ class PIV2D(object):
         aScanList = t7.prepare_stream_loop(
             IN_NAMES=IN_NAMES, OUT_NAMES=OUT_NAMES, volt=volt)
 
-        scanRate = len(OUT_NAMES) / dt
+        scanRate = len(OUT_NAMES) / time_between_frames
         scansPerRead = scanRate  # It should be an integer
         TOTAL_NUM_CHANNELS = len(IN_NAMES) + len(OUT_NAMES)
 
@@ -84,8 +83,8 @@ class PIV2D(object):
             '\n' + '-' * 79 + '\n\n' +
             'Settings in Camware software\n\n'
             '- trigger Mode to "Ext Exp Start"\n'
-            '- frame rate >= {} Hz\n'.format(1.0/dt) +
-            '- exposure <= {} s \n'.format(dt) +
+            '- frame rate >= {} Hz\n'.format(1.0/time_between_frames) +
+            '- exposure <= {} s \n'.format(time_between_frames) +
             '- acquire Mode to "Auto"\n'
             '- I/O Signal: tick only "Exposure Trigger"\n')
 
@@ -95,17 +94,19 @@ class PIV2D(object):
         if wait_file:
             wait_for_file('oscillate_*', nb_period_to_wait)
 
-        save_exp(t, volt, dt=dt, rootname='piv2d_single_frame')
+        save_exp(t, volt, time_between_frames=time_between_frames,
+                 rootname='piv2d_single_frame')
 
         scanRate = ljm.eStreamStart(
             handle, int(scansPerRead), TOTAL_NUM_CHANNELS, aScanList, scanRate)
         print('Stream started')
 
-        t7.wait_before_stop(total_time, dt)
+        t7.wait_before_stop(total_time, time_between_frames)
 
-    def double_frame_2d(self, time_between_pairs, time_expo, delta_t,
-                        nb_couples, nb_nodes=256,
-                        wait_file=False, nb_period_to_wait=1.):
+    def double_frame_2d(
+            self, time_between_pairs, time_expo, time_between_frames,
+            nb_couples, nb_nodes=256,
+            wait_file=False, nb_period_to_wait=1.):
         """
         Double frame 2D PIV.
 
@@ -118,16 +119,17 @@ class PIV2D(object):
         -------
         """
 
-        times_signal, volts_signal, time_expo, delta_t, time_between_nodes = \
+        (times_signal, volts_signal, time_expo,
+         time_between_frames, time_between_nodes) = \
             make_signal_double_frame(
-                time_between_pairs, time_expo, delta_t, nb_nodes)
-        # print(volts_signal)
+                time_between_pairs, time_expo, time_between_frames, nb_nodes)
 
         print(
             'New values for the variables:\n' +
             ('time_between_pairs = {} s\n'
              'time_expo = {} s\n'
-             'delta_t = {}').format(time_between_pairs, time_expo, delta_t))
+             'time_between_frames = {}').format(
+                 time_between_pairs, time_expo, time_between_frames))
 
         t7 = self.t7
         handle = t7.handle
@@ -159,20 +161,33 @@ class PIV2D(object):
             '\n' + '-' * 79 + '\n\n' +
             'Settings in Camware software\n\n'
             '- trigger Mode to "Ext Exp Start"\n'
-            '- frame rate >= {} Hz\n'.format(1./delta_t) +
+            '- frame rate >= {} Hz\n'.format(1./time_between_frames) +
             '- exposure <= {} s \n'.format(time_expo) +
             '- acquire Mode to "Auto"\n'
-            '- I/O Signal: tick only "Exposure Trigger"\n')
+            '- I/O Signal: tick only "Exposure Trigger"\n'
+            '- number of images = {}'.format(2*nb_couples))
+
+        # # to avoid a strange bug
+        # t7.write_out_buffer('STREAM_OUT0_BUFFER_F32', 0*volts[0])
+        # scanRate = ljm.eStreamStart(
+        #     handle, int(scansPerRead), TOTAL_NUM_CHANNELS, aScanList,
+        #     scanRate)
+
+        # time.sleep(time_between_pairs)
+        # t7.write_out_buffer('STREAM_OUT0_BUFFER_F32', volts[0])
+        # time.sleep(time_between_pairs)
+        # # end of the code to avoid the strange bug
 
         if not query_yes_no('Are you ready to start acquisition?'):
             return
 
-        if wait_file:
-            wait_for_file('oscillate_*', nb_period_to_wait)
-
-        save_exp(times_signal, volts_signal, dt=delta_t, time_expo=time_expo,
+        save_exp(times_signal, volts_signal,
+                 time_between_frames=time_between_frames, time_expo=time_expo,
                  time_between_pairs=time_between_pairs,
                  rootname='piv2d_double_frame')
+
+        if wait_file:
+            wait_for_file('oscillate_*', nb_period_to_wait)
 
         timer = Timer(time_between_pairs)
         try:
@@ -182,14 +197,14 @@ class PIV2D(object):
                     aScanList, scanRate)
                 print('\r{}/{}'.format(i+1, nb_couples), end='')
                 sys.stdout.flush()
-                time.sleep(2 * delta_t)
+                time.sleep(2 * time_between_frames)
                 t7.write_out_buffer('STREAM_OUT0_BUFFER_F32', volts[0])
                 timer.wait_tick()
         except KeyboardInterrupt:
             pass
         finally:
+            print('')
             t7.stop_stream()
-
 
     def set_voltage(self, volt):
         ljm.eWriteName(self.t7.handle, 'DAC0', volt)
@@ -205,11 +220,12 @@ if __name__ == '__main__':
 
     time_between_pairs = 1.
     time_expo = 0.1
-    delta_t = 0.3
+    time_between_frames = 0.3
     n = 256
 
     total_time = 30
 
     piv = PIV2D()
 
-    piv.double_frame_2d(time_between_pairs, time_expo, delta_t, total_time, n)
+    piv.double_frame_2d(
+        time_between_pairs, time_expo, time_between_frames, total_time, n)

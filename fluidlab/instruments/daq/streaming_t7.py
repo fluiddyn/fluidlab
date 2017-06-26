@@ -40,6 +40,7 @@ class T7(object):
             self._closed = True
 
     def stop_stream(self):
+        print('stop_stream')
         handle = self.handle
         ljm.eWriteName(handle, 'DAC0', 0)
         ljm.eWriteName(handle, 'DAC1', 0)

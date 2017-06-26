@@ -40,7 +40,7 @@ def wait_for_file(str_file, nb_period_to_wait):
             time.sleep(nb_period_to_wait*period)
 
 
-def save_exp(t, volt, dt=None, time_expo=None, tup=None,
+def save_exp(t, volt, time_between_frames=None, time_expo=None, tup=None,
              time_between_pairs=None,
              rootname='pivscan'):
     date = time_as_str()
@@ -52,8 +52,8 @@ def save_exp(t, volt, dt=None, time_expo=None, tup=None,
         f['t_start'] = time.ctime(int(time.time()))
         if time_between_pairs:
             f['time_between_pairs'] = time_between_pairs
-        if dt:
-            f['dt'] = dt
+        if time_between_frames:
+            f['time_between_frames'] = time_between_frames
         if tup:
             f['tup'] = tup
         if time_expo:
