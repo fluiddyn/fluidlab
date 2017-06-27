@@ -33,10 +33,10 @@ from fluidlab.util.util import make_ip_as_str
 volt_no_movement = 2.5
 
 path_dir = os.path.expanduser('~\.fluidlab')
-if not os.path.exists(path_dir):   
+if not os.path.exists(path_dir):
     os.makedirs(path_dir)
 
-    
+
 class TraverseError(ValueError):
     pass
 
@@ -49,7 +49,7 @@ class Traverse(object):
         self.movement_allowed = True
         self._const_position = const_position
         self.ip_modbus = ip_modbus
-        sleep(0.5)
+        sleep(0.2)
         print(self.motor.state)
         if self.motor.state == 'Fault (9)':
             self.motor.fault_reset()
@@ -110,14 +110,13 @@ class Traverse(object):
         return self.motor.get_state()
 
     def is_displacement_possible(self, displacement, position=None):
-        upper_limit = 3
+        upper_limit = 1.2
         lower_limit = 0.01
-        
+
         if position is None:
             position = self.get_absolute_position()
 
         new_position = position - displacement
-        # new_position = position + displacement
 
         if new_position > upper_limit or new_position < lower_limit:
             raise TraverseError(
@@ -126,7 +125,7 @@ class Traverse(object):
 
         return True
 
-    def calibrate(self, delta_t, rpm, save=None):
+    def calibrate(self, delta_t, rpm, save=False):
         """Function to compute _coef_meter_per_rot.
 
         Parameters
@@ -614,7 +613,7 @@ class Traverses(object):
             self.u3.writeRegister(5000, volt_no_movement)
         except NameError:
             self._use_u3 = False
-            
+
     def close(self):
         for traverse in self.traverses:
             traverse.close()
@@ -682,7 +681,7 @@ class Traverses(object):
 
     def make_profiles(self, z_min, z_max, speed_down, speed_up=None,
                       period=None, nb_periods=None):
-              
+
         if speed_up is None:
             speed_up = speed_down
 
@@ -698,10 +697,11 @@ class Traverses(object):
         self.go_to(z_max, speed_up)
 
         path = os.path.join(path_dir, 'make_profiles_{}.txt'.format(
-            time_as_str()))                                            
+            time_as_str()))
 
-        with open(path, 'w') as f:                                     
-            f.write('make_profiles(z_min={}, z_max={}, speed_down={},\n'.format(
+        with open(path, 'w') as f:
+            f.write('make_profiles(z_min='
+                    '{}, z_max={}, speed_down={},\n'.format(
                         z_min, z_max, speed_down) +
                     '              speed_up={},\n'.format(speed_up) +
                     '              period={}, nb_periods={})\n'.format(
