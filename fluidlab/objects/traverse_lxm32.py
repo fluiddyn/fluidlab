@@ -49,7 +49,7 @@ class Traverse(object):
         self.movement_allowed = True
         self._const_position = const_position
         self.ip_modbus = ip_modbus
-        sleep(0.2)
+        sleep(0.5)
         print(self.motor.state)
         if self.motor.state == 'Fault (9)':
             self.motor.fault_reset()
@@ -68,7 +68,7 @@ class Traverse(object):
         try:
             self._coef_meter_per_rot = self._load_calibration()
         except(IOError):
-            self._coef_meter_per_rot = None
+            self._coef_meter_per_rot = 1e6
             print("Calibration file doesn't exist. Use function self.calibrate().")
     def get_absolute_position(self):
         # coeff1 = 1.0273e6
@@ -170,7 +170,6 @@ class Traverse(object):
             
             with open(path, 'w') as f:
                 f.write('coef_meter_per_rot = {}'.format(coef_meter_per_rot))
-            f.close()
 
         # Use the calibration coefficient
         self._coef_meter_per_rot = coef_meter_per_rot
@@ -314,11 +313,13 @@ class Traverse(object):
         thread.start()
         return thread
 
-    def define_track_profilometer(self, z_max, z_min, v_up, v_down, acc,
-                                  dacc, dt, t_exp, t_sleep, t_bottom):
+    def define_track_profilometer(
+            self, z_max, z_min, v_up, v_down, acc,
+            dacc, dt, t_exp, t_sleep, t_bottom):
 
-        times1, positions1, speeds1, t_total = make_track_sleep_1period_tbottom(
-            z_max, z_min, v_up, v_down, acc, dacc, dt, t_sleep, t_bottom)
+        times1, positions1, speeds1, t_total = \
+            make_track_sleep_1period_tbottom(
+                z_max, z_min, v_up, v_down, acc, dacc, dt, t_sleep, t_bottom)
         nb_periods = int(round(t_exp/t_total, 0))
         times, speeds, positions = concatenate(
             times1, speeds1, positions1, nb_periods)
@@ -592,10 +593,10 @@ class Traverses(object):
             ip_addresses = ['192.168.28.11', '192.168.28.12', '192.168.28.13']
 
         if const_positions is None:
-            const_positions = [1.062, 0.01, 0.01]
+            const_positions = [0.9983 + 0.01]*3
 
-        offset_abs = [0., 11.21, 64.20]
-
+        offset_abs = [0.]*3
+        
         self.ip_addresses = ip_addresses
         self.movement_allowed = True
 
@@ -796,9 +797,8 @@ class Traverses(object):
             target=self.record_positions, args=(duration, dtime))
         thread.start()
         return thread
-
     
-    def run_profiles(self, relative=True):
+    def run_profiles(self, times, speeds, positions, relative=True):
         
         threads = []
         # The master driver is also driven the 0/5 volts output signal
@@ -841,13 +841,14 @@ if __name__ == '__main__':
 
     t_bottom = 2
     
-
     profile = True
     record_positions = False
     if profile:
         
-        times, speeds, positions = traverses.traverse0.define_track_profilometer(
-            z_max, z_min, v_up, v_down, accel, dacc, dt, t_exp, t_sleep, t_bottom)
+        times, speeds, positions = \
+            traverses.traverse0.define_track_profilometer(
+                z_max, z_min, v_up, v_down, accel, dacc, dt,
+                t_exp, t_sleep, t_bottom)
         
         import matplotlib.pyplot as plt
         fig = plt.figure()
