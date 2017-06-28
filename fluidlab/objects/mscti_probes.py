@@ -32,9 +32,12 @@ class MSCTIProbe():
 
     """
 
-    def __init__(self, channels=['Dev1/ai1', 'Dev1/ai2'], sample_rate=256,
+    def __init__(self, channels=['Dev1/ai1', 'Dev1/ai2'], sample_rate=100,
                  Vmin=-5, Vmax=5, mode='Diff',
-                 file_calib=['calib_rho_MSCTI', 'calib_T_MSCTI']):
+                 file_calib=None):
+
+        if file_calib is None:
+            file_calib = ['calib_mscti_rho', 'calib_mscti_temp']
 
         self.channels = channels
         self.sample_rate = sample_rate
@@ -81,7 +84,7 @@ class MSCTIProbe():
     # ##########################################################################
     # MEASUREMENTS
 
-    def measure_volts(self, duration, save=True, file_name=None,
+    def measure_volts(self, duration, file_name=None,
                       sample_rate=None, return_time=True, verbose=False):
         """Measure and return the times and voltages.
 
@@ -92,12 +95,13 @@ class MSCTIProbe():
           (in s)
 
         """
-
-        if save and not file_name:
-            print('You need to give a filename to save the points!!')
-            file_name = input('Please give a name of the file output \n')
+        if file_name is None:
+            save = False
+        else:
+            save = True
+        
         if not return_time and save:
-            print('return time is important for acquisition, '
+            print('the times are important for acquisition, '
                   'return_time is set to True automatically')
             return_time = True
 
@@ -161,7 +165,7 @@ class MSCTIProbe():
 
     def measure_density(self):
 
-        time, voltages = self.measure_volts(duration=2, save=False)
+        time, voltages = self.measure_volts(duration=2)
         voltrho = np.mean(voltages[0])
         rho = self.rho_from_voltrho(voltrho)
 
@@ -185,7 +189,7 @@ class MSCTIProbe():
             print('Calibration cancelled...')
             return
 
-        volts = self.measure_volts(duration, return_time=False, save=False)
+        volts = self.measure_volts(duration, return_time=False)
         print(volts)
         header = 'profile for z={0}'.format(z)
         np.savetxt('temp_calib.txt', volts.transpose(), header=header)
@@ -277,20 +281,20 @@ class MSCTIProbe():
 
         figs.show()
 
-        def plot_profiles(self, file_profiles):
-            # file_profile is an array of strings
+    def plot_profiles(self, file_profiles):
+        # file_profile is an array of strings
 
-            for profile in file_profiles:
-                z, voltrho, voltT, date = self.load_profile(profile)
-                rho = self.rho_from_voltrho(voltrho)
-                plt.plot(rho, z)
+        for profile in file_profiles:
+            z, voltrho, voltT, date = self.load_profile(profile)
+            rho = self.rho_from_voltrho(voltrho)
+            plt.plot(rho, z)
 
-            plt.title('Density profile')
-            plt.xlabel('Density')
-            plt.ylabel('Vertical position z')
-            plt.grid(True)
-            plt.legend(file_profiles)
-            plt.show()
+        plt.title('Density profile')
+        plt.xlabel('Density')
+        plt.ylabel('Vertical position z')
+        plt.grid(True)
+        plt.legend(file_profiles)
+        plt.show()
 
     def fit_profile(self, z, rho):
         """Creates a function from data."""
@@ -353,7 +357,7 @@ with extreme densities with the following volume ratio: """
 
         happy = False
         while not happy:
-            volts = self.measure_volts(duration, return_time=False, save=False)
+            volts = self.measure_volts(duration, return_time=False)
             header = ('calibration for rho='
                       '{0}, T= {1} \n Volt rho, Volt T'.format(rho, T))
             np.savetxt('temp_calib.txt', volts.transpose(), header=header)
@@ -406,7 +410,7 @@ with extreme densities with the following volume ratio: """
 
         happy = False
         while not happy:
-            volts = self.measure_volts(duration, return_time=False, save=False)
+            volts = self.measure_volts(duration, return_time=False)
             header = ('calibration for rho='
                       '{0}, T= {1} \n Volt rho, Volt T'.format(rho, T))
             np.savetxt('temp_calib.txt', volts.transpose(), header=header)
@@ -466,17 +470,18 @@ with extreme densities with the following volume ratio: """
             file_calib = self.file_calib[0]
         elif kind_of_calib == 'T':
             file_calib = self.file_calib[1]
+        file_calib += '.h5'
 
-        if not os.path.exists(file_calib+'.h5'):
+        if not os.path.exists(file_calib):
+            print('No calibration file ' + file_calib)
             return rho, voltrho, T, voltT, date
         else:
-            temp = h5py.File(file_calib + '.h5', 'r')
-            rho = temp['rho'].value
-            voltrho = temp['voltrho'].value
-            T = temp['T'].value
-            voltT = temp['voltT'].value
-            date = temp['date'].value
-            temp.close()
+            with h5py.File(file_calib, 'r') as f:
+                rho = f['rho'].value
+                voltrho = f['voltrho'].value
+                T = f['T'].value
+                voltT = f['voltT'].value
+                date = f['date'].value
 
         return rho, voltrho, T, voltT, date
 
