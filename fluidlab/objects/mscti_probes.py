@@ -11,17 +11,16 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-# from fluiddyn.io import txt
-
 from fluiddyn.util import query
-
-import fluiddyn.output.figs as figs
-
 from fluidlab.instruments.daq.daqmx import read_analog
 
 import h5py
 
 import time
+
+
+def _isarray(a):
+    return isinstance(a, (np.ndarray, np.generic))
 
 
 class MSCTIProbe():
@@ -34,17 +33,17 @@ class MSCTIProbe():
 
     def __init__(self, channels=['Dev1/ai1', 'Dev1/ai2'], sample_rate=100,
                  Vmin=-5, Vmax=5, mode='Diff',
-                 file_calib=None):
+                 files_calib=None):
 
-        if file_calib is None:
-            file_calib = ['calib_mscti_rho', 'calib_mscti_temp']
+        if files_calib is None:
+            files_calib = ['calib_mscti_rho', 'calib_mscti_temp']
 
         self.channels = channels
         self.sample_rate = sample_rate
         self.Vmin = Vmin
         self.Vmax = Vmax
         self.mode = mode
-        self.file_calib = file_calib
+        self.files_calib = files_calib
         self.voltToff = -4.9962  # tension when temperature probe is unplugged
         # (constructor info)
 
@@ -52,14 +51,16 @@ class MSCTIProbe():
         rho_old, voltrho_old, T_old, voltT_old, date_old = \
             self.load_calibrations('rho')
 
-        if isinstance(rho_old, (np.ndarray, np.generic)) and rho_old.size > 1:
+        if _isarray(rho_old) and rho_old.size > 1:
             self.fit_rho_vs_voltrho(rho_old, voltrho_old)
 
-        rho_old, voltrho_old, T_old, voltT_old, date_old = \
-            self.load_calibrations('T')
+        self._has_temp = len(files_calib) > 1
+        if self._has_temp:
+            rho_old, voltrho_old, T_old, voltT_old, date_old = \
+                self.load_calibrations('T')
 
-        if isinstance(rho_old, (np.ndarray, np.generic)) and rho_old.size > 1:
-            self.fit_T_vs_voltT(T_old, voltT_old)
+            if _isarray(rho_old) and rho_old.size > 1:
+                self.fit_T_vs_voltT(T_old, voltT_old)
 
     def set_sample_rate(self, sample_rate):
         """Sets the sample rate."""
@@ -77,14 +78,14 @@ class MSCTIProbe():
         """Sets Vmin."""
         self.Vmax = Vmax
 
-    def set_file_calib(self, file_calib):
+    def set_files_calib(self, files_calib):
         """Sets the file calib."""
-        self.file_calib = file_calib
+        self.files_calib = files_calib
 
     # ##########################################################################
     # MEASUREMENTS
 
-    def measure_volts(self, duration, file_name=None,
+    def measure_volts(self, duration, path_save=None,
                       sample_rate=None, return_time=True, verbose=False):
         """Measure and return the times and voltages.
 
@@ -95,11 +96,11 @@ class MSCTIProbe():
           (in s)
 
         """
-        if file_name is None:
+        if path_save is None:
             save = False
         else:
             save = True
-        
+
         if not return_time and save:
             print('the times are important for acquisition, '
                   'return_time is set to True automatically')
@@ -115,49 +116,51 @@ class MSCTIProbe():
 
         if verbose:
             print('conductivity volts:\n', volts[0])
-            print('temperature volts:\n', volts[1])
             print('mean of conductictivity volts:', volts[0].mean())
-            print('mean of temperature volts:', volts[1].mean())
+
+            if self._has_temp:
+                print('temperature volts:\n', volts[1])
+                print('mean of temperature volts:', volts[1].mean())
 
         if return_time:
             ts = 1./self.sample_rate*np.arange(1, nb+1)
             if save:
-                file_name += '.h5'
-                self.save_volts(file_name, ts, volts)
+                if not path_save.endswith('.h5'):
+                    path_save += '.h5'
+                self.save_volts(path_save, ts, volts)
             return ts, volts
         else:
             return volts
 
-    def save_volts(self, path, t, volts):
+    def save_volts(self, path, times, volts):
 
         if os.path.exists(path):
             raise ValueError('file already exist, give an other name file')
 
         with h5py.File(path, 'w-') as f:
-            f['t'] = t
+            f['t'] = times
             f['voltrho'] = volts[0]
-            f['voltT'] = volts[1]
+            if self._has_temp:
+                f['voltT'] = volts[1]
             f['date'] = time.ctime(int(time.time()))
 
-            if os.path.exists(self.file_calib[0]+'.h5'):
-                f['calibration/file_calibration_rho'] = self.file_calib[0]
+            if os.path.exists(self.files_calib[0]+'.h5'):
+                f['calibration/file_calibration_rho'] = self.files_calib[0]
                 if not hasattr(self, 'coeffs_rho'):
                     rho_old, voltrho_old, T_old, voltT_old, date_old = \
                         self.load_calibrations('rho')
-                    if isinstance(rho_old, (np.ndarray, np.generic)) and \
-                       rho_old.size >= 1:
+                    if _isarray(rho_old) and rho_old.size >= 1:
                         self.fit_rho_vs_voltrho(rho_old, voltrho_old)
                         f['calibration/coeffsrho'] = self.coeffsrho
                     else:
                         f['calibration/coeffsrho'] = self.coeffsrho
 
-            if os.path.exists(self.file_calib[1]+'.h5'):
-                f['calibration/file_calibration_T'] = self.file_calib[1]
+            if self._has_temp and os.path.exists(self.files_calib[1]+'.h5'):
+                f['calibration/file_calibration_T'] = self.files_calib[1]
                 if not hasattr(self, 'coeffs_T'):
                     rho_old, voltrho_old, T_old, voltT_old, date_old = \
                         self.load_calibrations('T')
-                    if isinstance(rho_old, (np.ndarray, np.generic)) and \
-                       rho_old.size >= 1:
+                    if _isarray(rho_old) and rho_old.size >= 1:
                         self.fit_T_vs_voltT(T_old, voltT_old)
                         f['calibration/coeffsT'] = self.coeffsT
                     else:
@@ -210,16 +213,16 @@ class MSCTIProbe():
         z_old, voltrho_old, voltT_old, date_old = self.load_profile(
             file_profile)
 
-        if isinstance(z_old, (np.ndarray, np.generic)) and z_old.size >= 1:
+        if _isarray(z_old) and z_old.size >= 1:
             z = np.append(z_old, z)
             voltrho = np.append(voltrho_old, volts[0])
             voltT = np.append(voltT_old, volts[1])
             date = np.append(date_old, time.ctime(int(time.time())))
         else:
-            z = np.asarray(z)
-            voltrho = np.asarray(volts[0])
-            voltT = np.asarray(volts[1])
-            date = np.asarray(time.ctime(int(time.time())))
+            z = np.array(z)
+            voltrho = np.array(volts[0])
+            voltT = np.array(volts[1])
+            date = np.array(time.ctime(int(time.time())))
         if not os.path.exists(file_profile+'.h5'):
             mode = 'a'
         else:
@@ -253,14 +256,8 @@ class MSCTIProbe():
         """Plots the measurements of the save profile."""
 
         # plot
-        figures = figs.Figures()
-        fig = figures.new_figure(
-            name_file='fig_profile',
-            fig_width_mm=190, fig_height_mm=150,
-            size_axe=[0.13, 0.14, 0.83, 0.82]
-        )
+        fig = plt.figure()
         ax = fig.gca()
-
         ax.set_xlabel(r'$\rho (kg/l)$')
         ax.set_ylabel(r'$z$ (m)')
 
@@ -269,9 +266,9 @@ class MSCTIProbe():
             file_profile)
         rho_old = self.rho_from_voltrho(voltrho_old)
         # load all saved profile
-        if isinstance(z_old, (np.ndarray, np.generic)) and z_old.size >= 1:
+        if _isarray(z_old) and z_old.size >= 1:
             ax.plot(rho_old, z_old, 'xg')
-        if isinstance(z_old, (np.ndarray, np.generic)) and z_old.size > 1:
+        if _isarray(z_old) and z_old.size > 1:
             self.fit_profile(rho_old, z_old)
             rhos_for_plot = np.linspace(rho_old.min(), rho_old.max(), 200)
             ax.plot(rhos_for_plot, self.z_from_rho(rhos_for_plot), 'k-')
@@ -279,7 +276,7 @@ class MSCTIProbe():
         if z is not None and voltrho is not None:
             ax.plot(self.rho_from_voltrho(voltrho), z, 'xr')
 
-        figs.show()
+        plt.show()
 
     def plot_profiles(self, file_profiles):
         # file_profile is an array of strings
@@ -314,13 +311,12 @@ class MSCTIProbe():
         print('rhos:', rhos)
 
         print(
-"""These solutions can be prepared by mixing the two first solutions
-with extreme densities with the following volume ratio: """
-        )
+            'These solutions can be prepared by mixing the two '
+            'first solutions with extreme densities with the following '
+            'volume ratio: \nV_rho_max/V_tot :',
+            (rhos-rho_min)/(rho_max-rho_min))
 
-        print('V_rho_max/V_tot :', (rhos-rho_min)/(rho_max-rho_min))
-
-    def calibrate(self, rho, T,  duration=2.):
+    def calibrate(self, rho, T, duration=2.):
         r"""Calibrates the probe.
 
         Parameters
@@ -342,14 +338,9 @@ with extreme densities with the following volume ratio: """
         temperature.
         """
 
-        voltages = np.empty(2)
-
-        # measure voltages
-
         answer = query.query(
-            '\nPut the probe in solution with rho = {0}\n'.format(rho) +
-            'Ready? [Y / no, cancel the calibration] '
-        )
+            '\nPut the probe in solution with rho = {}\n'.format(rho) +
+            'Ready? [Y / no, cancel the calibration] ')
 
         if answer.startswith('n'):
             print('Calibration cancelled...')
@@ -359,21 +350,21 @@ with extreme densities with the following volume ratio: """
         while not happy:
             volts = self.measure_volts(duration, return_time=False)
             header = ('calibration for rho='
-                      '{0}, T= {1} \n Volt rho, Volt T'.format(rho, T))
-            np.savetxt('temp_calib.txt', volts.transpose(), header=header)
-            voltages = np.mean(volts, axis=1)
-            print('solution rho: {0} ; voltage: {1} kg/m3'.format(
+                      '{}, T= {}\nVolt rho, Volt T'.format(rho, T))
+            np.savetxt('tmp_calib.txt', volts.transpose(), header=header)
+            voltages = volts.mean(axis=1)
+            print('solution rho: {} kg/l; voltage: {}'.format(
                 rho, voltages[0]))
-            print('solution T: {0} ; voltage: {1} V'.format(T, voltages[1]))
+            print('solution T: {} ; voltage: {} V'.format(T, voltages[1]))
             happy = query.query_yes_no(
                 'Are you happy with this measurement?')
 
         self.plot_calibrations(rho=rho, voltrho=voltages[0])
 
-        if query.query_yes_no('Are you happy with this measurement?'):
+        if query.query_yes_no('Should the new point be saved?'):
             self.save_calibration(rho, T, voltages, 'rho')
 
-    def calibrate_temperature(self, rho, T,  duration=2.):
+    def calibrate_temperature(self, rho, T, duration=2.):
         r"""Calibrates the temperature probe.
 
         Parameters
@@ -395,14 +386,9 @@ with extreme densities with the following volume ratio: """
         temperature.
         """
 
-        voltages = np.empty(2)
-
-        # measure voltages
-
         answer = query.query(
-            '\nPut the probe in solution at T = {0}\n'.format(T) +
-            'Ready? [Y / no, cancel the calibration] '
-        )
+            '\nPut the probe in solution at T = {}\n'.format(T) +
+            'Ready? [Y / no, cancel the calibration] ')
 
         if answer.startswith('n'):
             print('Calibration cancelled...')
@@ -412,50 +398,50 @@ with extreme densities with the following volume ratio: """
         while not happy:
             volts = self.measure_volts(duration, return_time=False)
             header = ('calibration for rho='
-                      '{0}, T= {1} \n Volt rho, Volt T'.format(rho, T))
-            np.savetxt('temp_calib.txt', volts.transpose(), header=header)
+                      '{}, T= {} \n Volt rho, Volt T'.format(rho, T))
+            np.savetxt('tmp_calib.txt', volts.transpose(), header=header)
             voltages = np.mean(volts, axis=1)
-            print('solution T: {0} ; voltage: {1} V'.format(T, voltages[1]))
+            print('solution T: {} ; voltage: {} V'.format(T, voltages[1]))
             happy = query.query_yes_no(
                 'Are you happy with this measurement?')
 
         self.plot_calibrations_T(T=T, voltT=voltages[1])
 
-        if query.query_yes_no('Are you happy with this measurement?'):
+        if query.query_yes_no('Should the new point be saved?'):
             self.save_calibration(rho, T, voltages, 'T')
 
     def save_calibration(self, rho, T, volts, kind_of_calib):
         """Saves the results of a calibration."""
 
         if kind_of_calib == 'rho':
-            file_calib = self.file_calib[0]
+            file_calib = self.files_calib[0]
         elif kind_of_calib == 'T':
-            file_calib = self.file_calib[1]
+            file_calib = self.files_calib[1]
+        file_calib += '.h5'
 
         print('Save the results of the calibration in file:', file_calib)
 
         rho_old, voltrho_old, T_old, voltT_old, date_old = \
             self.load_calibrations(kind_of_calib)
 
-        if isinstance(rho_old, (np.ndarray, np.generic)) and \
-           rho_old.size >= 1:
+        if _isarray(rho_old) and rho_old.size >= 1:
             rho = np.append(rho_old, rho)
             voltrho = np.append(voltrho_old, volts[0])
             T = np.append(T_old, T)
             voltT = np.append(voltT_old, volts[1])
             date = np.append(date_old, time.ctime(int(time.time())))
         else:
-            rho = np.asarray(rho)
-            T = np.asarray(T)
-            voltrho = np.asarray(volts[0])
-            voltT = np.asarray(volts[1])
-            date = np.asarray(time.ctime(int(time.time())))
-        if not os.path.exists(file_calib + '.h5'):
+            rho = np.array(rho)
+            T = np.array(T)
+            voltrho = np.array(volts[0])
+            voltT = np.array(volts[1])
+            date = np.array(time.ctime(int(time.time())))
+        if not os.path.exists(file_calib):
             mode = 'a'
         else:
             mode = 'w'
 
-        with h5py.File(file_calib + '.h5', mode) as f:
+        with h5py.File(file_calib, mode) as f:
             f['rho'] = rho
             f['voltrho'] = voltrho
             f['T'] = T
@@ -467,9 +453,9 @@ with extreme densities with the following volume ratio: """
         rho, voltrho, T, voltT, date = [], [], [], [], []
 
         if kind_of_calib == 'rho':
-            file_calib = self.file_calib[0]
+            file_calib = self.files_calib[0]
         elif kind_of_calib == 'T':
-            file_calib = self.file_calib[1]
+            file_calib = self.files_calib[1]
         file_calib += '.h5'
 
         if not os.path.exists(file_calib):
@@ -490,12 +476,7 @@ with extreme densities with the following volume ratio: """
         """Plots the measurements of the saved calibrations for rho."""
 
         # plot
-        figures = figs.Figures()
-        fig = figures.new_figure(
-            name_file='fig_calibration',
-            fig_width_mm=190, fig_height_mm=150,
-            size_axe=[0.13, 0.14, 0.83, 0.82]
-        )
+        fig = plt.figure()
         ax = fig.gca()
 
         ax.set_xlabel(r'$\rho$')
@@ -506,33 +487,25 @@ with extreme densities with the following volume ratio: """
         # load all saved calibrations
         rho_old, voltrho_old, T_old, voltT_old, date_old = \
             self.load_calibrations('rho')
-        if isinstance(rho_old, (np.ndarray, np.generic)) and rho_old.size >= 1:
+        if _isarray(rho_old) and rho_old.size >= 1:
             ax.plot(rho_old, voltrho_old, 'xg')
-        if isinstance(rho_old, (np.ndarray, np.generic)) and rho_old.size > 1:
+        if _isarray(rho_old) and rho_old.size > 1:
             self.fit_rho_vs_voltrho(rho_old, voltrho_old)
             volts_for_plot = np.linspace(
                 voltrho_old.min(), voltrho_old.max(), 200)
             ax.plot(self.rho_from_voltrho(volts_for_plot),
-                    volts_for_plot,
-                    'k-')
+                    volts_for_plot, 'k-')
 
         if rho is not None and voltrho is not None:
             ax.plot(rho, voltrho, 'xr')
 
-        figs.show()
+        plt.show()
 
     def plot_calibrations_T(self, T=None, voltT=None):
         """Plots the measurements of the saved calibrations for T."""
 
-        # plot
-        figures = figs.Figures()
-        fig = figures.new_figure(
-            name_file='fig_calibration',
-            fig_width_mm=190, fig_height_mm=150,
-            size_axe=[0.13, 0.14, 0.83, 0.82]
-        )
+        fig = plt.figure()
         ax = fig.gca()
-
         ax.set_xlabel(r'$T (C)$')
         ax.set_ylabel(r'$U$ (V)')
 
@@ -541,20 +514,19 @@ with extreme densities with the following volume ratio: """
         # load all saved calibrations
         rho_old, voltrho_old, T_old, voltT_old, date_old = \
             self.load_calibrations('T')
-        if isinstance(rho_old, (np.ndarray, np.generic)) and rho_old.size >= 1:
+        if _isarray(rho_old) and rho_old.size >= 1:
             ax.plot(T_old, voltT_old, 'xg')
-        if isinstance(rho_old, (np.ndarray, np.generic)) and rho_old.size > 1:
+        if _isarray(rho_old) and rho_old.size > 1:
             self.fit_T_vs_voltT(T_old, voltT_old)
             ax.plot(T_old, voltT_old, 'xg')
             volts_for_plot = np.linspace(voltT_old.min(), voltT_old.max(), 200)
             ax.plot(self.T_from_voltT(volts_for_plot),
-                    volts_for_plot,
-                    'k-')
+                    volts_for_plot, 'k-')
 
         if T is not None and voltT is not None:
             ax.plot(T, voltT, 'xr')
 
-        figs.show()
+        plt.show()
 
     # fits of calibration data points
     def fit_rho_vs_voltrho(self, rho, voltrho):
@@ -564,8 +536,8 @@ with extreme densities with the following volume ratio: """
         self.coeffsrho = coeffs
 
     def T_from_voltT(self, voltT):
-        temp = (np.log(voltT-self.voltToff)-self.coeffsT[1])/self.coeffsT[0]
-        Ti = 1./temp - 273.15
+        tmp = (np.log(voltT-self.voltToff)-self.coeffsT[1])/self.coeffsT[0]
+        Ti = 1./tmp - 273.15
         return Ti
 
     def fit_T_vs_voltT(self, T, voltT):

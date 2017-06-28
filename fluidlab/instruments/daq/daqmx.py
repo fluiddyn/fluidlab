@@ -154,7 +154,8 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         volt_max = [volt_max] * nb_resources
 
     # check samples_per_chan
-    if not isinstance(samples_per_chan, six.integer_types) or samples_per_chan <= 0:
+    if not isinstance(samples_per_chan, six.integer_types) or \
+       samples_per_chan <= 0:
         raise ValueError('samples_per_chan has to be a positive integer.')
 
     # prepare coupling_types
@@ -181,7 +182,8 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
 
     for ir, resource in enumerate(resource_names):
         if verbose:
-            print('DAQmx: Create AI Voltage Chan (' + str(resource) + ' [' + str(volt_min[ir]) + 'V;' + str(volt_max[ir]) + 'V])')
+            print('DAQmx: Create AI Voltage Chan (' + str(resource) +
+                  ' [' + str(volt_min[ir]) + 'V;' + str(volt_max[ir]) + 'V])')
         task.CreateAIVoltageChan(
             resource, '', terminal_config, volt_min[ir], volt_max[ir],
             DAQmx_Val_Volts, None)
@@ -206,7 +208,8 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         if verbose:
             for name, value in _coupling_values.items():
                 if value == coupling_value:
-                    print('DAQmx: Setting AI channel coupling (' + str(resource) + '): ' + name)
+                    print('DAQmx: Setting AI channel coupling (' +
+                          str(resource) + '): ' + name)
         task.SetChanAttribute(resource, DAQmx_AI_Coupling, coupling_value)
 
     # configure clock and DMA input buffer
@@ -214,17 +217,19 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         verbose_text = 'DAQmx: Configure clock timing ('
         if verbose:
             if samples_per_chan < 1000:
-                verbose_text = verbose_text + str(samples_per_chan) + " samp/chan @ "
+                verbose_text += str(samples_per_chan) + " samp/chan @ "
             elif samples_per_chan < 1000000:
-                verbose_text = verbose_text + str(samples_per_chan/1000) + " kSamp/chan @ "
+                verbose_text += str(samples_per_chan/1000) + " kSamp/chan @ "
             else:
-                verbose_text = verbose_text + str(samples_per_chan/1000000) + " MSamp/chan @ "
+                verbose_text += str(samples_per_chan/1000000) + " MSamp/chan @ "
             if sample_rate < 1000:
-                verbose_text = verbose_text + ("%.2f Hz using OnboardClock)" % sample_rate)
+                verbose_text += ("%.2f Hz using OnboardClock)" % sample_rate)
             elif sample_rate < 1000000:
-                verbose_text = verbose_text + ("%.2f kHz using OnboardClock)" % (sample_rate/1000.0))
+                verbose_text += ("%.2f kHz using OnboardClock)" %
+                                 (sample_rate/1000.0))
             else:
-                verbose_text = verbose_text + ("%.2f MHz using OnboardClock)" % (sample_rate/1e6))
+                verbose_text += ("%.2f MHz using OnboardClock)" %
+                                 (sample_rate/1e6))
             print(verbose_text)
         task.CfgSampClkTiming(
             'OnboardClock', sample_rate, DAQmx_Val_Rising,
@@ -244,7 +249,8 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         endtime = starttime+samples_per_chan/sample_rate
         endtime_str = time.strftime(dateformat, time.localtime(endtime))
         print("DAQmx: Starting acquisition: " + starttime_str)
-        print("       Expected duration: %.2f min" % (samples_per_chan/(60.0*sample_rate)))
+        print("       Expected duration: %.2f min" %
+              (samples_per_chan/(60.0*sample_rate)))
         print("       Expected end time: " + endtime_str)
 
     task.StartTask()
