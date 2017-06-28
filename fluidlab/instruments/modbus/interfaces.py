@@ -18,6 +18,7 @@ Provides:
 
 """
 
+import sys
 import collections
 import six
 
@@ -106,10 +107,17 @@ class PyModbusInterface(ModbusInterface):
 
     def __init__(self, port, method='rtu', timeout=1):
         try:
-            from pymodbus.client.sync import ModbusSerialClient
+            if sys.version_info.major == 2:
+                from pymodbus.client.sync import ModbusSerialClient
+            else:
+                from pymodbus3.client.sync import ModbusSerialClient
         except ImportError:
+            if sys.version_info.major == 2:
+                package_name = 'pymodbus'
+            else:
+                package_name = 'pymodbus3'
             raise ImportError(
-                'Can not import pymodbus. '
+                'Can not import {}. '.format(package_name) +
                 'Is it installed? If not, try to install it.')
 
         self._modbus = ModbusSerialClient(method=method, port=port)
