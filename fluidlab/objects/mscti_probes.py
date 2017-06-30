@@ -47,6 +47,8 @@ class MSCTIProbe():
         self.voltToff = -4.9962  # tension when temperature probe is unplugged
         # (constructor info)
 
+        self._has_temp = len(files_calib) > 1
+        
         # load saved calibration
         rho_old, voltrho_old, T_old, voltT_old, date_old = \
             self.load_calibrations('rho')
@@ -54,7 +56,6 @@ class MSCTIProbe():
         if _isarray(rho_old) and rho_old.size > 1:
             self.fit_rho_vs_voltrho(rho_old, voltrho_old)
 
-        self._has_temp = len(files_calib) > 1
         if self._has_temp:
             rho_old, voltrho_old, T_old, voltT_old, date_old = \
                 self.load_calibrations('T')
@@ -355,7 +356,7 @@ class MSCTIProbe():
             voltages = volts.mean(axis=1)
             print('solution rho: {} kg/l; voltage: {}'.format(
                 rho, voltages[0]))
-            print('solution T: {} ; voltage: {} V'.format(T, voltages[1]))
+            # print('solution T: {} ; voltage: {} V'.format(T, voltages[1]))
             happy = query.query_yes_no(
                 'Are you happy with this measurement?')
 
@@ -427,14 +428,16 @@ class MSCTIProbe():
         if _isarray(rho_old) and rho_old.size >= 1:
             rho = np.append(rho_old, rho)
             voltrho = np.append(voltrho_old, volts[0])
-            T = np.append(T_old, T)
-            voltT = np.append(voltT_old, volts[1])
+            if self._has_temp:
+                T = np.append(T_old, T)
+                voltT = np.append(voltT_old, volts[1])
             date = np.append(date_old, time.ctime(int(time.time())))
         else:
             rho = np.array(rho)
-            T = np.array(T)
             voltrho = np.array(volts[0])
-            voltT = np.array(volts[1])
+            if self._has_temp:
+                T = np.array(T)
+                voltT = np.array(volts[1])
             date = np.array(time.ctime(int(time.time())))
         if not os.path.exists(file_calib):
             mode = 'a'
@@ -444,8 +447,9 @@ class MSCTIProbe():
         with h5py.File(file_calib, mode) as f:
             f['rho'] = rho
             f['voltrho'] = voltrho
-            f['T'] = T
-            f['voltT'] = voltT
+            if self._has_temp:
+                f['T'] = T
+                f['voltT'] = voltT
             f['date'] = date
 
     def load_calibrations(self, kind_of_calib):
@@ -465,8 +469,9 @@ class MSCTIProbe():
             with h5py.File(file_calib, 'r') as f:
                 rho = f['rho'].value
                 voltrho = f['voltrho'].value
-                T = f['T'].value
-                voltT = f['voltT'].value
+                if self._has_temp:
+                    T = f['T'].value
+                    voltT = f['voltT'].value
                 date = f['date'].value
 
         return rho, voltrho, T, voltT, date
@@ -531,7 +536,13 @@ class MSCTIProbe():
     # fits of calibration data points
     def fit_rho_vs_voltrho(self, rho, voltrho):
         """Creates a function from data."""
-        coeffs = np.polyfit(voltrho, rho, deg=3)
+        if len(rho) < 3:
+            deg = 1
+        elif len(rho) < 5:
+            deg = 2
+        else:
+            deg = 3 
+        coeffs = np.polyfit(voltrho, rho, deg=deg)
         self.rho_from_voltrho = np.poly1d(coeffs)
         self.coeffsrho = coeffs
 

@@ -174,8 +174,7 @@ def make_track_sleep_1period(z_max, z_min, v_up, v_down, acc, dacc, dt,
     return times, positions, speeds, t_total
 
 def make_track_sleep_1period_tbottom(z_max, z_min, v_up, v_down, acc, dacc, dt,
-                                     t_sleep, t_bottom):
-
+                                     t_bottom, t_period=None):
     """ 
     Track for the profilometers with a sleeping time at the end AND
     sleeping time at the bottom (to measure the signal at the bottom).
@@ -202,11 +201,16 @@ def make_track_sleep_1period_tbottom(z_max, z_min, v_up, v_down, acc, dacc, dt,
     t_5 = t_4 + v_up/acc
     t_6 = t_5 + (abs(z_5-z_4)/v_up)
     t_7 = t_6 + v_up/dacc
-    t_total = t_7 + t_sleep
 
+    if t_period is None:
+        t_period = t_7
+    elif t_period < t_7:
+        raise ValueError('t_period < t_7')
 
     # Arrays
-    nt = np.round(t_total/dt)
+    nt = np.round(t_period/dt)
+    t_total = nt * dt
+    
     times = dt*np.arange(nt)
     positions = np.zeros_like(times)
     speeds = np.zeros_like(times)

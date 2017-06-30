@@ -10,7 +10,8 @@
 
 from __future__ import division
 
-from fluidlab.util.calcul_track import make_track_sleep_1period_tbottom, concatenate
+from fluidlab.util.calcul_track import (
+    make_track_sleep_1period_tbottom, concatenate)
 from fluiddyn.util import query
 
 import os
@@ -40,6 +41,19 @@ if not os.path.exists(path_dir):
 class TraverseError(ValueError):
     pass
 
+
+def define_track_profilometer(
+        z_max, z_min, v_up, v_down, acc,
+        dacc, dt, t_exp, t_bottom, t_period=None):
+
+    times1, positions1, speeds1, t_total = \
+        make_track_sleep_1period_tbottom(
+            z_max, z_min, v_up, v_down, acc, dacc, dt, t_bottom, t_period)
+    nb_periods = int(round(t_exp/t_total, 0))
+    times, speeds, positions = concatenate(
+        times1, speeds1, positions1, nb_periods)
+
+    return times, speeds, positions
 
 class Traverse(object):
     def __init__(self, ip_modbus=None, const_position=1.062, offset_abs=None):
@@ -304,6 +318,7 @@ class Traverse(object):
                 pos = self.get_relative_position()
                 t = time()
                 f.write('{:.4f},{:.4f}\n'.format(t - timer.tstart, pos))
+                f.flush()
                 t_loop = timer.wait_tick()
 
     def record_positions_async(self, duration, dtime=0.2):
@@ -311,19 +326,6 @@ class Traverse(object):
             target=self.record_positions, args=(duration, dtime))
         thread.start()
         return thread
-
-    def define_track_profilometer(
-            self, z_max, z_min, v_up, v_down, acc,
-            dacc, dt, t_exp, t_sleep, t_bottom):
-
-        times1, positions1, speeds1, t_total = \
-            make_track_sleep_1period_tbottom(
-                z_max, z_min, v_up, v_down, acc, dacc, dt, t_sleep, t_bottom)
-        nb_periods = int(round(t_exp/t_total, 0))
-        times, speeds, positions = concatenate(
-            times1, speeds1, positions1, nb_periods)
-        
-        return times, speeds, positions
     
     def make_profiles_from_track(self, times, speeds, positions, save=False):
         
@@ -468,6 +470,8 @@ class Traverse(object):
                          fact_multiplicatif_accel=1, coeff_smooth=2.,
                          periodic=True):
 
+        self.u3.writeRegister(5000, volt_no_movement)
+        
         timestep = times[1] - times[0]
 
         self.times = times
@@ -481,6 +485,9 @@ class Traverse(object):
         speeds[:-1] = (speeds[:-1] + speeds[1:])/2
 
         eps = 0.0001  # an error of eps m in position is accepted
+
+        error_v = 0.0001
+        
         x_measured = []
         v_sent = []
         t_sent = []
@@ -490,7 +497,7 @@ class Traverse(object):
             acc * fact_multiplicatif_accel)
 
         t_start = time()
-        dt = times[1] - times[0]
+        dt = timestep
         timer = Timer(dt)
 
         v = speeds[0]
@@ -514,20 +521,6 @@ class Traverse(object):
             print(positions[it], x)
             error = abs(positions[it] - x)
 
-            # Test u3
-            # *************
-            sign = np.sign(positions[it+1] - x)
-            if sign < 0:
-                value = 5.
-
-            elif sign > 0:
-                value = 0.
-
-            elif sign == 0:
-                value = volt_no_movement
-            
-            self.u3.writeRegister(5000, value)
-
             if error > 1.:
                 self.set_target_speed(0)
                 self.motor.run_quick_stop()
@@ -535,7 +528,16 @@ class Traverse(object):
 
             v_should_go = (positions[it+1]-x) / timestep
 
+            # u3
+            if abs(v_theo) <= error_v:
+                value = volt_no_movement
+            elif v_theo < -error_v:
+                value = 5.
+            else:
+                value = 0.
             
+            self.u3.writeRegister(5000, value)
+
             if error >= eps:
                 v_target = (coeff_smooth*v_theo + v_should_go) / (
                     coeff_smooth + 1)
@@ -549,7 +551,6 @@ class Traverse(object):
 
             t_sent.append(time()-t_start)
             self.set_target_speed(v_target)
-            
             
             acc = (abs(rotation_rates[it+1] - rotation_rates[it-1]) /
                    (2*timestep) or 600)
@@ -700,12 +701,14 @@ class Traverses(object):
             time_as_str()))
 
         with open(path, 'w') as f:
-            f.write('make_profiles(z_min='
-                    '{}, z_max={}, speed_down={},\n'.format(
-                        z_min, z_max, speed_down) +
-                    '              speed_up={},\n'.format(speed_up) +
-                    '              period={}, nb_periods={})\n'.format(
-                        period, nb_periods))
+            f.write(
+                time_as_str(2) +
+                '\nmake_profiles(z_min='
+                '{}, z_max={}, speed_down={},\n'.format(
+                    z_min, z_max, speed_down) +
+                '              speed_up={},\n'.format(speed_up) +
+                '              period={}, nb_periods={})\n'.format(
+                    period, nb_periods))
 
         i_period = 0
         timer = Timer(period)
@@ -724,7 +727,6 @@ class Traverses(object):
                nb_periods is not None and i_period >= nb_periods:
                 break
             timer.wait_tick()
-
 
     def make_profiles_from_track(self, times, speeds, positions, save=False):
         
@@ -756,7 +758,6 @@ class Traverses(object):
 
         if save: 
             f.close()
-
 
     def record_positions(self, duration, dtime=0.2):
 
@@ -793,14 +794,30 @@ class Traverses(object):
                 t_loop = timer.wait_tick()
 
     def record_positions_async(self, duration, dtime=0.2):
-        thread = Thread(
-            target=self.record_positions, args=(duration, dtime))
+        thread = create_thread_record_positions(duration, dtime)
         thread.start()
         return thread
+
+    def create_thread_record_positions(self, duration, dtime=0.2):
+        thread = Thread(
+            target=self.record_positions, args=(duration, dtime))
+        return thread
     
-    def run_profiles(self, times, speeds, positions, relative=True):
+    def run_profiles(self, times, speeds, positions, relative=True, thread_record=None):
+
+        eps = 0.001
+        for traverse in self.traverses:
+            pos = traverse.get_relative_position()
+            print(pos, positions[0])
+            if abs(pos - positions[0]) > eps:
+                print('First run traverses.go_to({}, 0.01)'.format(positions[0]))
+                return
         
         threads = []
+
+        if thread_record is not None:
+            threads.append(thread_record)
+        
         # The master driver is also driven the 0/5 volts output signal
         thread = Thread(target=self.traverses[0]._follow_track_u3,
                         args=(times, speeds, positions))
@@ -816,7 +833,7 @@ class Traverses(object):
         for thread in threads:
             thread.join()
 
-        print ('threads = ', threads)
+        print('threads = ', threads)
         
 if __name__ == '__main__':
 
