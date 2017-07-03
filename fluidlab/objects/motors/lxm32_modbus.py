@@ -90,8 +90,9 @@ class Motor(object):
                 self.write_registers(17498, [0, 0])
 
         if disable_limit_switches:
-            # disable limit switches (power stage must be disabled)
             self.write_registers(1566, [0]*4)
+        else:
+            self.write_registers(1566, [0, 1, 0, 1])
 
         self.ramp_v = self.read_ramp_v()
 
@@ -122,12 +123,12 @@ class Motor(object):
     def __del__(self):
         self.close()
 
-    def _disable_limit_switches(self):
+    def disable_limit_switches(self):
         """disable limit switches (power stage must be disabled)"""
         self.disable()
         self.write_registers(1566, [0]*4)
 
-    def _enable_limit_switches(self):
+    def enable_limit_switches(self):
         """disable limit switches (power stage must be disabled)"""
         self.disable()
         self.write_registers(1566, [0, 1, 0, 1])
@@ -147,7 +148,7 @@ class Motor(object):
             # flip toggle bit
             self.dm_control ^= 1 << 7
             out[0] = self.dm_control
-            print('hex(dm_control):', hex(self.dm_control))
+            # print('hex(dm_control):', hex(self.dm_control))
 
         outscan.extend(out)
         self.outscan = outscan

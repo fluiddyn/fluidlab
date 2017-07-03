@@ -8,7 +8,7 @@
 
 """
 
-from __future__ import division
+from __future__ import division, print_function
 
 from fluidlab.util.calcul_track import (
     make_track_sleep_1period_tbottom, concatenate)
@@ -59,12 +59,10 @@ class Traverse(object):
     def __init__(self, ip_modbus=None, const_position=1.062, offset_abs=None):
         self.motor = Motor(
             ip_modbus=ip_modbus, disable_limit_switches=False)
-        print(self.motor)
         self.movement_allowed = True
         self._const_position = const_position
         self.ip_modbus = ip_modbus
         sleep(0.2)
-        print(self.motor.state)
         if self.motor.state == 'Fault (9)':
             self.motor.fault_reset()
             sleep(0.1)
@@ -72,6 +70,8 @@ class Traverse(object):
         if self.motor.state == 'Ready To Switch (4)':
             self.enable()
             sleep(0.1)
+
+        print(self.motor.state)
 
         self._offset_abs = offset_abs
         self.u3 = U3()
@@ -81,7 +81,7 @@ class Traverse(object):
         # Load calibration*
         try:
             self._coef_meter_per_rot = self._load_calibration()
-        except(IOError):
+        except IOError:
             self._coef_meter_per_rot = 1e6
             print("Calibration file doesn't exist. Use function self.calibrate().")
     def get_absolute_position(self):
@@ -374,12 +374,11 @@ class Traverse(object):
         # to decrease discretization error
         speeds[:-1] = (speeds[:-1] + speeds[1:])/2
 
-        eps = 0.0001  # an error of eps m in position is accepted
+        eps = 0.001  # an error of eps m in position is accepted
         x_measured = []
         v_sent = []
         t_sent = []
         acc = abs((rotation_rates[1] - rotation_rates[0])) / timestep or 600
-        print('acc = ', acc) 
         self.motor.set_acceleration(
             acc * fact_multiplicatif_accel)
 
@@ -405,27 +404,28 @@ class Traverse(object):
                 self.motor.set_target_rotation_rate(0)
                 return x_measured
                 
-            print(positions[it], x)
+            # print(positions[it], x)
             error = abs(positions[it] - x)
 
-            if error > 1.:
+            if error > 0.1:
+                print('Large error position carriage!')
                 self.set_target_speed(0)
                 self.motor.run_quick_stop()
                 raise CarriageError('Error in position too large.')
 
             v_should_go = (positions[it+1]-x) / timestep
 
-            
             if error >= eps:
                 v_target = (coeff_smooth*v_theo + v_should_go) / (
                     coeff_smooth + 1)
             else:
                 v_target = v_theo
 
-            print(('error: {:4.3f} m, '
-                   'v_should_go: {:4.3f} m/s, '
-                   'v_theo: {:4.3f} m/s, v_target:{:4.3f} m/s').format(
-                       error, v_should_go, v_theo, v_target))
+            if error > 4 * eps:
+                print(('Warning: error = {:4.3f} m, '
+                       'v_should_go: {:4.3f} m/s, '
+                       'v_theo: {:4.3f} m/s, v_target:{:4.3f} m/s').format(
+                           error, v_should_go, v_theo, v_target))
 
             t_sent.append(time()-t_start)
             self.set_target_speed(v_target)
@@ -484,7 +484,7 @@ class Traverse(object):
         # to decrease discretization error
         speeds[:-1] = (speeds[:-1] + speeds[1:])/2
 
-        eps = 0.0001  # an error of eps m in position is accepted
+        eps = 0.001  # an error of eps m in position is accepted
 
         error_v = 0.0001
         
@@ -492,7 +492,6 @@ class Traverse(object):
         v_sent = []
         t_sent = []
         acc = abs((rotation_rates[1] - rotation_rates[0])) / timestep or 600
-        print('acc = ', acc) 
         self.motor.set_acceleration(
             acc * fact_multiplicatif_accel)
 
@@ -518,10 +517,10 @@ class Traverse(object):
                 self.motor.set_target_rotation_rate(0)
                 return x_measured
                 
-            print(positions[it], x)
             error = abs(positions[it] - x)
 
-            if error > 1.:
+            if error > 0.1:
+                print('Large error position carriage!')
                 self.set_target_speed(0)
                 self.motor.run_quick_stop()
                 raise CarriageError('Error in position too large.')
@@ -544,10 +543,11 @@ class Traverse(object):
             else:
                 v_target = v_theo
 
-            print(('error: {:4.3f} m, '
-                   'v_should_go: {:4.3f} m/s, '
-                   'v_theo: {:4.3f} m/s, v_target:{:4.3f} m/s').format(
-                       error, v_should_go, v_theo, v_target))
+            if error > 4 * eps:
+                print(('Warning (u3): error = {:4.3f} m, '
+                       'v_should_go: {:4.3f} m/s, '
+                       'v_theo: {:4.3f} m/s, v_target:{:4.3f} m/s').format(
+                           error, v_should_go, v_theo, v_target))
 
             t_sent.append(time()-t_start)
             self.set_target_speed(v_target)
@@ -808,7 +808,6 @@ class Traverses(object):
         eps = 0.001
         for traverse in self.traverses:
             pos = traverse.get_relative_position()
-            print(pos, positions[0])
             if abs(pos - positions[0]) > eps:
                 print('First run traverses.go_to({}, 0.01)'.format(positions[0]))
                 return
