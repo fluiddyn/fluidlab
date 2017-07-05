@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -185,13 +187,21 @@ def make_track_sleep_1period_tbottom(z_max, z_min, v_up, v_down, acc, dacc, dt,
     z_1 = z_max - (0.5 * acc * (v_down/acc)**2)
     z_2 = z_min + (0.5 * dacc * (v_down/dacc)**2)
 
-    if z_2 > z_1:
-        raise ValueError('Acceleration too small or uniform velocity \n'
-                         'too large. Change input parameters!')
-
     z_3 = z_min
     z_4 = z_min + (0.5 * acc * (v_up/acc)**2)
     z_5 = z_max - (0.5 * dacc * (v_up/dacc)**2)
+    
+    if not z_0 > z_1 > z_2 > z_3:
+        print('not z_0 > z_1 > z_2 > z_3')
+        print('z_0, z_1, z_2, z_3 =', z_0, z_1, z_2, z_3)
+        raise ValueError('Acceleration too small or uniform velocity \n'
+                         'too large. Change input parameters!')
+
+    if not z_3 < z_4 < z_5 < z_0:
+        print('not z_3 < z_4 < z_5 < z_0')
+        print('z_3, z_4, z_5, z_0 =', z_3, z_4, z_5, z_0)
+        raise ValueError('Acceleration too small or uniform velocity \n'
+                         'too large. Change input parameters!')
 
     # Times
     t_1 = v_down/acc
@@ -284,22 +294,24 @@ def concatenate(times1, positions1, speeds1, nb_periods):
 
 if __name__ == '__main__':
 
-    z_max = 0.
-    z_min = -0.5
+    z_max = 0.78
+    z_min = 0.02
+    
+    coef = 2
 
-    v_up = 0.05
-    v_down = 0.1
+    v_up = 0.1 / coef
+    v_down = 0.07 / coef
 
-    acc = 0.1 # Fix acceleration
-    dacc = 0.1 # Fix acceleration
+    acc = 0.05 / coef # Fix acceleration
+    dacc = 0.05 / coef # Fix acceleration
 
-    dt = 0.25
-    t_sleep = 5
-
-    t_exp = 120 # t_exp
-    t_bottom = 2
+    dt = 0.25* coef
+    t_exp = 100.
+    t_bottom = 10. * coef
+    t_period = 60. * coef
+    
     times1, positions1, speeds1, t_total = make_track_sleep_1period_tbottom(
-        z_max, z_min, v_up, v_down, acc, dacc, dt, t_sleep, t_bottom)
+        z_max, z_min, v_up, v_down, acc, dacc, dt, t_bottom, t_period)
 
     nb_periods = int(round(t_exp/t_total, 0))
 
@@ -312,4 +324,4 @@ if __name__ == '__main__':
     ax.set_ylabel('position (m)')
     ax.plot(times1, positions1, 'x')
 
-    plt.show(block=False)
+    plt.show()
