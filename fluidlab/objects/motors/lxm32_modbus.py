@@ -20,7 +20,7 @@ def get_bit(number, idx):
 
 int32max = 2**31
 int32min = -int32max
-uint16max = 2**16
+uint16max = 2**16 - 1
 
 
 def sig_handler(signo, frame):
@@ -338,6 +338,7 @@ class Motor(object):
             a = int(round(a))
         if a > uint16max:
             a = uint16max
+            print('Warning: too large acceleration for the motor.')
         self.ramp_v = [0, a] * 2
         self._pingpong()
 

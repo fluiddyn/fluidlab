@@ -15,6 +15,7 @@ from fluidlab.util.calcul_track import (
 from fluiddyn.util import query
 
 import os
+import sys
 from time import time, sleep, ctime
 from threading import Thread
 
@@ -84,6 +85,7 @@ class Traverse(object):
         except IOError:
             self._coef_meter_per_rot = 1e6
             print("Calibration file doesn't exist. Use function self.calibrate().")
+
     def get_absolute_position(self):
         # coeff1 = 1.0273e6
         # Value chosen by hand
@@ -358,121 +360,14 @@ class Traverse(object):
         if save: 
             f.close()
 
-    def _follow_track(self, times, speeds, positions,
-                      fact_multiplicatif_accel=1, coeff_smooth=2.,
-                      periodic=True):
+    def follow_track(self, times, speeds, positions,
+                     fact_multiplicatif_accel=1, coeff_smooth=2.,
+                     periodic=True, use_u3=False):
 
-        timestep = times[1] - times[0]
-
-        self.times = times
-        self.speeds = speeds
-        self.positions = positions
-
-        rotation_rates = self.rotation_rates = \
-            self.speeds / self._coef_meter_per_rot
-
-        # to decrease discretization error
-        speeds[:-1] = (speeds[:-1] + speeds[1:])/2
-
-        eps = 0.001  # an error of eps m in position is accepted
-        x_measured = []
-        v_sent = []
-        t_sent = []
-        acc = abs((rotation_rates[1] - rotation_rates[0])) / timestep or 600
-        self.motor.set_acceleration(
-            acc * fact_multiplicatif_accel)
-
-        t_start = time()
-        dt = times[1] - times[0]
-        timer = Timer(dt)
-
-        v = speeds[0]
-
-        x_measured.append(self.get_relative_position())
-        v_sent.append(v)
-        t_sent.append(time()-t_start)
-        self.set_target_speed(v)
-
-        timer.wait_tick()
-
-        for it, t in enumerate(times[1:-1]):
-            it += 1
-            v_theo = speeds[it]
-            x = self.get_relative_position()
-
-            if not self.movement_allowed:
-                self.motor.set_target_rotation_rate(0)
-                return x_measured
-                
-            # print(positions[it], x)
-            error = abs(positions[it] - x)
-
-            if error > 0.1:
-                print('Large error position carriage!')
-                self.set_target_speed(0)
-                self.motor.run_quick_stop()
-                raise CarriageError('Error in position too large.')
-
-            v_should_go = (positions[it+1]-x) / timestep
-
-            if error >= eps:
-                v_target = (coeff_smooth*v_theo + v_should_go) / (
-                    coeff_smooth + 1)
-            else:
-                v_target = v_theo
-
-            if error > 4 * eps:
-                print(('Warning: error = {:4.3f} m, '
-                       'v_should_go: {:4.3f} m/s, '
-                       'v_theo: {:4.3f} m/s, v_target:{:4.3f} m/s').format(
-                           error, v_should_go, v_theo, v_target))
-
-            t_sent.append(time()-t_start)
-            self.set_target_speed(v_target)
-            
-            
-            acc = (abs(rotation_rates[it+1] - rotation_rates[it-1]) /
-                   (2*timestep) or 600)
-            
-            self.motor.set_acceleration(
-                acc * fact_multiplicatif_accel)
-
-            x_measured.append(x)
-            v_sent.append(v_target)
-
-            timer.wait_tick()
-
-        x = self.get_relative_position()
-
-        if periodic:
-            pos_end = positions[0]
-        else:
-            pos_end = positions[-1]
-
-        v = (pos_end-x)/timestep
-        x_measured.append(x)
-        v_sent.append(v)
-        t_sent.append(time()-t_start)
-        self.set_target_speed(v)
-
-        timer.wait_tick()
-        self.motor.set_acceleration(1000)
-        self.motor.set_target_rotation_rate(0)
-
-        self.x_measured = np.array(x_measured)
-        self.v_sent = np.array(v_sent)
-        self.t_sent = np.array(t_sent)
-
-        return self.x_measured
-    
-
-    def _follow_track_u3(self, times, speeds, positions,
-                         fact_multiplicatif_accel=1, coeff_smooth=2.,
-                         periodic=True):
-
-        self.u3.writeRegister(5000, volt_no_movement)
+        if use_u3:
+            self.u3.writeRegister(5000, volt_no_movement)
         
-        timestep = times[1] - times[0]
+        dt = timestep = times[1] - times[0]
 
         self.times = times
         self.speeds = speeds
@@ -485,9 +380,7 @@ class Traverse(object):
         speeds[:-1] = (speeds[:-1] + speeds[1:])/2
 
         eps = 0.001  # an error of eps m in position is accepted
-
         error_v = 0.0001
-        
         x_measured = []
         v_sent = []
         t_sent = []
@@ -496,46 +389,57 @@ class Traverse(object):
             acc * fact_multiplicatif_accel)
 
         t_start = time()
-        dt = timestep
+        path_out = os.path.join(path_dir, time_as_str() + '_track_profiler_' +
+                                self.ip_modbus + '.txt')
+        f = open(path_out, 'w')
+        f.write('# track_profiler ' + self.ip_modbus +
+                '\n# time since epock: {}'.format(t_start) +
+                '\n# time(s), position (m)\n')
+        f.flush()
         timer = Timer(dt)
-
         v = speeds[0]
-
-        x_measured.append(self.get_relative_position())
+        t = time() - t_start
+        x = self.get_relative_position()
+        x_measured.append(x)
         v_sent.append(v)
         t_sent.append(time()-t_start)
         self.set_target_speed(v)
+        f.write('{:.4f},{:.4f}\n'.format(t, x))
+        f.flush()
 
         timer.wait_tick()
 
         for it, t in enumerate(times[1:-1]):
             it += 1
             v_theo = speeds[it]
+            t = time() - t_start
             x = self.get_relative_position()
 
             if not self.movement_allowed:
+                print('not self.movement_allowed')
                 self.motor.set_target_rotation_rate(0)
-                return x_measured
+                self.motor.run_quick_stop()
+                raise TraverseError('not self.movement_allowed.')
                 
             error = abs(positions[it] - x)
 
-            if error > 0.1:
-                print('Large error position carriage!')
+            if error > 0.04:
+                print('Large error position carriage! error = {}:\n'.format(error) +
+                      'STOP traverse ' + self.ip_modbus)
                 self.set_target_speed(0)
                 self.motor.run_quick_stop()
-                raise CarriageError('Error in position too large.')
+                return
 
             v_should_go = (positions[it+1]-x) / timestep
 
-            # u3
-            if abs(v_theo) <= error_v:
-                value = volt_no_movement
-            elif v_theo < -error_v:
-                value = 5.
-            else:
-                value = 0.
-            
-            self.u3.writeRegister(5000, value)
+            if use_u3:
+                if abs(v_theo) <= error_v:
+                    value = volt_no_movement
+                elif v_theo < -error_v:
+                    value = 5.
+                else:
+                    value = 0.
+                self.u3.writeRegister(5000, value)
 
             if error >= eps:
                 v_target = (coeff_smooth*v_theo + v_should_go) / (
@@ -543,26 +447,30 @@ class Traverse(object):
             else:
                 v_target = v_theo
 
-            if error > 4 * eps:
-                print(('Warning (u3): error = {:4.3f} m, '
-                       'v_should_go: {:4.3f} m/s, '
-                       'v_theo: {:4.3f} m/s, v_target:{:4.3f} m/s').format(
-                           error, v_should_go, v_theo, v_target))
+            if error > 4 * eps:                
+                print(('Warning ({}, {}): error = {:4.3f} m, '
+                       'v_target:{:4.3f} m/s').format(
+                           self.ip_modbus, self.motor.state, error, v_target))
+                sys.stdout.flush()
 
-            t_sent.append(time()-t_start)
-            self.set_target_speed(v_target)
-            
             acc = (abs(rotation_rates[it+1] - rotation_rates[it-1]) /
                    (2*timestep) or 600)
             
             self.motor.set_acceleration(
                 acc * fact_multiplicatif_accel)
+                
+            t_sent.append(time()-t_start)
+            self.set_target_speed(v_target)
 
             x_measured.append(x)
             v_sent.append(v_target)
+            
+            f.write('{:.4f},{:.4f}\n'.format(t, x))
+            f.flush()
 
             timer.wait_tick()
 
+        t = time() - t_start   
         x = self.get_relative_position()
 
         if periodic:
@@ -576,10 +484,16 @@ class Traverse(object):
         t_sent.append(time()-t_start)
         self.set_target_speed(v)
 
+        f.write('{:.4f},{:.4f}\n'.format(t, x))
+        f.flush()
+        
         timer.wait_tick()
         self.motor.set_acceleration(1000)
         self.motor.set_target_rotation_rate(0)
 
+        if use_u3:
+            self.u3.writeRegister(5000, volt_no_movement)
+        
         self.x_measured = np.array(x_measured)
         self.v_sent = np.array(v_sent)
         self.t_sent = np.array(t_sent)
@@ -803,7 +717,8 @@ class Traverses(object):
             target=self.record_positions, args=(duration, dtime))
         return thread
     
-    def run_profiles(self, times, speeds, positions, relative=True, thread_record=None):
+    def run_profiles(self, times, speeds, positions,
+                     relative=True, thread_record=None):
 
         eps = 0.001
         for traverse in self.traverses:
@@ -818,12 +733,13 @@ class Traverses(object):
             threads.append(thread_record)
         
         # The master driver is also driven the 0/5 volts output signal
-        thread = Thread(target=self.traverses[0]._follow_track_u3,
-                        args=(times, speeds, positions))
+        thread = Thread(target=self.traverses[0].follow_track,
+                        args=(times, speeds, positions), kwargs={'use_u3': True})
         threads.append(thread)
+
         for traverse in self.traverses[1:]:
-            thread = Thread(target=traverse._follow_track,
-                        args=(times, speeds, positions))
+            thread = Thread(target=traverse.follow_track,
+                            args=(times, speeds, positions))
             threads.append(thread)
             
         for thread in threads:
@@ -835,36 +751,37 @@ class Traverses(object):
         print('threads = ', threads)
         
 if __name__ == '__main__':
-
-    traverses = Traverses()
+    ip_addresses = ['192.168.28.11']
+    traverses = Traverses(ip_addresses=ip_addresses)
+    # traverses = Traverses()
     # traverse0 = traverses.traverse0
     #traverse1 = traverses.traverse1
     # traverse = Traverse(ip_modbus='192.168.28.13')
 
     # Parameters
-    z_max = 0.
-    z_min = -0.8
-
-    v_up = 0.05
-    v_down = 0.1
+    z_max = 0.77
+    z_min = 0.02
     
-    accel = 0.025
-    dacc = 0.009
+    coef = 2
 
-    dt = 0.25
-    t_exp = 40
-    t_sleep = 5
+    v_up = 0.1 / coef
+    v_down = 0.07 / coef
 
-    t_bottom = 2
-    
+    accel = 0.05 / coef
+    dacc = 0.05 / coef
+
+    dt = 0.25 * coef
+    t_exp = 200.
+    t_bottom = 5. * coef
+    t_period = 60. * coef
+
     profile = True
-    record_positions = False
     if profile:
         
         times, speeds, positions = \
-            traverses.traverse0.define_track_profilometer(
+            define_track_profilometer(
                 z_max, z_min, v_up, v_down, accel, dacc, dt,
-                t_exp, t_sleep, t_bottom)
+                t_exp, t_bottom, t_period)
         
         import matplotlib.pyplot as plt
         fig = plt.figure()
@@ -883,15 +800,6 @@ if __name__ == '__main__':
         
         else:
             print('running track')
-            
-            if record_positions:
-                dtime_record = 0.2 # time step of recording
-                duration = times[-1] + 60.
-                thread = traverses.record_positions_async(duration, dtime=0.2)
-                traverses.run_profiles()
-                thread.join()
-
-            else:
-              traverses.run_profiles()  
+            traverses.run_profiles(times, speeds, positions)  
             
     
