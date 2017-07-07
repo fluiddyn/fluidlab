@@ -424,7 +424,8 @@ class Traverse(object):
             error = abs(positions[it] - x)
 
             if error > 0.04:
-                print('Large error position carriage! error = {}:\n'.format(error) +
+                print('Large error position carriage! error = '
+                      '{}:\n'.format(error) +
                       'STOP traverse ' + self.ip_modbus)
                 self.set_target_speed(0)
                 self.motor.run_quick_stop()
@@ -447,10 +448,10 @@ class Traverse(object):
             else:
                 v_target = v_theo
 
-            if error > 4 * eps:                
-                print(('Warning ({}, {}): error = {:4.3f} m, '
+            if error > 5 * eps:                
+                print(('Warning ({}): error = {:4.3f} m, '
                        'v_target:{:4.3f} m/s').format(
-                           self.ip_modbus, self.motor.state, error, v_target))
+                           self.ip_modbus, error, v_target))
                 sys.stdout.flush()
 
             acc = (abs(rotation_rates[it+1] - rotation_rates[it-1]) /
@@ -467,6 +468,18 @@ class Traverse(object):
             
             f.write('{:.4f},{:.4f}\n'.format(t, x))
             f.flush()
+
+            if self.motor.state != 'Operation Enabled (6)':
+                print('Error: motor not enable, ' + self.ip_modbus)
+                self.set_target_speed(0)
+                self.motor.run_quick_stop()
+                return
+
+            if it % 10 == 0:
+                print(
+                    'traverse ' + self.ip_modbus +
+                    ', it = {}, t = {:.4f} s'.format(it, t))
+                sys.stdout.flush()
 
             timer.wait_tick()
 
