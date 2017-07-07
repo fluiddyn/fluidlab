@@ -2,7 +2,7 @@
 from __future__ import print_function
 
 from threading import Thread
-from time import sleep
+from time import sleep, time
 import atexit
 import sys
 import signal
@@ -114,7 +114,8 @@ class Motor(object):
         signal.signal(signal.SIGTERM, sig_handler)
 
     def close(self):
-        print('close motor driver')
+        if self._is_scanning:
+            print('close motor driver')
         self._has_to_scan = False
         while self._is_scanning:
             sleep(0.05)
@@ -225,8 +226,14 @@ class Motor(object):
         self._is_scanning = False
 
     def _pingpong(self):
+        t0 = time()
         while self._is_pingponging:
             sleep(0.05)
+            t = time()
+            if t - t0 > 1:
+                print('warning: very slow Motor._pingpong (more than 1 s)')
+            elif t - t0 > 10:
+                raise Exception('Very slow Motor._pingpong (more than 10 s)')
 
         self._is_pingponging = True
         self._build_output_scan()

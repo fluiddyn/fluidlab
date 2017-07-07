@@ -267,7 +267,11 @@ class Traverse(object):
         current_position = get_pos()
         displacement = position_to_go - current_position
         self.move(displacement, speed)
-        if abs(get_pos() - position_to_go) > 0.005 and self.movement_allowed:
+        new_pos = get_pos()
+        error_pos = abs(new_pos - position_to_go)
+        if error_pos > 0.005 and \
+           abs(new_pos - current_position) > 0.5*abs(displacement) and \
+           self.movement_allowed:
             self.go_to(position_to_go, relative=relative)
 
     def make_profiles(self, z_min, z_max, speed_down, speed_up=None,
@@ -499,7 +503,7 @@ class Traverse(object):
 
         f.write('{:.4f},{:.4f}\n'.format(t, x))
         f.flush()
-        
+        f.close()
         timer.wait_tick()
         self.motor.set_acceleration(1000)
         self.motor.set_target_rotation_rate(0)
