@@ -2,7 +2,7 @@
 FluidLab
 ========
 
-|release| |docs|
+|release| |docs| |coverage| |travis|
 
 .. |release| image:: https://img.shields.io/pypi/v/fluidlab.svg
    :target: https://pypi.python.org/pypi/fluidlab/
@@ -11,6 +11,12 @@ FluidLab
 .. |docs| image:: https://readthedocs.org/projects/fluidlab/badge/?version=latest
    :target: http://fluidlab.readthedocs.org
    :alt: Documentation status
+
+.. |coverage| image:: https://codecov.io/gh/fluiddyn/fluidlab/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/fluiddyn/fluidlab
+
+.. |travis| image:: https://travis-ci.org/fluiddyn/fluidlab.svg?branch=master
+   :target: https://travis-ci.org/fluiddyn/fluidlab
 
 FluidLab is the package of the `FluidDyn project
 <http://fluiddyn.readthedocs.org>`__ for doing laboratory
