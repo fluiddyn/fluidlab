@@ -72,8 +72,6 @@ class Traverse(object):
             self.enable()
             sleep(0.1)
 
-        print(self.motor.state)
-
         self._offset_abs = offset_abs
         self.u3 = U3()
         self._use_u3 = False
@@ -427,7 +425,7 @@ class Traverse(object):
                 
             error = abs(positions[it] - x)
 
-            if error > 0.04:
+            if error > 0.02:
                 print('Large error position carriage! error = '
                       '{}:\n'.format(error) +
                       'STOP traverse ' + self.ip_modbus)
@@ -524,7 +522,7 @@ class Traverses(object):
             ip_addresses = ['192.168.28.11', '192.168.28.12', '192.168.28.13']
 
         if const_positions is None:
-            const_positions = [0.9983 + 0.01]*3
+            const_positions = [0.9983 + 0.01 + 0.02]*3
 
         offset_abs = [0.]*3
         

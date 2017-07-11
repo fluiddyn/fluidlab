@@ -24,6 +24,7 @@ uint16max = 2**16 - 1
 
 
 def sig_handler(signo, frame):
+    print('sig_handler({}, {})'.format(signo, frame))
     sys.exit(0)
 
 
@@ -54,6 +55,7 @@ def parse_mf_stat(mf_stat):
 
 
 states = {
+    0: '?',
     1: 'Start (1)',
     2: 'Not Ready To Switch On (2)',
     3: 'Switch On Disabled (3)',
@@ -76,6 +78,7 @@ modes = {1: 'Profile Position',
 class Motor(object):
     def __init__(self, ip_modbus='192.168.28.21',
                  disable_scan_timeout=False, disable_limit_switches=False):
+        self._code_state = None
         self._is_scanning = False
         self.client = ModbusClient(ip_modbus)
         if self.client.connect():
@@ -237,14 +240,18 @@ class Motor(object):
 
         self._is_pingponging = True
         self._build_output_scan()
+        # t1 = time()
         ret_write = self.write_registers(0, self.outscan, unit=255)
-
         if isinstance(ret_write, ExceptionResponse):
             print('ExceptionResponse',
                   ret_write.exception_code, ret_write.function_code-128)
 
         ret_read = self.read_holding_registers(0, 13, unit=255)
         registers = ret_read.registers
+        # t = time()
+        # # print ('write_read_time = {}'.format(t - t1))
+        # if t - t1 > 0.01:
+        #     print('write and read time > dt')
 
         self.par_ch = registers[:4]
         self.drive_stat = drive_stat = registers[4]
@@ -256,8 +263,13 @@ class Motor(object):
         self._I_act = registers[12]
 
         # decode drive_stat
-        self.state = states[drive_stat & 0xF]
-
+        new_code_state = drive_stat & 0xF
+        if self._code_state != new_code_state and self._code_state is not None:
+            print('state changed from "' + states[self._code_state] +
+                  '" to "' + states[new_code_state] + '"')
+        self._code_state = new_code_state
+        self.state = states[new_code_state]
+        
         self.error = get_bit(drive_stat, 6)
         self.warn = get_bit(drive_stat, 7)
         self.halt = get_bit(drive_stat, 8)
