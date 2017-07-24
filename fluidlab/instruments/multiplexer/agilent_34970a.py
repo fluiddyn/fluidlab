@@ -78,7 +78,7 @@ class Agilent34970a(IEC60488):
         self.NPLC[str(channelNumber)] = nplcValue
 
     def set_tk_type(self, channelNumber, tkType):
-        if tkType in ('B', 'E', 'J', 'K', 'N', 'R', 'S'):
+        if tkType in ('B', 'E', 'J', 'K', 'N', 'R', 'S', 'T'):
             self.TkType[str(channelNumber)] = tkType
         else:
             raise ValueError("Unknown TK type")
