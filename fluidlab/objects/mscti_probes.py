@@ -23,6 +23,25 @@ def _isarray(a):
     return isinstance(a, (np.ndarray, np.generic))
 
 
+def load_calibration(path):
+    """Loads the data from the previous calibrations."""
+    rho, voltrho, T, voltT, date = [], [], [], [], []
+
+    if not os.path.exists(path):
+        print('No calibration file ' + path)
+    else:
+        with h5py.File(path, 'r') as f:
+            rho = f['rho'].value
+            voltrho = f['voltrho'].value
+
+            if 'T' in f.keys():
+                T = f['T'].value
+                voltT = f['voltT'].value
+            date = f['date'].value
+
+    return rho, voltrho, T, voltT, date
+
+
 class MSCTIProbe():
     """Represent a MSCTI conductivity (+ temperature) probe.
 
@@ -48,17 +67,17 @@ class MSCTIProbe():
         # (constructor info)
 
         self._has_temp = len(files_calib) > 1
-        
+
         # load saved calibration
         rho_old, voltrho_old, T_old, voltT_old, date_old = \
-            self.load_calibrations('rho')
+            self.load_calibration('rho')
 
         if _isarray(rho_old) and rho_old.size > 1:
             self.fit_rho_vs_voltrho(rho_old, voltrho_old)
 
         if self._has_temp:
             rho_old, voltrho_old, T_old, voltT_old, date_old = \
-                self.load_calibrations('T')
+                self.load_calibration('T')
 
             if _isarray(rho_old) and rho_old.size > 1:
                 self.fit_T_vs_voltT(T_old, voltT_old)
@@ -149,7 +168,7 @@ class MSCTIProbe():
                 f['calibration/file_calibration_rho'] = self.files_calib[0]
                 if not hasattr(self, 'coeffs_rho'):
                     rho_old, voltrho_old, T_old, voltT_old, date_old = \
-                        self.load_calibrations('rho')
+                        self.load_calibration('rho')
                     if _isarray(rho_old) and rho_old.size >= 1:
                         self.fit_rho_vs_voltrho(rho_old, voltrho_old)
                         f['calibration/coeffsrho'] = self.coeffsrho
@@ -160,7 +179,7 @@ class MSCTIProbe():
                 f['calibration/file_calibration_T'] = self.files_calib[1]
                 if not hasattr(self, 'coeffs_T'):
                     rho_old, voltrho_old, T_old, voltT_old, date_old = \
-                        self.load_calibrations('T')
+                        self.load_calibration('T')
                     if _isarray(rho_old) and rho_old.size >= 1:
                         self.fit_T_vs_voltT(T_old, voltT_old)
                         f['calibration/coeffsT'] = self.coeffsT
@@ -360,7 +379,7 @@ class MSCTIProbe():
             happy = query.query_yes_no(
                 'Are you happy with this measurement?')
 
-        self.plot_calibrations(rho=rho, voltrho=voltages[0])
+        self.plot_calibration(rho=rho, voltrho=voltages[0])
 
         if query.query_yes_no('Should the new point be saved?'):
             self.save_calibration(rho, T, voltages, 'rho')
@@ -406,7 +425,7 @@ class MSCTIProbe():
             happy = query.query_yes_no(
                 'Are you happy with this measurement?')
 
-        self.plot_calibrations_T(T=T, voltT=voltages[1])
+        self.plot_calibration_T(T=T, voltT=voltages[1])
 
         if query.query_yes_no('Should the new point be saved?'):
             self.save_calibration(rho, T, voltages, 'T')
@@ -423,7 +442,7 @@ class MSCTIProbe():
         print('Save the results of the calibration in file:', file_calib)
 
         rho_old, voltrho_old, T_old, voltT_old, date_old = \
-            self.load_calibrations(kind_of_calib)
+            self.load_calibration(kind_of_calib)
 
         if _isarray(rho_old) and rho_old.size >= 1:
             rho = np.append(rho_old, rho)
@@ -452,9 +471,8 @@ class MSCTIProbe():
                 f['voltT'] = voltT
             f['date'] = date
 
-    def load_calibrations(self, kind_of_calib):
+    def load_calibration(self, kind_of_calib):
         """Loads the data from the previous calibrations."""
-        rho, voltrho, T, voltT, date = [], [], [], [], []
 
         if kind_of_calib == 'rho':
             file_calib = self.files_calib[0]
@@ -462,22 +480,9 @@ class MSCTIProbe():
             file_calib = self.files_calib[1]
         file_calib += '.h5'
 
-        if not os.path.exists(file_calib):
-            print('No calibration file ' + file_calib)
-            return rho, voltrho, T, voltT, date
-        else:
-            with h5py.File(file_calib, 'r') as f:
-                rho = f['rho'].value
-                voltrho = f['voltrho'].value
-                if self._has_temp:
-                    T = f['T'].value
-                    voltT = f['voltT'].value
-                date = f['date'].value
+        return load_calibration(file_calib)
 
-        return rho, voltrho, T, voltT, date
-
-    # plot calibration fonctions
-    def plot_calibrations(self, rho=None, voltrho=None):
+    def plot_calibration(self, rho=None, voltrho=None):
         """Plots the measurements of the saved calibrations for rho."""
 
         # plot
@@ -491,7 +496,7 @@ class MSCTIProbe():
 
         # load all saved calibrations
         rho_old, voltrho_old, T_old, voltT_old, date_old = \
-            self.load_calibrations('rho')
+            self.load_calibration('rho')
         if _isarray(rho_old) and rho_old.size >= 1:
             ax.plot(rho_old, voltrho_old, 'xg')
         if _isarray(rho_old) and rho_old.size > 1:
@@ -506,7 +511,7 @@ class MSCTIProbe():
 
         plt.show()
 
-    def plot_calibrations_T(self, T=None, voltT=None):
+    def plot_calibration_T(self, T=None, voltT=None):
         """Plots the measurements of the saved calibrations for T."""
 
         fig = plt.figure()
@@ -518,7 +523,7 @@ class MSCTIProbe():
 
         # load all saved calibrations
         rho_old, voltrho_old, T_old, voltT_old, date_old = \
-            self.load_calibrations('T')
+            self.load_calibration('T')
         if _isarray(rho_old) and rho_old.size >= 1:
             ax.plot(T_old, voltT_old, 'xg')
         if _isarray(rho_old) and rho_old.size > 1:
@@ -541,7 +546,7 @@ class MSCTIProbe():
         elif len(rho) < 5:
             deg = 2
         else:
-            deg = 3 
+            deg = 3
         coeffs = np.polyfit(voltrho, rho, deg=deg)
         self.rho_from_voltrho = np.poly1d(coeffs)
         self.coeffsrho = coeffs
