@@ -272,7 +272,7 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
 
 
 def write_analog(resource_names, sample_rate=1, volt_min=-10.0, volt_max=10.0, 
-                 signals=None, blocking=True):
+                 signals=None, blocking=True, verbose=False):
     """Write analogic output
 
     Parameters
