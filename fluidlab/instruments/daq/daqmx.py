@@ -15,6 +15,8 @@ Provides:
 
 """
 
+from __future__ import print_function
+
 from collections import Iterable
 from numbers import Number
 from platform import platform
@@ -23,6 +25,7 @@ import time
 import numpy as np
 
 import ctypes
+import six
 
 from PyDAQmx import Task, byref, float64, int32, uInt32, bool32
 
@@ -45,9 +48,14 @@ _coupling_values = {
 
 def _parse_resource_names(resource_names):
 
-    if isinstance(resource_names, str):
+    if isinstance(resource_names, six.string_types):
+        if six.PY3 and isinstance(resource_names, str):
+            resource_names = resource_names.encode('ascii')
         resource_names = [resource_names]
-    elif not isinstance(resource_names, Iterable):
+    elif isinstance(resource_names, Iterable):
+        if six.PY3 and isinstance(resource_names[0], str):
+            resource_names = [r.encode('ascii') for r in resource_names]
+    else:
         raise ValueError('resource_names has to be a string or an iterable.')
 
     nb_resources = len(resource_names)
@@ -146,16 +154,17 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         volt_max = [volt_max] * nb_resources
 
     # check samples_per_chan
-    if not isinstance(samples_per_chan, int) or samples_per_chan <= 0:
+    if not isinstance(samples_per_chan, six.integer_types) or \
+       samples_per_chan <= 0:
         raise ValueError('samples_per_chan has to be a positive integer.')
 
     # prepare coupling_types
-    if (not isinstance(coupling_types, str) and
+    if (not isinstance(coupling_types, six.string_types) and
             len(coupling_types) != nb_resources):
         raise ValueError(
             'coupling_types has to be a number or an iterable '
             'of the same length as resource_names')
-    if isinstance(coupling_types, str):
+    if isinstance(coupling_types, six.string_types):
         coupling_types = [coupling_types] * nb_resources
 
     possible_keys_coupling = _coupling_values.keys()
@@ -173,27 +182,34 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
 
     for ir, resource in enumerate(resource_names):
         if verbose:
-            print('DAQmx: Create AI Voltage Chan (' + resource + ' [' + str(volt_min[ir]) + 'V;' + str(volt_max[ir]) + 'V])')
+            print('DAQmx: Create AI Voltage Chan (' + str(resource) +
+                  ' [' + str(volt_min[ir]) + 'V;' + str(volt_max[ir]) + 'V])')
         task.CreateAIVoltageChan(
             resource, '', terminal_config, volt_min[ir], volt_max[ir],
             DAQmx_Val_Volts, None)
 
+    # Attention SetChanAttribute doit etre dans une deuxieme boucle
+    # car dans le cas d'une acquisition multi-cartes, DAQmx impose que
+    # toutes les voies soient ajoutees a la task avant de changer
+    # quelque parametre
+    for ir, resource in enumerate(resource_names):
         # check volt range
         task.GetAIRngHigh(resource, byref(actual_volt_max))
         task.GetAIRngLow(resource, byref(actual_volt_min))
         actual_vmin = actual_volt_min.value
         actual_vmax = actual_volt_max.value
         if actual_vmin != volt_min[ir] or actual_vmax != volt_max[ir]:
-            print('DAQmx: Actual range for ' + resource +
+            print('DAQmx: Actual range for ' + str(resource) +
                   ' is actually [{:6.2f} V, {:6.2f} V].'.format(
                       actual_vmin, actual_vmax))
 
         # set coupling
         coupling_value = _coupling_values[coupling_types[ir]]
         if verbose:
-            for name, value in _coupling_values.iteritems():
+            for name, value in _coupling_values.items():
                 if value == coupling_value:
-                    print('DAQmx: Setting AI channel coupling (' + resource + '): ' + name)
+                    print('DAQmx: Setting AI channel coupling (' +
+                          str(resource) + '): ' + name)
         task.SetChanAttribute(resource, DAQmx_AI_Coupling, coupling_value)
 
     # configure clock and DMA input buffer
@@ -201,17 +217,19 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         verbose_text = 'DAQmx: Configure clock timing ('
         if verbose:
             if samples_per_chan < 1000:
-                verbose_text = verbose_text + str(samples_per_chan) + " samp/chan @ "
+                verbose_text += str(samples_per_chan) + " samp/chan @ "
             elif samples_per_chan < 1000000:
-                verbose_text = verbose_text + str(samples_per_chan/1000) + " kSamp/chan @ "
+                verbose_text += str(samples_per_chan/1000) + " kSamp/chan @ "
             else:
-                verbose_text = verbose_text + str(samples_per_chan/1000000) + " MSamp/chan @ "
+                verbose_text += str(samples_per_chan/1000000) + " MSamp/chan @ "
             if sample_rate < 1000:
-                verbose_text = verbose_text + ("%.2f Hz using OnboardClock)" % sample_rate)
+                verbose_text += ("%.2f Hz using OnboardClock)" % sample_rate)
             elif sample_rate < 1000000:
-                verbose_text = verbose_text + ("%.2f kHz using OnboardClock)" % (sample_rate/1000.0))
+                verbose_text += ("%.2f kHz using OnboardClock)" %
+                                 (sample_rate/1000.0))
             else:
-                verbose_text = verbose_text + ("%.2f MHz using OnboardClock)" % (sample_rate/1e6))
+                verbose_text += ("%.2f MHz using OnboardClock)" %
+                                 (sample_rate/1e6))
             print(verbose_text)
         task.CfgSampClkTiming(
             'OnboardClock', sample_rate, DAQmx_Val_Rising,
@@ -231,7 +249,8 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
         endtime = starttime+samples_per_chan/sample_rate
         endtime_str = time.strftime(dateformat, time.localtime(endtime))
         print("DAQmx: Starting acquisition: " + starttime_str)
-        print("       Expected duration: %.2f min" % (samples_per_chan/(60.0*sample_rate)))
+        print("       Expected duration: %.2f min" %
+              (samples_per_chan/(60.0*sample_rate)))
         print("       Expected end time: " + endtime_str)
 
     task.StartTask()
@@ -251,7 +270,9 @@ def read_analog(resource_names, terminal_config, volt_min, volt_max,
 
     return data.reshape([nb_resources, samples_per_chan])
 
-def write_analog(resource_names,sample_rate=1,volt_min=-10.0,volt_max=10.0, signals=None, blocking=True, verbose=False):
+
+def write_analog(resource_names, sample_rate=1, volt_min=-10.0, volt_max=10.0, 
+                 signals=None, blocking=True):
     """Write analogic output
 
     Parameters
@@ -259,19 +280,19 @@ def write_analog(resource_names,sample_rate=1,volt_min=-10.0,volt_max=10.0, sign
 
     resource_name:
 
-      Analogic input identifier(s), e.g. 'Dev1/ao1'.
+      Analogic input identifier(s), e.g. 'Dev1/ao0'.
 
     sample_rate: number
 
       Frequency rate for all channels (Hz).
 
-    volt_min : {number or iterable of numbers}
+    volt_min: {number or iterable of numbers}
+        
+        Minima for the channels
 
-      Minima for the channels.
+    volt_max: {number or iterable of numbers}
 
-    volt_max : {number or iterable of numbers}
-
-      Maxima for the channels.
+        Maxima for the channels
 
     signals: numpy.ndarray or simple scalar
 
@@ -300,7 +321,7 @@ def write_analog(resource_names,sample_rate=1,volt_min=-10.0,volt_max=10.0, sign
         volt_min = [volt_min] * nb_resources
     if isinstance(volt_max, Number):
         volt_max = [volt_max] * nb_resources
-   
+
     if isinstance(signals, (list, tuple, np.ndarray))==False:
         nb_samps_per_chan =1
     #if np.isscalar(signals)==True
@@ -309,20 +330,21 @@ def write_analog(resource_names,sample_rate=1,volt_min=-10.0,volt_max=10.0, sign
     elif signals.ndim == 2:
         nb_samps_per_chan = signals.shape[1]
     else:
-        raise ValueError('signals has to a scalar or be an array of dimension 1 or 2.')
+        raise ValueError('signals has to be a scalar or an array of dimension 1 or 2.')
 
     # create task
     if verbose:
         print('DAQmx: Create Task')
 
     task = Task()
+
     # create AO channels
     for ir, resource in enumerate(resource_names):
         if verbose:
             print('DAQmx: Create A0 Voltage Chan (' + resource + ' [' + str(volt_min[ir]) + 'V;' + str(volt_max[ir]) + 'V])')
         task.CreateAOVoltageChan(
-            resource, '',  volt_min[ir], volt_max[ir], DAQmx_Val_Volts, None)
-    print('bouh3')
+            resource, '', volt_min[ir], volt_max[ir], DAQmx_Val_Volts, None)
+
     # configure clock
     if nb_samps_per_chan  > 1:
         verbose_text = 'DAQmx: Configure clock timing ('
@@ -344,51 +366,46 @@ def write_analog(resource_names,sample_rate=1,volt_min=-10.0,volt_max=10.0, sign
             'OnboardClock', sample_rate, DAQmx_Val_Rising,
             DAQmx_Val_FiniteSamps, nb_samps_per_chan)
 
-    
+    # write data
     written = int32()
-    
     if nb_samps_per_chan ==1:
-	
-		task.WriteAnalogScalarF64(1,10.0,signals, None)
-		print(" Write voltage: " + ("%.2f Volts" % signals))
-    #0,10== dont autostart + timeout 10sec, 
-    #http://zone.ni.com/reference/en-XX/help/370471AE-01/daqmxcfunc/daqmxwriteanalogscalarf64/
+        task.WriteAnalogScalarF64(1,10.0,signals, None)
+        print(" Write voltage: " + ("%.2f Volts" % signals))
+        #0,10== dont autostart + timeout 10sec, 
+        #http://zone.ni.com/reference/en-XX/help/370471AE-01/daqmxcfunc/daqmxwriteanalogscalarf64/
         #task.WriteAnalogF64(
-            #nb_samps_per_chan, 0, 10.0, DAQmx_Val_GroupByChannel,
-            #signals.ravel(), byref(written), None)
+        #nb_samps_per_chan, 0, 10.0, DAQmx_Val_GroupByChannel,
+        #signals.ravel(), byref(written), None)
     else:
-        
-		task.WriteAnalogF64(
+        task.WriteAnalogF64(
             nb_samps_per_chan, 0, 10.0, DAQmx_Val_GroupByChannel,
             signals.ravel(), byref(written), None)
+        #0,10== dont autostart + timeout 10sec, 
+        #http://zone.ni.com/reference/en-XX/help/370471AE-01/daqmxcfunc/daqmxwriteanalogf64/
     
-    #0,10== dont autostart + timeout 10sec, 
-    #http://zone.ni.com/reference/en-XX/help/370471AE-01/daqmxcfunc/daqmxwriteanalogf64/
-    
-    # start task
-		if verbose:
-			if platform().startswith('Windows'):
-				dateformat = '%A %d %B %Y - %X (%z)'
-			else:
-				dateformat = '%A %e %B %Y - %H:%M:%S (UTC%z)'
-			starttime = time.time()
-			starttime_str = time.strftime(dateformat, time.localtime(starttime))
-			endtime = starttime+nb_samps_per_chan/sample_rate
-			endtime_str = time.strftime(dateformat, time.localtime(endtime))
-			print("DAQmx: Starting write Task: " + starttime_str)
-			print("       Expected duration: %.2f min" % (nb_samps_per_chan/(60.0*sample_rate)))
-			print("       Expected end time: " + endtime_str)
+        # start task
+        if verbose:
+            if platform().startswith('Windows'):
+                dateformat = '%A %d %B %Y - %X (%z)'
+            else:
+                dateformat = '%A %e %B %Y - %H:%M:%S (UTC%z)'
+            starttime = time.time()
+            starttime_str = time.strftime(dateformat, time.localtime(starttime))
+            endtime = starttime+nb_samps_per_chan/sample_rate
+            endtime_str = time.strftime(dateformat, time.localtime(endtime))
+            print("DAQmx: Starting write Task: " + starttime_str)
+            print("       Expected duration: %.2f min" % (nb_samps_per_chan/(60.0*sample_rate)))
+            print("       Expected end time: " + endtime_str)
 
-		task.StartTask()
+        task.StartTask()
 
-		if blocking:
-			task.WaitUntilTaskDone(1.1*nb_samps_per_chan/sample_rate)
-			task.StopTask()
-		else:
-			if verbose:
-				print("DAQmx write done")
-
-			return task
+        if blocking:
+            task.WaitUntilTaskDone(1.1*nb_samps_per_chan/sample_rate)
+            task.StopTask()
+        else:
+            if verbose:
+                print("DAQmx write done")
+            return task
 
 
 def write_analog_end_task(task, timeout=0.):
@@ -426,7 +443,7 @@ def measure_freq(resource_name, freq_min=1, freq_max=1000):
 
       The minimum frequency (Hz) that you expect to measure.
 
-    freq_max : numbers
+    freq_max : number
 
       The maximum frequency (Hz) that you expect to measure.
 
@@ -478,6 +495,4 @@ if __name__ == '__main__':
     signals = np.vstack((signals, signals + 2))
     write_analog(['dev1/ao{}'.format(i) for i in (0, 2)], 10, signals,
                  blocking=True)
-
-         
     
