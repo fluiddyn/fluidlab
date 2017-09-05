@@ -10,33 +10,36 @@
 
 from __future__ import print_function, unicode_literals, division
 
-__all__ = ["PfeifferMaxiGauge"]
-
 from fluidlab.instruments.drivers import Driver
 from fluidlab.instruments.interfaces.serial_inter import SerialInterface
 from fluidlab.instruments.features import Value
-from time import sleep
+# from time import sleep
 import numpy as np
 import six
 from clint.textui import colored
 from functools import reduce
 
-codes = {'ETX': b'\x03', # End of text (reset the interface)
-         'CR': b'\x0D',  # Carriage return (go to beginning of line)
-         'LF': b'\x0A',  # Line feed (advance by one line)
-         'ENQ': b'\x05', # Enquiry (request data transmission)
-         'ACK': b'\x06', # Acknowledge (positive report signal)
-         'NAK': b'\x15', # Negative acknowledge (negative report signal)
-         'ESC': b'\x1B'} # Escape
+__all__ = ["PfeifferMaxiGauge"]
+
+codes = {'ETX': b'\x03',  # End of text (reset the interface)
+         'CR': b'\x0D',   # Carriage return (go to beginning of line)
+         'LF': b'\x0A',   # Line feed (advance by one line)
+         'ENQ': b'\x05',  # Enquiry (request data transmission)
+         'ACK': b'\x06',  # Acknowledge (positive report signal)
+         'NAK': b'\x15',  # Negative acknowledge (negative report signal)
+         'ESC': b'\x1B'}  # Escape
+
 
 class PfeifferMaxiGaugeException(Exception):
     pass
-    
+
+
 class PfeifferMaxiGaugeValue(Value):
     def __init__(self, name, doc='', mnemonic=b''):
-        super(PfeifferMaxiGaugeValue, self).__init__(name, doc, command_set=None,
-                                                     command_get=None, check_instrument_value=False,
-                                                     pause_instrument=0.5, channel_argument=False)
+        super(PfeifferMaxiGaugeValue, self).__init__(
+            name, doc, command_set=None,
+            command_get=None, check_instrument_value=False,
+            pause_instrument=0.5, channel_argument=False)
         self.mnemonic = mnemonic
 
     def set(self, value):
@@ -44,6 +47,7 @@ class PfeifferMaxiGaugeValue(Value):
 
     def get(self, parameter=b""):
         return self._driver.reception(self.mnemonic, parameter)
+
 
 class PfeifferMaxiGaugePressureValue(PfeifferMaxiGaugeValue):
     def get(self, sensor):
@@ -69,8 +73,9 @@ class PfeifferMaxiGaugePressureValue(PfeifferMaxiGaugeValue):
 class PfeifferMaxiGaugeOnOffValue(PfeifferMaxiGaugeValue):
     def set(self, booleans):
         if len(booleans) != 6:
-            raise ValueEror('6 booleans are expected')
-        msg = reduce(lambda a,b: a+b, [b',2' if b else b',1' for b in booleans])
+            raise ValueError('6 booleans are expected')
+        msg = reduce(lambda a, b:
+                     a+b, [b',2' if b else b',1' for b in booleans])
         try:
             super(PfeifferMaxiGaugeOnOffValue, self).set(msg)
         except PfeifferMaxiGaugeException:
@@ -99,7 +104,7 @@ class PfeifferMaxiGauge(Driver):
                             b'PBR': 'FullRange BA',
                             b'no Sensor': 'No sensor',
                             b'no Ident': 'No identification'}
-        for i,sensor in enumerate(self.sensor_id()):
+        for i, sensor in enumerate(self.sensor_id()):
             try:
                 desc = "(" + long_description[sensor] + ")"
             except KeyError:
@@ -110,7 +115,7 @@ class PfeifferMaxiGauge(Driver):
         if self.debug:
             print('-> ETX')
         self.interface.write(codes['ETX'])
-        
+
     def transmission(self, mnemonics, parameters=b""):
         """
         Transmission protocol:
@@ -199,18 +204,14 @@ class PfeifferMaxiGauge(Driver):
         return data
 
 
-    
-
 features = [PfeifferMaxiGaugeOnOffValue('onoff',
                                         'Switch ON/OFF sensors',
                                         mnemonic=b'SEN'),
             PfeifferMaxiGaugePressureValue('pressure',
-                                        'Pressure measurement',
-                                        mnemonic=b'PR')]
+                                           'Pressure measurement',
+                                           mnemonic=b'PR')]
 
 PfeifferMaxiGauge._build_class_with_features(features)
 
 if __name__ == '__main__':
     gauge = PfeifferMaxiGauge('COM1', debug=False)
-    
-    

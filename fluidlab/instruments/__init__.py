@@ -33,8 +33,6 @@ A mechanism to easily write such drivers is implemented in:
    features
    iec60488
 
-.. todo:: Write drivers for some "VISA instruments"...
-
 Some drivers of particular "VISA instruments" are organized in the
 packages:
 
@@ -47,6 +45,8 @@ packages:
    multimeter
    multiplexer
    sourcemeter
+   chiller
+   pressure_transducer
 
 Other very common communication standards are Modbus and Firewire:
 

@@ -1,5 +1,5 @@
-"""Sourcemeters (:mod: `fluidlab.instruments.sourcemeter`)
-==========================================================
+"""Sourcemeters (:mod:`fluidlab.instruments.sourcemeter`)
+=========================================================
 
 Provides:
 

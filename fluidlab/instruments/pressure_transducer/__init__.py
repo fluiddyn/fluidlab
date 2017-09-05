@@ -1,6 +1,6 @@
 """
 Pressure transducer (:mod:`fluidlab.instruments.pressure_transducer`)
-======================================================
+=====================================================================
 
 Provides:
 
@@ -8,6 +8,7 @@ Provides:
    :toctree:
 
    furness_fco318
+   pfeiffer_maxigauge
 
 """
 

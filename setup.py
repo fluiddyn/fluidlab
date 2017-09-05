@@ -112,7 +112,7 @@ setup(name='fluidlab',
           'Programming Language :: Cython'],
       packages=find_packages(exclude=['doc', 'digiflow', 'examples']),
       install_requires=install_requires,
-      extras_require={'doc': ['Sphinx>=1.1', 'numpydoc']},
+      extras_require={'doc': ['Sphinx>=1.1', 'numpydoc', 'clint']},
       scripts=['bin/fluid_stop_pumps.py'],
       cmdclass={"build_ext": build_ext},
       ext_modules=ext_modules)
