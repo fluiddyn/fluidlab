@@ -59,7 +59,6 @@ class Agilent33220a_Vrms(SuperValue):
         valeurs = self._driver.get_generator_state()
         return valeurs[2]
 
-
 class Agilent33220a_Frequency(SuperValue):
     def __init__(self):
         super(Agilent33220a_Frequency, self).__init__(
@@ -99,6 +98,35 @@ class Agilent33220a(IEC60488, PowerOn, Calibration,
 
     """
 
+    def configure_am(self, vrms_min, vrms_max, freq, am_freq):
+        self.interface.write('OUTP:LOAD INF')
+        self.interface.write('VOLT:UNIT VRMS')
+        self.interface.write('APPL:SIN {freq:}, {ampl:}, 0.0'.format(freq=freq,
+                                        ampl=vrms_max))
+        self.interface.write('AM:INT:FUNC SQU')
+        self.interface.write('AM:INT:FREQ {freq:}'.format(freq=am_freq))
+        self.interface.write('AM:DEPT {ratio:d}'.format(\
+            ratio=int(100.0*(1.0-(vrms_min/vrms_max)))))
+        self.interface.write('AM:STAT ON')
+        self.interface.write('OUTP ON')
+
+
+    def configure_square(self, vmin, vmax=None, freq=None):
+        """
+        Set the device in Square function
+        """
+        
+        if vmax and freq:
+            vpp = vmax-vmin
+            voffset = (vmin+vmax)/2
+            self.interface.write('OUTP:LOAD INF')
+            self.interface.write('APPL:SQU {freq:}, {ampl:}, {offset:}'.format(freq=freq, ampl=vpp, offset=voffset))
+            self.interface.write('OUTP ON')
+        else:
+            if vmin == 0:
+                self.interface.write('OUTP OFF')
+            else:
+                raise ValueError('Bad arguments')
 
 features = [
     QueryCommand(
