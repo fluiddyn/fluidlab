@@ -22,7 +22,7 @@ import time
 import atexit
 
 from fluiddyn.io import _write_warning
-from fluiddyn.util import query
+from fluiddyn.io import query
 from fluiddyn.io import txt
 
 try:

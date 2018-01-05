@@ -24,12 +24,12 @@ import glob
 from fluiddyn.io import txt
 
 from fluiddyn.util import time_as_str
-from fluiddyn.util import query
+from fluiddyn.io import query
+import fluiddyn.output.figs as figs
+
 from fluidlab.objects.traverse import Traverse
 
 from fluidlab.objects.boards import ObjectUsingBoard
-
-import fluiddyn.output.figs as figs
 
 from fluidlab.objects.pinchvalve import PinchValve, tube_as_opened_as_possible
 

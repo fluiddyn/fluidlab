@@ -30,9 +30,8 @@ import os
 import h5py
 
 import fluiddyn.output.figs as figs
-
-from fluiddyn.util.signal import FunctionLinInterp
-import fluiddyn.util.query as query
+from fluiddyn.calcul.signal import FunctionLinInterp
+import fluiddyn.io.query as query
 from fluiddyn.util.timer import Timer
 
 from fluidlab.objects.pumps import MasterFlexPumps

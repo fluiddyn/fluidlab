@@ -32,22 +32,17 @@ import matplotlib.pyplot as plt
 import fluiddyn as fld
 
 from fluiddyn.io.hdf5 import H5File
-
-from fluiddyn.util import time_as_str
-from fluiddyn.util.signal import decimate
+from fluiddyn import time_as_str
+from fluiddyn.calcul.signal import decimate
 from fluiddyn.util.timer import Timer
-
 from fluiddyn.output.util import gradient_colors
+import fluiddyn.output.figs as figs
+from fluiddyn.util.daemons import DaemonThread as Daemon
 
 from fluidlab.exp.withtank import ExperimentWithTank
 
 from fluidlab.objects.boards import PowerDAQBoard
 from fluidlab.objects.probes import MovingConductivityProbe
-
-import fluiddyn.output.figs as figs
-
-
-from fluiddyn.util.daemons import DaemonThread as Daemon
 
 
 class DaemonMeasureProfiles(Daemon):
