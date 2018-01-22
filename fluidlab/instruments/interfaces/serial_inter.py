@@ -42,6 +42,8 @@ class SerialInterface(QueryInterface):
     def write(self, *args):
         if self.eol is not None:
             return self.ser_io.write(*args)
+        # ensure no unicode strings sent to serial_port.write
+        args = [a.encode('ascii') if isinstance(a, str) else a for a in args]
         return self.serial_port.write(*args)
         
     def readline(self, *args):

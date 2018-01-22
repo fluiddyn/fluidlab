@@ -27,20 +27,20 @@ class LaudaValue(Value):
     def get(self):
         result = super(LaudaValue, self).get()
         if len(result) < 3:
-            print(result)
+            print(result.decode('ascii'))
             raise LaudaException("Erreur de communication")
-        elif result.startswith('ERR'):
+        elif result.startswith(b'ERR'):
             raise LaudaException("Erreur Lauda: " + result)
         else:
             return float(result)
 
     def set(self, value):
-        command = self.command_set.format(value)
+        command = self.command_set.format(value).encode('ascii')
         self._interface.write(command)
         sleep(self.pause_instrument)
         confirmation = self._interface.read()
-        if confirmation != 'OK':
-            print(confirmation)
+        if confirmation != b'OK':
+            print(confirmation.decode('ascii'))
             raise LaudaException("Erreur de communication")
 
 class LaudaOnOffValue(LaudaValue):
@@ -58,7 +58,7 @@ class LaudaOnOffValue(LaudaValue):
 
     def set(self, value):
         if value:
-            self._interface.write('START\r')
+            self._interface.write(b'START\r')
             sleep(self.pause_instrument)
 
 class LaudaStatValue(Value):
@@ -66,7 +66,7 @@ class LaudaStatValue(Value):
         super(LaudaStatValue, self).__init__(name, doc, command_set, command_get, check_instrument_value, pause_instrument, channel_argument)
 
     def get(self):
-        result = super(LaudaStatValue, self).get()
+        result = super(LaudaStatValue, self).get().decode('ascii')
         if len(result) < 3:
             raise LaudaException("Erreur de communication")
         elif result.startswith("ERR"):
@@ -95,9 +95,9 @@ class Lauda(Driver):
                                     rtscts=False, dsrdtr=False)
         super(Lauda, self).__init__(interface)
 
-        identification = self.interface.query('TYPE\r')
+        identification = self.interface.query(b'TYPE\r').decode('ascii')
         if identification not in Lauda.Models:
-            if isinstance(identification, str) and len(identification) > 0:
+            if len(identification) > 0:
                 raise LaudaException("Unsupported model: " + identification) 
             else:
                 raise LaudaException("Cannot communicate with Lauda on " + str(serialPort))
