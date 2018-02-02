@@ -12,7 +12,7 @@ from __future__ import division, print_function
 
 from fluidlab.util.calcul_track import (
     make_track_sleep_1period_tbottom, concatenate)
-from fluiddyn.util import query
+from fluiddyn.io import query
 
 import os
 import sys
@@ -517,15 +517,16 @@ class Traverse(object):
 
 
 class Traverses(object):
-    def __init__(self, ip_addresses=None, const_positions=None):
+    def __init__(self, ip_addresses=None, const_positions=None, offset_abs=None):
         if ip_addresses is None:
             ip_addresses = ['192.168.28.11', '192.168.28.12', '192.168.28.13']
 
         if const_positions is None:
-            const_positions = [0.9983 + 0.01 + 0.02]*3
+            const_positions = [1.046875]*3
 
-        offset_abs = [0.]*3
-        
+        if offset_abs is None:
+            offset_abs = [0.]*3
+
         self.ip_addresses = ip_addresses
         self.movement_allowed = True
 
