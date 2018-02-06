@@ -199,12 +199,8 @@ class Agilent34970a(IEC60488):
         # Parse data
         if samplesPerChan > 1:
             # timeStamp + value for each channel
-            expectedEntriesPerLine = 2*numChans
-            retval = np.zeros((samplesPerChan, expectedEntriesPerLine))
-            i=0
-            for line in data.splitlines():
-                retval[i, :] = [float(x) for x in line.split(',')]
-                i=i+1
+            values = np.array([float(x) for x in data.split(',')])
+            retval = values[::2], values[1::2]
         else:
             expectedEntriesPerLine = numChans
             # only value for each channel
