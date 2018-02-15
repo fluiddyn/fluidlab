@@ -20,10 +20,10 @@ class PyvisaInterface(QueryInterface):
         instr = rm.get_instrument(resource_name)
         self._lowlevel = instr
         self.pyvisa_instr = instr
-        self.write = instr.write
-        self.read = instr.read
+        #self.write = instr.write
+        #self.read = instr.read
         self.read_raw = instr.read_raw
-        self.query = instr.query
+        #self.query = instr.query
         self.close = instr.close
         self.assert_trigger = instr.assert_trigger
         try:
@@ -31,6 +31,20 @@ class PyvisaInterface(QueryInterface):
         except AttributeError as e:
             # with @py ?
             print(e)
+    
+    # methods below are rewritten to accept optional arguments
+    # for compatibility with linuxgpib interface
+    def write(self, message, termination=None, encoding=None,
+              verbose=False, tracing=False):
+        return self.pyvisa_instr.write(message, termination, encoding)
+
+    def read(self, termination=None, encoding=None,
+             verbose=False, tracing=False):
+        return self.pyvisa_instr.read(termination, encoding)
+
+    def query(self, message, delay=None,
+              verbose=False, tracing=False):
+        return self.pyvisa_instr.query(message, delay)
 
 if __name__ == '__main__':
     interface = PyvisaInterface('ASRL2::INSTR', backend='@sim')

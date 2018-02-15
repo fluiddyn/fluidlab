@@ -10,6 +10,7 @@
 __all__ = ["Agilent34970a"]
 
 import numpy as np
+from datetime import datetime
 
 from fluidlab.instruments.iec60488 import (
     IEC60488)
@@ -28,10 +29,13 @@ class Agilent34970aValue(SuperValue):
 
         setattr(Driver, name, self)
 
-        def get(self, chanList, samplesPerChan=1, sampleRate=None):
+        def get(self, chanList, samplesPerChan=1, sampleRate=None, verbose=None):
             """Get """ + name
+            if verbose is None:
+                # default is verbose for acquisitions
+                verbose = (samplesPerChan > 1)
             result = self._driver.scan(
-                chanList, function_name, samplesPerChan, sampleRate)
+                chanList, function_name, samplesPerChan, sampleRate, verbose)
             if len(result) == 1:
                 result = result[0]
             return result
@@ -83,7 +87,7 @@ class Agilent34970a(IEC60488):
         else:
             raise ValueError("Unknown TK type")
 
-    def scan(self, channelList, functionName, samplesPerChan, sampleRate):
+    def scan(self, channelList, functionName, samplesPerChan, sampleRate, verbose=True):
         """ Initiates a scan """
 
         try:
@@ -143,6 +147,13 @@ class Agilent34970a(IEC60488):
                 self.interface.write(
                     'SENS:' + functionName + ':NPLC ' +
                     str(self.NPLC[str(chan)]) + ',(@' + str(chan) + ')')
+                if samplesPerChan > 1:
+                    # warn if wrong value (50Hz line hard coded here)
+                    tMoy = self.NPLC[str(chan)]/50.0
+                    if tMoy > 1.0/sampleRate:
+                        print('Warning: averaging for {:.1f} ms, and sample time is {:.1f} ms'.format(1000.0*tMoy, 1000.0/sampleRate))
+            elif samplesPerChan > 1:
+                print('Warning: NPLC should be specified for acquisitions')
 
         # Set TK Type for specified channels (if TK channel and TkType defined)
         if functionName == 'TEMP':
@@ -183,18 +194,22 @@ class Agilent34970a(IEC60488):
 
         # Initiate scan and trigger Operation Complete event after completion
         self.interface.write('INIT')
+        if verbose:
+            print(datetime.now().isoformat().replace('T',' ') + ' - Acquisition initiated')
 
         # Wait for Service Request (triggered by *OPC after the scan
         # is complete)
-        self.wait_till_completion_of_operations()
+        self.wait_till_completion_of_operations() # sends *OPC
         # self.interface.assert_trigger()
-        self.interface.wait_for_srq()
+        self.interface.wait_for_srq(timeout=samplesPerChan/sampleRate)
 
         # Unassert SRQ
         self.clear_status()
 
         # Fetch data
-        data = self.interface.query('FETCH?')
+        if verbose:
+            print(datetime.now().isoformat().replace('T',' ') + ' - Fetching data')
+        data = self.interface.query('FETCH?', verbose=verbose)
 
         # Parse data
         if samplesPerChan > 1:
