@@ -14,18 +14,18 @@
 import sys
 import os
 
-from fluidrtd import mock_modules
+from fluiddoc import mock_modules, on_rtd
 
 # to be able to build the doc without h5py with Read the docs
-on_rtd = os.environ.get('READTHEDOCS')
 if on_rtd:
     # this package comes from fluiddyn
     mock_modules(['h5py', 'scipy', 'scipy.interpolate',
                   'scipy.misc', 'scipy.ndimage'])
 
-mock_modules(['gpib', 'PyDAQmx', 'pyvisa', 'u3', 'rpyc', 'rpyc.utils.server'])
+mock_modules(['gpib', 'PyDAQmx', 'pyvisa',
+              'u3', 'rpyc', 'rpyc.utils.server'])
 
-from fluidrtd.ipynb_maker import ipynb_to_rst
+from fluiddoc.ipynb_maker import ipynb_to_rst
 ipynb_to_rst()
 
 import fluidlab
@@ -124,7 +124,7 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #html_theme = 'default'
-html_theme = 'sphinxdoc'
+html_theme = 'sphinx_rtd_theme'
 
 
 # Theme options are theme-specific and customize the look and feel of a theme

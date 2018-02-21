@@ -1,0 +1,12 @@
+
+dependencies:
+  - python=3.6
+  - numpy
+  - h5py
+  - sphinx
+  - numpydoc
+  - jupyter
+  - matplotlib
+  - pip:
+    - sphinx_rtd_theme
+    - clint

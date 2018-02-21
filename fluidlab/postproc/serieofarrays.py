@@ -333,8 +333,8 @@ class SeriesOfArrays(object):
     This class can be used to produce series of arrays from a
     :class:`SerieOfArrays`.
 
-    Arguments
-    ---------
+    Parameters
+    ----------
 
     serie_arrays: SerieOfArrays
 

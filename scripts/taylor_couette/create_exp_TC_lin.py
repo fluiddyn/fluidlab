@@ -13,7 +13,7 @@ import importlib
 
 from fluidlab.exp.taylorcouette.linearprofile import ILSTaylorCouetteExp
 
-from fluiddyn.util.query import query_yes_no
+from fluiddyn.io.query import query_yes_no
 
 from . import params_creation_TC_lin as p
 importlib.reload(p)

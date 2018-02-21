@@ -12,7 +12,7 @@ import sys
 
 from labjack import ljm
 
-from fluiddyn.util.query import query_yes_no
+from fluiddyn.io.query import query_yes_no
 
 
 def is_power2(num):

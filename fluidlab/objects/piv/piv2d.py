@@ -13,7 +13,7 @@ import numpy as np
 
 from labjack import ljm
 
-from fluiddyn.util.query import query_yes_no
+from fluiddyn.io.query import query_yes_no
 from fluidlab.instruments.daq.streaming_t7 import T7
 
 from fluidlab.exp import Timer

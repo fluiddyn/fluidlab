@@ -11,7 +11,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-from fluiddyn.util import query
+from fluiddyn.io import query
 from fluidlab.instruments.daq.daqmx import read_analog
 
 import h5py

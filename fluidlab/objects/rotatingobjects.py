@@ -36,7 +36,7 @@ import time
 from fluidlab.objects.boards import ObjectUsingBoard
 from fluidlab.objects.boards import NIDAQBoard
 from fluiddyn.util.timer import Timer
-from fluiddyn.util import query
+from fluiddyn.io import query
 from fluiddyn.io import txt
 
 import fluiddyn.output.figs as figs

@@ -9,7 +9,7 @@ import pylab
 
 from labjack import ljm
 
-from fluiddyn.util.query import query_yes_no
+from fluiddyn.io.query import query_yes_no
 from fluidlab.exp import Timer
 from fluidlab.objects.galvanometer import Galva
 

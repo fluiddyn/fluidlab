@@ -6,7 +6,7 @@ import numpy as np
 import h5py
 import matplotlib.pyplot as plt
 
-from fluiddyn.util import query
+from fluiddyn.io import query
 
 
 def _isarray(a):
