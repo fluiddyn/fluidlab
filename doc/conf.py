@@ -14,13 +14,7 @@
 import sys
 import os
 
-from fluiddoc import mock_modules, on_rtd
-
-# to be able to build the doc without h5py with Read the docs
-if on_rtd:
-    # this package comes from fluiddyn
-    mock_modules(['h5py', 'scipy', 'scipy.interpolate',
-                  'scipy.misc', 'scipy.ndimage'])
+from fluiddoc import mock_modules
 
 mock_modules(['gpib', 'PyDAQmx', 'pyvisa',
               'u3', 'rpyc', 'rpyc.utils.server'])
