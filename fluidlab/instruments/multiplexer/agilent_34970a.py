@@ -201,8 +201,12 @@ class Agilent34970a(IEC60488):
         # is complete)
         self.wait_till_completion_of_operations() # sends *OPC
         # self.interface.assert_trigger()
-        self.interface.wait_for_srq(timeout=samplesPerChan/sampleRate)
-
+        if sampleRate:
+            tmo = samplesPerChan/sampleRate
+        else:
+            tmo = 1.0
+        self.interface.wait_for_srq(timeout=tmo)
+        
         # Unassert SRQ
         self.clear_status()
 
