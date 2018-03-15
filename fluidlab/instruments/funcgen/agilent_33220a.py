@@ -127,6 +127,22 @@ class Agilent33220a(IEC60488, PowerOn, Calibration,
                 self.interface.write('OUTP OFF')
             else:
                 raise ValueError('Bad arguments')
+                
+    def configure_burst(self, freq, ncycles):
+        """
+        Configure a TTL burst with a given number of cycles
+        Send *TRG or gbf.trigger() to start a burst
+        """
+        
+        self.interface.write('OUTP:LOAD INF')
+        self.interface.write('APPL:SQU {freq:} HZ, 5 VPP, +2.5 V'.format(freq=freq))
+        self.interface.write('BURS:MODE TRIG')
+        self.interface.write('BURS:NCYC {ncycles:}'.format(ncycles=ncycles))
+        self.interface.write('BURS:PHAS 0')
+        self.interface.write('TRIG:SOUR BUS')
+        self.interface.write('BURS:STAT ON')
+        self.interface.write('OUTP ON')
+        
 
 features = [
     QueryCommand(
