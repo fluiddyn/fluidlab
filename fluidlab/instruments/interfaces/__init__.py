@@ -42,6 +42,16 @@ class QueryInterface(Interface):
 
     def query(self, s):
         raise NotImplementedError
+        
+    def close(self):
+        pass
+        
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, type_, value, cb):
+        self.close()
+        
 
 
 class FalseInterface(QueryInterface):

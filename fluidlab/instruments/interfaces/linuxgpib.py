@@ -98,6 +98,12 @@ class GPIBInterface(QueryInterface):
         return self.read(numbytes, verbose, tracing)
 
     def wait_for_srq(self, timeout=None):
+        """
+        timeout is expressed in milliseconds for compatibility
+        with pyvisa
+        """
+        timeout = float(timeout*1e-3)
+        # now timeout is in seconds
         try:
             if timeout is not None:
                 tmo = closest_timeout(timeout)
@@ -120,3 +126,4 @@ class GPIBInterface(QueryInterface):
                 print('Unknown WaitSRQ result')
         finally:
             gpib.timeout(self.handle, self.default_tmo)
+            

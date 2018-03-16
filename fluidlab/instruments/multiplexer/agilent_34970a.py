@@ -12,11 +12,8 @@ __all__ = ["Agilent34970a"]
 import numpy as np
 from datetime import datetime
 
-from fluidlab.instruments.iec60488 import (
-    IEC60488)
-
+from fluidlab.instruments.iec60488 import IEC60488
 from fluidlab.instruments.features import SuperValue
-
 
 class Agilent34970aValue(SuperValue):
     def __init__(self, name, doc='', function_name=None):
@@ -188,10 +185,10 @@ class Agilent34970a(IEC60488):
         self.interface.write('FORM:READ:UNIT OFF')
 
         # Prepare status and event register
-        self.clear_status()
-        self.event_status_enable_register.set(1)
-        self.status_enable_register.set(32)
-
+        self.clear_status() # *CLS
+        self.event_status_enable_register.set(1) # *ESE 1
+        self.status_enable_register.set(32) # *SRE 32
+        
         # Initiate scan and trigger Operation Complete event after completion
         self.interface.write('INIT')
         if verbose:
@@ -199,12 +196,11 @@ class Agilent34970a(IEC60488):
 
         # Wait for Service Request (triggered by *OPC after the scan
         # is complete)
-        self.wait_till_completion_of_operations() # sends *OPC
-        # self.interface.assert_trigger()
+        self.wait_till_completion_of_operations() # *OPC
         if sampleRate:
-            tmo = samplesPerChan/sampleRate
+            tmo = int(1000*samplesPerChan/sampleRate)
         else:
-            tmo = 1.0
+            tmo = 10000
         self.interface.wait_for_srq(timeout=tmo)
         
         # Unassert SRQ

@@ -91,6 +91,14 @@ class Driver(object):
             raise error_class(name + ' is not a value of this instrument')
 
         return value
+        
+    def __enter__(self):
+        self.interface.__enter__()
+        return self
+    
+    def __exit__(self, type_, value, cb):
+        self.interface.__exit__(type_, value, cb)
+    
 
 
 class VISADriver(Driver):
