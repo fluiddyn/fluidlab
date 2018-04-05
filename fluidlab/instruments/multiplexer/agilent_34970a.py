@@ -76,6 +76,14 @@ class Agilent34970a(IEC60488):
             self.Range[str(channelNumber)] = rangeValue
 
     def set_nplc(self, channelNumber, nplcValue):
+        """
+        Sets the averaging for each channel expressed in line cycles.
+        Possible values are: 0.02, 0.2, 1.0, 2.0, 10, 20, 100, 200
+        """
+        possible_values = {0.02, 0.2, 1.0, 2.0, 10.0, 20.0, 100.0, 200.0}
+        nplcValue = float(nplcValue)
+        if nplcValue not in possible_values:
+            raise ValueError('Unacceptable NPLC value')
         self.NPLC[str(channelNumber)] = nplcValue
 
     def set_tk_type(self, channelNumber, tkType):
@@ -201,6 +209,7 @@ class Agilent34970a(IEC60488):
             tmo = int(1000*samplesPerChan/sampleRate)
         else:
             tmo = 10000
+        print('tmo =', tmo, 'ms')
         self.interface.wait_for_srq(timeout=tmo)
         
         # Unassert SRQ
