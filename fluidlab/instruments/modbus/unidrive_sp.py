@@ -119,7 +119,8 @@ import numpy as np
 
 from fluidlab.instruments.modbus.driver import ModbusDriver
 from fluidlab.instruments.modbus.features import (
-    DecimalInt16Value, Int16StringValue)
+    DecimalInt16Value, Int16StringValue
+)
 from fluiddyn.util.terminal_colors import print_fail, print_warning
 
 
@@ -154,28 +155,33 @@ class BaseUnidriveSP(ModbusDriver):
     """
     _constant_nb_pairs_poles = 4
 
-    def __init__(self, port=None, timeout=1,
-                 module='minimalmodbus', signed=False):
+    def __init__(
+        self, port=None, timeout=1, module="minimalmodbus", signed=False
+    ):
 
         self.signed = signed
 
         if port is None:
             from fluidlab.util import userconfig
+
             try:
                 port = userconfig.port_unidrive_sp
             except AttributeError:
                 raise ValueError(
                     'If port is None, "port_unidrive_sp" has to be defined in'
-                    ' one of the FluidLab user configuration files.')
+                    " one of the FluidLab user configuration files."
+                )
 
-        super(BaseUnidriveSP, self).__init__(port=port, method='rtu',
-                                             timeout=timeout, module=module)
+        super(BaseUnidriveSP, self).__init__(
+            port=port, method="rtu", timeout=timeout, module=module
+        )
 
         mode = self.mode.get()
-        if hasattr(self, '_mode') and self._mode_cls != mode:
+        if hasattr(self, "_mode") and self._mode_cls != mode:
             raise ModeError(
-                'Instantiating a class for mode '
-                '{} but driver is in mode {}.'.format(self._mode_cls, mode))
+                "Instantiating a class for mode "
+                "{} but driver is in mode {}.".format(self._mode_cls, mode)
+            )
 
     def unlock(self):
         """Unlock the motor (then rotation is possible)."""
@@ -211,7 +217,7 @@ class BaseUnidriveSP(ModbusDriver):
 
     def stop_rotation(self):
         """Stop the rotation."""
-        self._reference_selection.set('preset')
+        self._reference_selection.set("preset")
         self._rotate.set(0)
 
     def set_target_rotation_rate(self, rotation_rate, check=False):
@@ -224,7 +230,7 @@ class BaseUnidriveSP(ModbusDriver):
 
 
 def _compute_from_param_str(parameter_str):
-    l = parameter_str.split('.')
+    l = parameter_str.split(".")
     menu = int(l[0])
     parameter = int(l[1])
     address = 100 * menu + parameter - 1
@@ -232,17 +238,22 @@ def _compute_from_param_str(parameter_str):
 
 
 class Value(DecimalInt16Value):
-    def __init__(self, name, doc='', parameter_str='', number_of_decimals=0):
-        self._menu, self._parameter, address = \
-            _compute_from_param_str(parameter_str)
+
+    def __init__(self, name, doc="", parameter_str="", number_of_decimals=0):
+        self._menu, self._parameter, address = _compute_from_param_str(
+            parameter_str
+        )
         super(Value, self).__init__(
-            name, doc, address, number_of_decimals=number_of_decimals)
+            name, doc, address, number_of_decimals=number_of_decimals
+        )
 
 
 class StringValue(Int16StringValue):
-    def __init__(self, name, doc='', int_dict=None, parameter_str=''):
-        self._menu, self._parameter, address = \
-            _compute_from_param_str(parameter_str)
+
+    def __init__(self, name, doc="", int_dict=None, parameter_str=""):
+        self._menu, self._parameter, address = _compute_from_param_str(
+            parameter_str
+        )
         super(StringValue, self).__init__(name, doc, int_dict, address)
 
     def set(self, value, check=True):
@@ -260,56 +271,84 @@ class StringValue(Int16StringValue):
         instr_value = self.get()
         if instr_value != value:
             msg = (
-                'Value {} could not be set to {} and was set to {} instead'
-            ).format(self._name, value, instr_value)
+                "Value {} could not be set to {} and was set to {} instead"
+            ).format(
+                self._name, value, instr_value
+            )
             warnings.warn(msg, UserWarning)
 
 
-int_dict_mode = {1: 'open_loop', 2: 'closed_loop', 3: 'servo', 4: 'regen'}
+int_dict_mode = {1: "open_loop", 2: "closed_loop", 3: "servo", 4: "regen"}
 
-int_dict_ref ={0: 'A1.A2', 1: 'A1.pr', 2: 'A2.pr', 3: 'preset',
-               4: 'pad', 5: 'Prc'}
+int_dict_ref = {
+    0: "A1.A2", 1: "A1.pr", 2: "A2.pr", 3: "preset", 4: "pad", 5: "Prc"
+}
 
 
-BaseUnidriveSP._build_class_with_features([
-    StringValue(name='mode',
-                doc='The operating mode.',
-                int_dict=int_dict_mode,
-                parameter_str='0.48'),
-    StringValue(name='_reference_selection',
-                doc=('Defines how the rotation speed is given to the motor.'
-                     '\n\n- "preset" is what we want here,\n'
-                     '- "pad" means it can be entered with the arrow keys '
-                     'of the motor pad'),
-                int_dict=int_dict_ref,
-                parameter_str='0.05'),
-    Value(name='_unlocked',
-          doc=('When this variable is equal to 0, '
-               'the motor is inhibited and displays "inh". '
-               'When it is equal to 1, the motor is ready to run '
-               'and displays "rdY".'),
-          parameter_str='6.15'),
-    Value(name='_rotate',
-          doc='Set this to 1 to give an order of rotation',
-          parameter_str='6.34'),
-    Value(name='acceleration_time',
-          doc='The time to go from 0 Hz to 100 Hz (s).',
-          parameter_str='0.03',
-          number_of_decimals=1),
-    Value(name='deceleration_time',
-          doc='The time to go from 100 Hz to 0 Hz (s).',
-          parameter_str='0.04',
-          number_of_decimals=1),
-    Value(name='_number_of_pairs_of_poles',
-          doc='The number of pairs of poles of the motor.',
-          parameter_str='0.42'),
-    Value(name='_rated_voltage',
-          doc='The Rated voltage of the motor (V).',
-          parameter_str='0.44'),
-    Value(name='_rated_current_open_loop',
-          doc='Rated current of the motor. Used in open loop.',
-          parameter_str='0.46',
-          number_of_decimals=2)])
+BaseUnidriveSP._build_class_with_features(
+    [
+        StringValue(
+            name="mode",
+            doc="The operating mode.",
+            int_dict=int_dict_mode,
+            parameter_str="0.48",
+        ),
+        StringValue(
+            name="_reference_selection",
+            doc=(
+                "Defines how the rotation speed is given to the motor."
+                '\n\n- "preset" is what we want here,\n'
+                '- "pad" means it can be entered with the arrow keys '
+                "of the motor pad"
+            ),
+            int_dict=int_dict_ref,
+            parameter_str="0.05",
+        ),
+        Value(
+            name="_unlocked",
+            doc=(
+                "When this variable is equal to 0, "
+                'the motor is inhibited and displays "inh". '
+                "When it is equal to 1, the motor is ready to run "
+                'and displays "rdY".'
+            ),
+            parameter_str="6.15",
+        ),
+        Value(
+            name="_rotate",
+            doc="Set this to 1 to give an order of rotation",
+            parameter_str="6.34",
+        ),
+        Value(
+            name="acceleration_time",
+            doc="The time to go from 0 Hz to 100 Hz (s).",
+            parameter_str="0.03",
+            number_of_decimals=1,
+        ),
+        Value(
+            name="deceleration_time",
+            doc="The time to go from 100 Hz to 0 Hz (s).",
+            parameter_str="0.04",
+            number_of_decimals=1,
+        ),
+        Value(
+            name="_number_of_pairs_of_poles",
+            doc="The number of pairs of poles of the motor.",
+            parameter_str="0.42",
+        ),
+        Value(
+            name="_rated_voltage",
+            doc="The Rated voltage of the motor (V).",
+            parameter_str="0.44",
+        ),
+        Value(
+            name="_rated_current_open_loop",
+            doc="Rated current of the motor. Used in open loop.",
+            parameter_str="0.46",
+            number_of_decimals=2,
+        ),
+    ]
+)
 
 
 class OpenLoopUnidriveSP(BaseUnidriveSP):
@@ -395,7 +434,7 @@ class OpenLoopUnidriveSP(BaseUnidriveSP):
     """
     _constant_nb_pairs_poles = 4
 
-    _mode_cls = 'open_loop'
+    _mode_cls = "open_loop"
 
     def set_target_rotation_rate(self, rotation_rate, check=False):
         """Set the target rotation rate in Hz."""
@@ -405,8 +444,9 @@ class OpenLoopUnidriveSP(BaseUnidriveSP):
         if not isinstance(rotation_rate, (int, float)):
             rotation_rate = float(rotation_rate)
 
-        self._speed.set(self._constant_nb_pairs_poles * rotation_rate,
-                        check=check)
+        self._speed.set(
+            self._constant_nb_pairs_poles * rotation_rate, check=check
+        )
 
     def get_target_rotation_rate(self):
         """Get the target rotation rate in Hz."""
@@ -416,26 +456,41 @@ class OpenLoopUnidriveSP(BaseUnidriveSP):
         return raw_speeed / self._constant_nb_pairs_poles
 
 
-OpenLoopUnidriveSP._build_class_with_features([
-    Value(name='_speed',
-          doc=('Frequency of the driving signal (Hz).\n\n'
-               'Warning: the actual rotation rate in Hz '
-               'is equal to this value divided by the number of poles.'),
-          parameter_str='0.24',
-          number_of_decimals=1),
-    Value(name='_min_frequency',
-          doc='Minimum limit of frequency (Hz).',
-          parameter_str='0.01',
-          number_of_decimals=1),
-    Value(name='_rated_speed',
-          doc='Rated speed of the motor (rpm).',
-          parameter_str='0.45'),
-    Value(name='_rated_frequency',
-          doc=('Rated frequency of the driving signal of the motor (Hz).\n\n'
-               'It has to be equal to '
-               '[rated speed / 60 * number of pairs of poles].'),
-          parameter_str='0.47',
-          number_of_decimals=1)])
+OpenLoopUnidriveSP._build_class_with_features(
+    [
+        Value(
+            name="_speed",
+            doc=(
+                "Frequency of the driving signal (Hz).\n\n"
+                "Warning: the actual rotation rate in Hz "
+                "is equal to this value divided by the number of poles."
+            ),
+            parameter_str="0.24",
+            number_of_decimals=1,
+        ),
+        Value(
+            name="_min_frequency",
+            doc="Minimum limit of frequency (Hz).",
+            parameter_str="0.01",
+            number_of_decimals=1,
+        ),
+        Value(
+            name="_rated_speed",
+            doc="Rated speed of the motor (rpm).",
+            parameter_str="0.45",
+        ),
+        Value(
+            name="_rated_frequency",
+            doc=(
+                "Rated frequency of the driving signal of the motor (Hz).\n\n"
+                "It has to be equal to "
+                "[rated speed / 60 * number of pairs of poles]."
+            ),
+            parameter_str="0.47",
+            number_of_decimals=1,
+        ),
+    ]
+)
 
 
 class ServoUnidriveSP(BaseUnidriveSP):
@@ -530,7 +585,7 @@ class ServoUnidriveSP(BaseUnidriveSP):
     """
     _constant_nb_pairs_poles = 4
 
-    _mode_cls = 'servo'
+    _mode_cls = "servo"
 
     def set_target_rotation_rate(self, rotation_rate, check=False, signed=False):
         """Set the target rotation rate in rpm."""
@@ -541,15 +596,22 @@ class ServoUnidriveSP(BaseUnidriveSP):
         return self._speed.get()
 
 
-ServoUnidriveSP._build_class_with_features([
-    Value(name='_speed',
-          doc=('Rotation rate of the motor (rpm).'),
-          parameter_str='0.24',
-          number_of_decimals=1),
-    Value(name='_min_frequency',
-          doc='Minimum limit of frequency (rpm).',
-          parameter_str='0.01',
-          number_of_decimals=1)])
+ServoUnidriveSP._build_class_with_features(
+    [
+        Value(
+            name="_speed",
+            doc=("Rotation rate of the motor (rpm)."),
+            parameter_str="0.24",
+            number_of_decimals=1,
+        ),
+        Value(
+            name="_min_frequency",
+            doc="Minimum limit of frequency (rpm).",
+            parameter_str="0.01",
+            number_of_decimals=1,
+        ),
+    ]
+)
 
 
 def example_linear_ramps(motor, max_speed=3., duration=5., steps=30):
@@ -560,15 +622,15 @@ def example_linear_ramps(motor, max_speed=3., duration=5., steps=30):
     speed = 0
     start_speed = motor.get_target_rotation_rate()
     motor.start_rotation(speed)
-    while t < duration/2:
-        sleep(duration/steps)
-        speed += 2*max_speed/steps
-        t += duration/steps
+    while t < duration / 2:
+        sleep(duration / steps)
+        speed += 2 * max_speed / steps
+        t += duration / steps
         motor.set_target_rotation_rate(speed, check=False)
     while t < duration:
-        sleep(duration/steps)
-        speed -= 2*max_speed/steps
-        t += duration/steps
+        sleep(duration / steps)
+        speed -= 2 * max_speed / steps
+        t += duration / steps
         if speed < 0:
             speed = 0.
         motor.set_target_rotation_rate(speed, check=False)
@@ -580,8 +642,8 @@ def example_linear_ramps(motor, max_speed=3., duration=5., steps=30):
 def attempt(func, *args, **kwargs):
     """Attempt to call a function."""
 
-    if 'maxattempt' in kwargs:
-        maxattempt = kwargs.pop('maxattempt')
+    if "maxattempt" in kwargs:
+        maxattempt = kwargs.pop("maxattempt")
     else:
         maxattempt = 100
 
@@ -605,71 +667,84 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
     isprintall = 0
     isprint_error = 1
 
-    def set_target_rotation_rate(self, rotation_rate, check=False,
-                                 maxattempt=10):
+    def set_target_rotation_rate(self, rotation_rate, check=False, maxattempt=10):
         """Set the target rotation rate in rpm."""
 
         count = attempt(
             super(ServoUnidriveSPCaptureError, self).set_target_rotation_rate,
-            rotation_rate, check, maxattempt=maxattempt)
+            rotation_rate,
+            check,
+            maxattempt=maxattempt,
+        )
         if count == maxattempt + 1:
             print_fail(
-                'set rotation at ' + str(rotation_rate) +
-                ' rpm aborted (number of attempt exceeds ' +
-                str(maxattempt) + ')')
+                "set rotation at "
+                + str(rotation_rate)
+                + " rpm aborted (number of attempt exceeds "
+                + str(maxattempt)
+                + ")"
+            )
         elif count > 1 and (self.isprint_error or self.isprintall):
-            print_warning('set rotation to ' + str(rotation_rate) +
-                          ' rpm at the ' + str(count) + 'th attempt')
+            print_warning(
+                "set rotation to "
+                + str(rotation_rate)
+                + " rpm at the "
+                + str(count)
+                + "th attempt"
+            )
         elif self.isprintall:
-            print('set rotation to ' + str(rotation_rate) + ' rpm')
+            print("set rotation to " + str(rotation_rate) + " rpm")
         return count
-
 
     def get_target_rotation_rate(self):
         """Get the target rotation rate in rpm."""
         count = attempt(
-            super(ServoUnidriveSPCaptureError, self).get_target_rotation_rate)
+            super(ServoUnidriveSPCaptureError, self).get_target_rotation_rate
+        )
 
         if count > 1 and (self.isprint_error or self.isprintall):
-            print_warning(
-                'got rotation at the ' + str(count) + 'th attempt')
+            print_warning("got rotation at the " + str(count) + "th attempt")
 
     def start_rotation(self, speed=None, direction=None):
         count = attempt(
             super(ServoUnidriveSPCaptureError, self).start_rotation,
-            speed, direction)
+            speed,
+            direction,
+        )
 
         if count > 1 and (self.isprint_error or self.isprintall):
-            print_warning('start rotation at ' + str(speed) +
-                          ' rpm at the ' + str(count) + 'th attempt')
+            print_warning(
+                "start rotation at "
+                + str(speed)
+                + " rpm at the "
+                + str(count)
+                + "th attempt"
+            )
         elif self.isprintall:
-            print('start rotation at ' + str(speed) + ' rpm')
+            print("start rotation at " + str(speed) + " rpm")
 
     def stop_rotation(self):
-        count = attempt(
-            super(ServoUnidriveSPCaptureError, self).stop_rotation)
+        count = attempt(super(ServoUnidriveSPCaptureError, self).stop_rotation)
 
         if count > 1 and (self.isprint_error or self.isprintall):
-            print_warning('stop rotation at the ' + str(count) + 'th attempt')
+            print_warning("stop rotation at the " + str(count) + "th attempt")
         elif self.isprintall:
-            print('stop rotation')
+            print("stop rotation")
 
     def unlock(self):
-        count = attempt(
-            super(ServoUnidriveSPCaptureError, self).unlock)
+        count = attempt(super(ServoUnidriveSPCaptureError, self).unlock)
 
         if count > 1 and (self.isprint_error or self.isprintall):
-            print_warning('unlocked at the ' + str(count) + 'th attempt')
+            print_warning("unlocked at the " + str(count) + "th attempt")
         elif self.isprintall:
-            print('unlocked')
+            print("unlocked")
 
     def lock(self):
-        count = attempt(
-            super(ServoUnidriveSPCaptureError, self).lock)
+        count = attempt(super(ServoUnidriveSPCaptureError, self).lock)
         if count > 1 and (self.isprint_error or self.isprintall):
-            print_warning('unlocked at the ' + str(count) + 'th attempt')
+            print_warning("unlocked at the " + str(count) + "th attempt")
         elif self.isprintall:
-            print('locked')
+            print("locked")
 
     def set_acceleration_time(self, acc, check=False, maxattempt=10):
         """Set the acceleration time XXs / 1000 rpm"""
@@ -677,50 +752,74 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
         if acc >= 0:
             count = attempt(
                 super(ServoUnidriveSPCaptureError, self).acceleration_time.set,
-                acc, check, maxattempt=maxattempt)
+                acc,
+                check,
+                maxattempt=maxattempt,
+            )
         else:
             count = attempt(
                 super(ServoUnidriveSPCaptureError, self).deceleration_time.set,
-                acc, check, maxattempt=maxattempt)
+                acc,
+                check,
+                maxattempt=maxattempt,
+            )
 
         if count == maxattempt + 1:
             print_fail(
-                'set acceleration (or deceleration) time to ' + str(acc) +
-                ' s / 1000 rpm aborted (number of attempt exceeds ' +
-                str(maxattempt) + ')')
+                "set acceleration (or deceleration) time to "
+                + str(acc)
+                + " s / 1000 rpm aborted (number of attempt exceeds "
+                + str(maxattempt)
+                + ")"
+            )
         elif count > 1 and (self.isprint_error or self.isprintall):
             print_warning(
-                'set acceleration (or deceleration) time to '
-                '{} s / 1000rpm at the {}th attempt.'.format(acc, count))
+                "set acceleration (or deceleration) time to "
+                "{} s / 1000rpm at the {}th attempt.".format(acc, count)
+            )
         elif self.isprintall:
-            print('set acceleration (or deceleration) time to ' + str(acc) +
-                  ' s / 1000 rpm')
+            print(
+                "set acceleration (or deceleration) time to "
+                + str(acc)
+                + " s / 1000 rpm"
+            )
         return count
 
-    def control_rotation(self,
-                         time, rotation_rate, fact_multiplicatif_accel=1):
-        if not (isinstance(time, np.ndarray) and
-                isinstance(rotation_rate, np.ndarray)):
+    def control_rotation(self, time, rotation_rate, fact_multiplicatif_accel=1):
+        if not (
+            isinstance(time, np.ndarray) and isinstance(rotation_rate, np.ndarray)
+        ):
             print("time and rotation_rate as to be of type numpy.ndarray ")
         time_instruct = 0.025  # typical time of exection of an instruction set
         maxattempt = int(max([(time[1] - time[0]) / time_instruct, 1]))
-        self.set_acceleration_time(int((time[1] - time[0]) / 1000.0 *
-                                       (rotation_rate[1] - rotation_rate[0]) /
-                                       fact_multiplicatif_accel))
+        self.set_acceleration_time(
+            int(
+                (time[1] - time[0])
+                / 1000.0
+                * (rotation_rate[1] - rotation_rate[0])
+                / fact_multiplicatif_accel
+            )
+        )
         self.start_rotation(0)
         timer = TimerIrregular(time)
 
         for t, ti in np.ndenumerate(time):
             t = t[0]
-            count = self.set_target_rotation_rate(rotation_rate[t],
-                                                  maxattempt=maxattempt)
+            count = self.set_target_rotation_rate(
+                rotation_rate[t], maxattempt=maxattempt
+            )
             if ti < max(time):
-                self.set_acceleration_time(int((time[t+1] - time[t]) / 1000.0 *
-                                               (rotation_rate[t+1] -
-                                                rotation_rate[t]) /
-                                               fact_multiplicatif_accel),
-                                           maxattempt=maxattempt - count)
+                self.set_acceleration_time(
+                    int(
+                        (time[t + 1] - time[t])
+                        / 1000.0
+                        * (rotation_rate[t + 1] - rotation_rate[t])
+                        / fact_multiplicatif_accel
+                    ),
+                    maxattempt=maxattempt - count,
+                )
 
-                maxattempt = int(max([(time[t+1] - time[t]) /
-                                      time_instruct, 1]))
+                maxattempt = int(
+                    max([(time[t + 1] - time[t]) / time_instruct, 1])
+                )
             timer.wait_tick()

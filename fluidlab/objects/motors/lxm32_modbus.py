@@ -18,13 +18,14 @@ else:
 def get_bit(number, idx):
     return (number & (1 << idx)) != 0
 
-int32max = 2**31
+
+int32max = 2 ** 31
 int32min = -int32max
-uint16max = 2**16 - 1
+uint16max = 2 ** 16 - 1
 
 
 def sig_handler(signo, frame):
-    print('sig_handler({}, {})'.format(signo, frame))
+    print("sig_handler({}, {})".format(signo, frame))
     sys.exit(0)
 
 
@@ -55,37 +56,45 @@ def parse_mf_stat(mf_stat):
 
 
 states = {
-    0: '?',
-    1: 'Start (1)',
-    2: 'Not Ready To Switch On (2)',
-    3: 'Switch On Disabled (3)',
-    4: 'Ready To Switch (4)',
-    5: 'Switched On (5)',
-    6: 'Operation Enabled (6)',
-    7: 'Quick Stop Active (7)',
-    8: 'Fault Reaction Active (8)',
-    9: 'Fault (9)'}
+    0: "?",
+    1: "Start (1)",
+    2: "Not Ready To Switch On (2)",
+    3: "Switch On Disabled (3)",
+    4: "Ready To Switch (4)",
+    5: "Switched On (5)",
+    6: "Operation Enabled (6)",
+    7: "Quick Stop Active (7)",
+    8: "Fault Reaction Active (8)",
+    9: "Fault (9)",
+}
 
-modes = {1: 'Profile Position',
-         3: 'Profile Velocity',
-         4: 'Profile Torque',
-         6: 'Homing',
-         0x1f: 'Jog',
-         0x1e: 'Electronic Gear',
-         0x1d: 'Motion Sequence'}
+modes = {
+    1: "Profile Position",
+    3: "Profile Velocity",
+    4: "Profile Torque",
+    6: "Homing",
+    0x1f: "Jog",
+    0x1e: "Electronic Gear",
+    0x1d: "Motion Sequence",
+}
 
 
 class Motor(object):
-    def __init__(self, ip_modbus='192.168.28.21',
-                 disable_scan_timeout=False, disable_limit_switches=False):
+
+    def __init__(
+        self,
+        ip_modbus="192.168.28.21",
+        disable_scan_timeout=False,
+        disable_limit_switches=False,
+    ):
         self._code_state = None
         self._is_scanning = False
         self.client = ModbusClient(ip_modbus)
         if self.client.connect():
-            print('connection ok')
+            print("connection ok")
             sys.stdout.flush()
         else:
-            raise ValueError('bad modbus connection.')
+            raise ValueError("bad modbus connection.")
 
         if disable_scan_timeout:
             ret = self.read_holding_registers(17498, 2)
@@ -93,7 +102,7 @@ class Motor(object):
                 self.write_registers(17498, [0, 0])
 
         if disable_limit_switches:
-            self.write_registers(1566, [0]*4)
+            self.write_registers(1566, [0] * 4)
         else:
             self.write_registers(1566, [0, 1, 0, 1])
 
@@ -118,7 +127,7 @@ class Motor(object):
 
     def close(self):
         if self._is_scanning:
-            print('close motor driver')
+            print("close motor driver")
         self._has_to_scan = False
         while self._is_scanning:
             sleep(0.05)
@@ -130,7 +139,7 @@ class Motor(object):
     def disable_limit_switches(self):
         """disable limit switches (power stage must be disabled)"""
         self.disable()
-        self.write_registers(1566, [0]*4)
+        self.write_registers(1566, [0] * 4)
 
     def enable_limit_switches(self):
         """disable limit switches (power stage must be disabled)"""
@@ -152,7 +161,7 @@ class Motor(object):
             # flip toggle bit
             self.dm_control ^= 1 << 7
             out[0] = self.dm_control
-            # print('hex(dm_control):', hex(self.dm_control))
+        # print('hex(dm_control):', hex(self.dm_control))
 
         outscan.extend(out)
         self.outscan = outscan
@@ -162,30 +171,38 @@ class Motor(object):
     def read_holding_registers(self, address, count=1, **kwargs):
         ret = self.client.read_holding_registers(address, count, **kwargs)
         if isinstance(ret, ExceptionResponse):
-            print('ExceptionResponse',
-                  ret.exception_code, ret.function_code-128)
+            print(
+                "ExceptionResponse", ret.exception_code, ret.function_code - 128
+            )
         return ret
 
     def write_registers(self, address, values, **kwargs):
         ret = self.client.write_registers(address, values, **kwargs)
         if isinstance(ret, ExceptionResponse):
-            print('ExceptionResponse',
-                  ret.exception_code, ret.function_code-128)
+            print(
+                "ExceptionResponse", ret.exception_code, ret.function_code - 128
+            )
         return ret
 
     def compute_dm_control(
-            self, mode=None, enable=None,
-            quick_stop=None, fault_reset=None, halt=None,
-            clear_halt=None, resume_after_halt=None):
+        self,
+        mode=None,
+        enable=None,
+        quick_stop=None,
+        fault_reset=None,
+        halt=None,
+        clear_halt=None,
+        resume_after_halt=None,
+    ):
 
         dm_control = self.dm_control
 
         if mode is not None:
             if not isinstance(mode, str):
                 mode = str(mode)
-            if mode.startswith('pos'):
+            if mode.startswith("pos"):
                 dm_control = 0x1
-            elif mode.startswith('homing'):
+            elif mode.startswith("homing"):
                 dm_control = 0x6
             else:
                 dm_control = 0x23
@@ -211,14 +228,24 @@ class Motor(object):
         self.dm_control = dm_control
 
     def set_dm_control(
-            self, mode=None, enable=None,
-            quick_stop=None, fault_reset=None, halt=None,
-            clear_halt=None, resume_after_halt=None):
+        self,
+        mode=None,
+        enable=None,
+        quick_stop=None,
+        fault_reset=None,
+        halt=None,
+        clear_halt=None,
+        resume_after_halt=None,
+    ):
         self.compute_dm_control(
-            mode=mode, enable=enable, quick_stop=quick_stop,
+            mode=mode,
+            enable=enable,
+            quick_stop=quick_stop,
             fault_reset=fault_reset,
             halt=halt,
-            clear_halt=clear_halt, resume_after_halt=resume_after_halt)
+            clear_halt=clear_halt,
+            resume_after_halt=resume_after_halt,
+        )
         self._pingpong()
 
     def _ioscanning(self):
@@ -234,17 +261,20 @@ class Motor(object):
             sleep(0.05)
             t = time()
             if t - t0 > 1:
-                print('warning: very slow Motor._pingpong (more than 1 s)')
+                print("warning: very slow Motor._pingpong (more than 1 s)")
             elif t - t0 > 10:
-                raise Exception('Very slow Motor._pingpong (more than 10 s)')
+                raise Exception("Very slow Motor._pingpong (more than 10 s)")
 
         self._is_pingponging = True
         self._build_output_scan()
         # t1 = time()
         ret_write = self.write_registers(0, self.outscan, unit=255)
         if isinstance(ret_write, ExceptionResponse):
-            print('ExceptionResponse',
-                  ret_write.exception_code, ret_write.function_code-128)
+            print(
+                "ExceptionResponse",
+                ret_write.exception_code,
+                ret_write.function_code - 128,
+            )
 
         ret_read = self.read_holding_registers(0, 13, unit=255)
         registers = ret_read.registers
@@ -265,11 +295,16 @@ class Motor(object):
         # decode drive_stat
         new_code_state = drive_stat & 0xF
         if self._code_state != new_code_state and self._code_state is not None:
-            print('state changed from "' + states[self._code_state] +
-                  '" to "' + states[new_code_state] + '"')
+            print(
+                'state changed from "'
+                + states[self._code_state]
+                + '" to "'
+                + states[new_code_state]
+                + '"'
+            )
         self._code_state = new_code_state
         self.state = states[new_code_state]
-        
+
         self.error = get_bit(drive_stat, 6)
         self.warn = get_bit(drive_stat, 7)
         self.halt = get_bit(drive_stat, 8)
@@ -291,16 +326,23 @@ class Motor(object):
 
     def get_state(self):
         return (
-            'error: {}\nquick_stop: {}'.format(self.error, self.quick_stop) +
-            'mode:' + hex(self.mode) +
-            '\nde: {}; me: {}; mt: {}\n'.format(self.de, self.me, self.mt) +
-            'x_add1: {}; x_end: {}; x_err: {}\n'.format(
-                self.x_add1, self.x_end, self.x_err) +
-            'drive_input: ' + bin(self.drive_input) +
-            '\ndrive_stat: ' + bin(self.drive_stat) +
-            '\nstate: ' + self.state +
-            '\nmotor_neg: {}, motor_pos: {}, motor_standstill: {}'.format(
-                self.motor_neg, self.motor_pos, self.motor_standstill))
+            "error: {}\nquick_stop: {}".format(self.error, self.quick_stop)
+            + "mode:"
+            + hex(self.mode)
+            + "\nde: {}; me: {}; mt: {}\n".format(self.de, self.me, self.mt)
+            + "x_add1: {}; x_end: {}; x_err: {}\n".format(
+                self.x_add1, self.x_end, self.x_err
+            )
+            + "drive_input: "
+            + bin(self.drive_input)
+            + "\ndrive_stat: "
+            + bin(self.drive_stat)
+            + "\nstate: "
+            + self.state
+            + "\nmotor_neg: {}, motor_pos: {}, motor_standstill: {}".format(
+                self.motor_neg, self.motor_pos, self.motor_standstill
+            )
+        )
 
     def print_state(self):
         print(self.get_state())
@@ -319,7 +361,7 @@ class Motor(object):
         return self.read_param(6940)
 
     def set_target_rotation_rate(self, i32):
-        if self.state == 'Fault (9)':
+        if self.state == "Fault (9)":
             print('self.state == "Fault (9)"')
         if not isinstance(i32, int):
             i32 = int(round(i32))
@@ -327,7 +369,7 @@ class Motor(object):
         self._pingpong()
 
     def set_target_position(self, i32):
-        if self.state == 'Fault (9)':
+        if self.state == "Fault (9)":
             print('self.state == "Fault (9)"')
         if not isinstance(i32, int):
             i32 = int(round(i32))
@@ -357,7 +399,7 @@ class Motor(object):
             a = int(round(a))
         if a > uint16max:
             a = uint16max
-            print('Warning: too large acceleration for the motor.')
+            print("Warning: too large acceleration for the motor.")
         self.ramp_v = [0, a] * 2
         self._pingpong()
 

@@ -12,4 +12,4 @@ Provides:
 
 """
 
-__all__ = ['furness_fco318', 'pfeiffer_maxigauge']
+__all__ = ["furness_fco318", "pfeiffer_maxigauge"]

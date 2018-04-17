@@ -73,20 +73,22 @@ following mixin classes.
 
 import six
 from fluidlab.instruments.features import (
-    WriteCommand, QueryCommand, BoolValue, StringValue, RegisterValue)
+    WriteCommand, QueryCommand, BoolValue, StringValue, RegisterValue
+)
 
 from fluidlab.instruments.drivers import VISADriver
 
 
 EVENT_STATUS_BYTES = [
-    'operation complete',
-    'request control',
-    'query error',
-    'device dependent error',
-    'execution error',
-    'command error',
-    'user request',
-    'power on']
+    "operation complete",
+    "request control",
+    "query error",
+    "device dependent error",
+    "execution error",
+    "command error",
+    "user request",
+    "power on",
+]
 
 
 class IEC60488(VISADriver):
@@ -128,14 +130,14 @@ class IEC60488(VISADriver):
 
     """
 
-    def __init__(self, interface=None, backend=''):
+    def __init__(self, interface=None, backend=""):
         super(IEC60488, self).__init__(interface, backend=backend)
         identification = self.query_identification()
 
         if isinstance(identification, six.string_types):
             identification = identification.strip()
 
-        print('Initialization driver for device: {}'.format(identification))
+        print("Initialization driver for device: {}".format(identification))
 
     def query_event_status_register(self):
         number = self.query_esr()
@@ -145,45 +147,49 @@ class IEC60488(VISADriver):
         number = self.query_stb()
         return self.status_enable_register.compute_dict_from_number(number)
 
+
 features = [
     # Reporting Commands
-    WriteCommand(
-        'clear_status', 'Clears the data status structure', '*CLS'),
+    WriteCommand("clear_status", "Clears the data status structure", "*CLS"),
     RegisterValue(
-        'event_status_enable_register',
+        "event_status_enable_register",
         doc=(
             """Event status enable register
 
 Used in the status and events reporting system.
-"""),
-        command_set='*ESE', keys=EVENT_STATUS_BYTES),
-    QueryCommand(
-        'query_esr', 'Query the event status register', '*ESR?'),
+"""
+        ),
+        command_set="*ESE",
+        keys=EVENT_STATUS_BYTES,
+    ),
+    QueryCommand("query_esr", "Query the event status register", "*ESR?"),
     RegisterValue(
-        'status_enable_register',
+        "status_enable_register",
         doc=(
             """Status enable register
 
 Used in the status reporting system.
-"""),
-        command_set='*SRE', keys=EVENT_STATUS_BYTES),
-    QueryCommand(
-        'query_stb', 'Query the status register', '*STB?'),
+"""
+        ),
+        command_set="*SRE",
+        keys=EVENT_STATUS_BYTES,
+    ),
+    QueryCommand("query_stb", "Query the status register", "*STB?"),
     # Internal operation commands
-    QueryCommand(
-        'query_identification', 'Identification query', '*IDN?'),
-    WriteCommand('reset_device', 'Perform a device reset', '*RST'),
-    QueryCommand(
-        'perform_internal_test',
-        'Perform internal self-test', '*TST?'),
+    QueryCommand("query_identification", "Identification query", "*IDN?"),
+    WriteCommand("reset_device", "Perform a device reset", "*RST"),
+    QueryCommand("perform_internal_test", "Perform internal self-test", "*TST?"),
     # Synchronization commands
     WriteCommand(
-        'wait_till_completion_of_operations',
-        'Return "1" when all operation are completed', '*OPC'),
+        "wait_till_completion_of_operations",
+        'Return "1" when all operation are completed',
+        "*OPC",
+    ),
     QueryCommand(
-        'get_operation_complete_flag',
-        'Get operation complete flag', '*OPC?'),
-    QueryCommand('wait', 'Wait to continue', '*WAI')]
+        "get_operation_complete_flag", "Get operation complete flag", "*OPC?"
+    ),
+    QueryCommand("wait", "Wait to continue", "*WAI"),
+]
 
 IEC60488._build_class_with_features(features)
 
@@ -197,10 +203,10 @@ class PowerOn(VISADriver):
     * `*PSC?` - Query the power-on status clear bit.
     """
 
-PowerOn._build_class_with_features([
-    BoolValue('power_on_status',
-              doc='Power-on status.',
-              command_set='*PSC')])
+
+PowerOn._build_class_with_features(
+    [BoolValue("power_on_status", doc="Power-on status.", command_set="*PSC")]
+)
 
 
 class ParallelPoll(VISADriver):
@@ -213,14 +219,22 @@ class ParallelPoll(VISADriver):
     * `*PRE?` - Query the parallel poll enable register.
     """
 
-ParallelPoll._build_class_with_features([
-    QueryCommand(
-        'query_status_message_bit',
-        'Query the individual status message bit', '*IST?'),
-    RegisterValue('parallel_poll',
-                  doc='Parallel poll enable register.',
-                  command_set='*PRE',
-                  keys='')])
+
+ParallelPoll._build_class_with_features(
+    [
+        QueryCommand(
+            "query_status_message_bit",
+            "Query the individual status message bit",
+            "*IST?",
+        ),
+        RegisterValue(
+            "parallel_poll",
+            doc="Parallel poll enable register.",
+            command_set="*PRE",
+            keys="",
+        ),
+    ]
+)
 
 
 class ResourceDescription(VISADriver):
@@ -233,10 +247,16 @@ class ResourceDescription(VISADriver):
     * `*RDT?` - Query the stored resource description.
     """
 
-ResourceDescription._build_class_with_features([
-    StringValue('resource_description',
-                doc='Resource description.',
-                command_set='*RDT')])
+
+ResourceDescription._build_class_with_features(
+    [
+        StringValue(
+            "resource_description",
+            doc="Resource description.",
+            command_set="*RDT",
+        )
+    ]
+)
 
 
 class ProtectedUserData(VISADriver):
@@ -248,10 +268,10 @@ class ProtectedUserData(VISADriver):
     * `*PUD?` - Query the protected user data.
     """
 
-ProtectedUserData._build_class_with_features([
-    StringValue('user_data',
-                doc='Protected user data.',
-                command_set='*PUD')])
+
+ProtectedUserData._build_class_with_features(
+    [StringValue("user_data", doc="Protected user data.", command_set="*PUD")]
+)
 
 
 class Calibration(VISADriver):
@@ -262,10 +282,14 @@ class Calibration(VISADriver):
     * `*CAL?` - Perform internal self calibration.
     """
 
-Calibration._build_class_with_features([
-    QueryCommand(
-        'perform_calibration',
-        'Perform internal self calibration', '*CAL?')])
+
+Calibration._build_class_with_features(
+    [
+        QueryCommand(
+            "perform_calibration", "Perform internal self calibration", "*CAL?"
+        )
+    ]
+)
 
 
 class Trigger(VISADriver):
@@ -276,8 +300,10 @@ class Trigger(VISADriver):
     * `*TRG` - Execute trigger command.
     """
 
-Trigger._build_class_with_features([
-    WriteCommand('trigger', 'Execute trigger command.', '*TRG')])
+
+Trigger._build_class_with_features(
+    [WriteCommand("trigger", "Execute trigger command.", "*TRG")]
+)
 
 
 class TriggerMacro(VISADriver):
@@ -289,10 +315,16 @@ class TriggerMacro(VISADriver):
     * `*DDT?` - Define device trigger query.
     """
 
-TriggerMacro._build_class_with_features([
-    StringValue('define_device_trigger',
-                doc='Define device trigger.',
-                command_set='*DDT')])
+
+TriggerMacro._build_class_with_features(
+    [
+        StringValue(
+            "define_device_trigger",
+            doc="Define device trigger.",
+            command_set="*DDT",
+        )
+    ]
+)
 
 
 class Macro(VISADriver):
@@ -308,18 +340,18 @@ class Macro(VISADriver):
     * `*PMC` - Define device trigger query.
     """
 
-Macro._build_class_with_features([
-    QueryCommand(
-        'dmc', 'Define device trigger (???).', '*DMC'),
-    StringValue('emc',
-                doc='Define device trigger (???).',
-                command_set='*EMC'),
-    QueryCommand(
-        'gmc', 'Define device trigger (???).', '*GMC?'),
-    QueryCommand(
-        'lmc', 'Define device trigger (???).', '*LMC?'),
-    QueryCommand(
-        'pmc', 'Define device trigger (???).', '*PMC')])
+
+Macro._build_class_with_features(
+    [
+        QueryCommand("dmc", "Define device trigger (???).", "*DMC"),
+        StringValue(
+            "emc", doc="Define device trigger (???).", command_set="*EMC"
+        ),
+        QueryCommand("gmc", "Define device trigger (???).", "*GMC?"),
+        QueryCommand("lmc", "Define device trigger (???).", "*LMC?"),
+        QueryCommand("pmc", "Define device trigger (???).", "*PMC"),
+    ]
+)
 
 
 class ObjectIdentification(VISADriver):
@@ -330,9 +362,10 @@ class ObjectIdentification(VISADriver):
     * `*OPT?` - Option identification query.
     """
 
-ObjectIdentification._build_class_with_features([
-    QueryCommand(
-        'opt_identification', 'Option identification query.', '*OPT?')])
+
+ObjectIdentification._build_class_with_features(
+    [QueryCommand("opt_identification", "Option identification query.", "*OPT?")]
+)
 
 
 class StoredSetting(VISADriver):
@@ -344,13 +377,21 @@ class StoredSetting(VISADriver):
     * `*SAV` - Store current settings of the device in local memory.
     """
 
-StoredSetting._build_class_with_features([
-    QueryCommand(
-        'restore_device_settings',
-        'Restore device settings from local memory.', '*RCL'),
-    QueryCommand(
-        'store_current_settings',
-        'Store current settings of the device in local memory.', '*SAV')])
+
+StoredSetting._build_class_with_features(
+    [
+        QueryCommand(
+            "restore_device_settings",
+            "Restore device settings from local memory.",
+            "*RCL",
+        ),
+        QueryCommand(
+            "store_current_settings",
+            "Store current settings of the device in local memory.",
+            "*SAV",
+        ),
+    ]
+)
 
 
 class Learn(VISADriver):
@@ -361,10 +402,10 @@ class Learn(VISADriver):
     * `*LRN?` - Learn device setup query.
     """
 
-Learn._build_class_with_features([
-    QueryCommand(
-        'learn_device_setup',
-        'Learn device setup query.', '*LRN?')])
+
+Learn._build_class_with_features(
+    [QueryCommand("learn_device_setup", "Learn device setup query.", "*LRN?")]
+)
 
 
 class SystemConfiguration(VISADriver):
@@ -376,13 +417,15 @@ class SystemConfiguration(VISADriver):
     * `*DLF` - Disable listener function command.
     """
 
-SystemConfiguration._build_class_with_features([
-    QueryCommand(
-        'accept_address_command',
-        'Accept address command.', '*AAD'),
-    QueryCommand(
-        'disable_listener',
-        'Disable listener function command.', '*DLF')])
+
+SystemConfiguration._build_class_with_features(
+    [
+        QueryCommand("accept_address_command", "Accept address command.", "*AAD"),
+        QueryCommand(
+            "disable_listener", "Disable listener function command.", "*DLF"
+        ),
+    ]
+)
 
 
 class PassingControl(VISADriver):
@@ -393,11 +436,11 @@ class PassingControl(VISADriver):
     * `*PCB` - Pass control back.
     """
 
-PassingControl._build_class_with_features([
-    QueryCommand(
-        'pass_control_back',
-        'Pass control back.', '*PCB')])
+
+PassingControl._build_class_with_features(
+    [QueryCommand("pass_control_back", "Pass control back.", "*PCB")]
+)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     iec = IEC60488()

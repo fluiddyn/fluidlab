@@ -36,8 +36,15 @@ def colored(string, color):
     else:
         return string
 
-    coloredstring = (pack('b', 27) + '[0;' + str(colorcode) + 'm' +
-                     string + pack('b', 27) + "[0;0m")
+    coloredstring = (
+        pack("b", 27)
+        + "[0;"
+        + str(colorcode)
+        + "m"
+        + string
+        + pack("b", 27)
+        + "[0;0m"
+    )
     return coloredstring
 
 
@@ -59,12 +66,13 @@ def read_header(f, verbose):
     """
     magic_number = str(f.read(10))
     if verbose:
-        print('magic number =', magic_number)
-    if magic_number != 'Octave-1-L':
-        raise OctaveReaderError('UnknownFileFormat')
+        print("magic number =", magic_number)
+    if magic_number != "Octave-1-L":
+        raise OctaveReaderError("UnknownFileFormat")
+
     float_format = ord(f.read(1))
     if verbose:
-        print('float format =', float_format)
+        print("float format =", float_format)
     return float_format
 
 
@@ -78,10 +86,11 @@ def read_scalar_var(f, verbose):
 
     tmp = ord(f.read(1))
     if tmp == 0:
-        raise OctaveReaderError('ScalarFormatError')
-    dtmp = unpack('d', f.read(8))[0]
+        raise OctaveReaderError("ScalarFormatError")
+
+    dtmp = unpack("d", f.read(8))[0]
     if verbose:
-        print('      value:', dtmp)
+        print("      value:", dtmp)
     return dtmp
 
 
@@ -93,40 +102,43 @@ def read_matrix_var(f, verbose):
 
     """
 
-    mdims = unpack('i', f.read(4))[0]
+    mdims = unpack("i", f.read(4))[0]
     if verbose:
         print("      mdims:", mdims)
     if mdims == 0:
-        raise OctaveReaderError('MatrixFormatError')
+        raise OctaveReaderError("MatrixFormatError")
+
     if mdims < 0:
         mdims = -mdims
-        dv = unpack('i'*mdims, f.read(4*mdims))
+        dv = unpack("i" * mdims, f.read(4 * mdims))
         if verbose:
             print("         dv:", dv)
         tmp = ord(f.read(1))
         if tmp == 0:
-            raise OctaveReaderError('MatrixFormatError')
-        num_elems = reduce(lambda x, y: x*y, dv)
+            raise OctaveReaderError("MatrixFormatError")
+
+        num_elems = reduce(lambda x, y: x * y, dv)
         if verbose:
-            print('  num_elems:', num_elems)
-        fortran_vec = unpack('d'*num_elems, f.read(8*num_elems))
-        var = np.array(fortran_vec).reshape(dv, order='F')
+            print("  num_elems:", num_elems)
+        fortran_vec = unpack("d" * num_elems, f.read(8 * num_elems))
+        var = np.array(fortran_vec).reshape(dv, order="F")
         if verbose:
             print("     matrix:", var.shape)
         if mdims == 2 and dv[0] == 1:
             var = var.flatten()
     else:
         nr = mdims
-        nc = unpack('i', f.read(4))[0]
+        nc = unpack("i", f.read(4))[0]
         tmp = ord(f.read(1))
         if tmp == 0:
-            raise OctaveReaderError('MatrixFormatError')
+            raise OctaveReaderError("MatrixFormatError")
+
         dv = (nr, nc)
-        num_elems = nr*nc
+        num_elems = nr * nc
         if verbose:
-            print('  num_elems:', num_elems)
-        fortran_vec = unpack('d'*num_elems, f.read(8*num_elems))
-        var = np.array(fortran_vec).reshape(dv, order='F')
+            print("  num_elems:", num_elems)
+        fortran_vec = unpack("d" * num_elems, f.read(8 * num_elems))
+        var = np.array(fortran_vec).reshape(dv, order="F")
         if verbose:
             print("     matrix:", var.shape)
 
@@ -142,18 +154,19 @@ def read_scalar_struct_var(f, verbose):
 
     """
 
-    length = unpack('i', f.read(4))[0]
+    length = unpack("i", f.read(4))[0]
     if verbose:
         print("     length:", length)
     if length == 0:
-        raise OctaveReaderError('ScalarStructFormatError')
+        raise OctaveReaderError("ScalarStructFormatError")
+
     if length < 0:
         # ov-struct.cc says we has explicit dimensions in that case
         mdims = -length
-        dv = unpack('i'*mdims, f.read(4*mdims))
+        dv = unpack("i" * mdims, f.read(4 * mdims))
         if verbose:
             print("         dv:", dv)
-        length = unpack('i', f.read(4))[0]
+        length = unpack("i", f.read(4))[0]
     else:
         dv = (1, 1)
 
@@ -164,6 +177,7 @@ def read_scalar_struct_var(f, verbose):
             var[name] = varvar
     return var
 
+
 def read_string_var(f, verbose):
     """ Reads one sq_string variable from Octave binary file
 
@@ -172,30 +186,32 @@ def read_string_var(f, verbose):
 
     """
 
-    elements = unpack('i', f.read(4))[0]
+    elements = unpack("i", f.read(4))[0]
     if verbose:
-        print('   elements:', elements)
+        print("   elements:", elements)
     if elements == 0:
-        raise OctaveReaderError('StringFormatError')
+        raise OctaveReaderError("StringFormatError")
+
     if elements < 0:
         mdims = -elements
-        dv = unpack('i'*mdims, f.read(4*mdims))
+        dv = unpack("i" * mdims, f.read(4 * mdims))
         if verbose:
             print("         dv:", dv)
-        num_elems = reduce(lambda x, y: x*y, dv)
+        num_elems = reduce(lambda x, y: x * y, dv)
         if verbose:
-            print('  num_elems:', num_elems)
-        fortran_vec = unpack('c'*num_elems, f.read(num_elems))
-        var = np.array(fortran_vec).reshape(dv, order='F')
+            print("  num_elems:", num_elems)
+        fortran_vec = unpack("c" * num_elems, f.read(num_elems))
+        var = np.array(fortran_vec).reshape(dv, order="F")
         if mdims == 2 and dv[0] == 1:
             var = var.flatten().tostring()
         if verbose:
-            print('     string:', var)
+            print("     string:", var)
     else:
         for i in range(elements):
-            length = unpack('i', f.read(4))[0]
+            length = unpack("i", f.read(4))[0]
             if length == 0:
-                raise OctaveReaderError('StringFormatError')
+                raise OctaveReaderError("StringFormatError")
+
             fortran_vec = f.read(length)
             var[i] = str(fortran_vec)
     return var
@@ -209,26 +225,29 @@ def read_cell_var(f, verbose):
 
     """
 
-    mdims = unpack('i', f.read(4))[0]
+    mdims = unpack("i", f.read(4))[0]
     if mdims >= 0:
-        raise OctaveReaderError('CellFormatError')
+        raise OctaveReaderError("CellFormatError")
+
     if verbose:
-        print('      mdims:', mdims)
+        print("      mdims:", mdims)
     mdims = -mdims
     if mdims > 0:
-        dv = unpack('i'*mdims, f.read(4*mdims))
+        dv = unpack("i" * mdims, f.read(4 * mdims))
         if verbose:
             print("         dv:", dv)
-        num_elems = reduce(lambda x, y: x*y, dv)
+        num_elems = reduce(lambda x, y: x * y, dv)
     else:
         num_elems = 0
     var = list()
     for i in range(num_elems):
         (name, varvar) = read_var(f, verbose)
-        if name != '<cell-element>':
-            raise OctaveReaderError('CellFormatError')
+        if name != "<cell-element>":
+            raise OctaveReaderError("CellFormatError")
+
         var.append(varvar)
     return var
+
 
 def read_var(f, verbose):
     """ Reads one variable from Octave binary file
@@ -284,62 +303,64 @@ def read_var(f, verbose):
     to be called. FILENAME is used for error messages.
     """
 
-    name_length = unpack('i', f.read(4))[0]
-    name  = str(f.read(name_length))
+    name_length = unpack("i", f.read(4))[0]
+    name = str(f.read(name_length))
     if verbose:
         print('* Variable "' + name + '":')
-    doc_length = unpack('i', f.read(4))[0]
+    doc_length = unpack("i", f.read(4))[0]
     doc = str(f.read(doc_length))
     if verbose:
-        print('        doc:', doc)
+        print("        doc:", doc)
     global_flag = ord(f.read(1))
     if verbose:
-        print('     global:', (global_flag == 1))
+        print("     global:", (global_flag == 1))
     data_type = ord(f.read(1))
     if data_type == 1:
-        data_type = 'scalar'
+        data_type = "scalar"
     elif data_type == 2:
-        data_type = 'matrix'
+        data_type = "matrix"
     elif data_type == 3:
-        data_type = 'complex scalar'
+        data_type = "complex scalar"
     elif data_type == 4:
-        data_type = 'complex matrix'
+        data_type = "complex matrix"
     elif data_type == 5:
-        data_type = 'string'
+        data_type = "string"
     elif data_type == 6:
-        data_type = 'range'
+        data_type = "range"
     elif data_type == 7:
-        data_type = 'string'
+        data_type = "string"
     elif data_type == 255:
-        data_type_length = unpack('i', f.read(4))[0]
+        data_type_length = unpack("i", f.read(4))[0]
         data_type = str(f.read(data_type_length))
     else:
-        raise OctaveReaderError('UnknownDataType')
+        raise OctaveReaderError("UnknownDataType")
+
     if verbose:
-        print('  data_type:', data_type)
-    if data_type == 'scalar':
+        print("  data_type:", data_type)
+    if data_type == "scalar":
         var = read_scalar_var(f, verbose)
-    elif data_type == 'matrix':
+    elif data_type == "matrix":
         var = read_matrix_var(f, verbose)
-    elif data_type == 'scalar struct':
+    elif data_type == "scalar struct":
         var = read_scalar_struct_var(f, verbose)
-    elif data_type == 'string' or data_type == 'sq_string' or data_type == 'dq_string':
+    elif data_type == "string" or data_type == "sq_string" or data_type == "dq_string":
         # sq_string is single-quoted string
         # dq_string is double-quoted string
         # both are charMatrix
         var = read_string_var(f, verbose)
-    elif data_type == 'cell':
+    elif data_type == "cell":
         var = read_cell_var(f, verbose)
     else:
-        raise OctaveReaderError('NotImplemented')
+        raise OctaveReaderError("NotImplemented")
 
     return (name, var)
+
 
 def read_octave_binary(path, verbose=False):
     """ Reads an Octave binary file. Returns a dictionnary containing all the variables. """
 
     data = dict()
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         float_format = read_header(f, verbose)
         done = False
         while not done:
@@ -349,6 +370,7 @@ def read_octave_binary(path, verbose=False):
             except OctaveReaderError as oe:
                 done = True
                 raise
+
             except:
                 done = True
                 pass
@@ -357,28 +379,28 @@ def read_octave_binary(path, verbose=False):
 
 
 def read_OctMI_session(sessionName, verbose=True):
-    filename = sessionName + '_MIstate.octave'
+    filename = sessionName + "_MIstate.octave"
     if verbose:
         print("Loading saved MI session from file `" + filename + "'")
-    MI_session = read_octave_binary(filename, False)['MI_session']
+    MI_session = read_octave_binary(filename, False)["MI_session"]
     Variables = dict()
-    Variables['startTime'] = MI_session['startTime']
-    for varname in MI_session['Variables']:
-        keyname = varname + '_array'
+    Variables["startTime"] = MI_session["startTime"]
+    for varname in MI_session["Variables"]:
+        keyname = varname + "_array"
         Variables[varname] = MI_session[keyname]
     time_fmt = "%A %e %B %Y - %H:%M:%S"
-    if MI_session.has_key('t_array'):
-        Variables['t'] = MI_session['t_array']
+    if MI_session.has_key("t_array"):
+        Variables["t"] = MI_session["t_array"]
         try:
-            Nelem = len(Variables['t'])
+            Nelem = len(Variables["t"])
         except:
             Nelem = 1
             pass
         if Nelem > 1:
-            lt_start = localtime(Variables['t'][0])
-            lt_end = localtime(Variables['t'][Nelem-1])
+            lt_start = localtime(Variables["t"][0])
+            lt_end = localtime(Variables["t"][Nelem - 1])
         elif Nelem == 1:
-            lt_start = localtime(Variables['t'])
+            lt_start = localtime(Variables["t"])
             lt_end = lt_start
         else:
             lt_start = localtime(Variables["startTime"])
@@ -395,7 +417,7 @@ def read_OctMI_session(sessionName, verbose=True):
     return Variables
 
 
-if __name__ == '__main__':
-    data_side = read_OctMI_session('W3E8_50Hz_side_1')
-    data = read_OctMI_session('W3E8_3')
-    dummy = read_OctMI_session('Dummy')
+if __name__ == "__main__":
+    data_side = read_OctMI_session("W3E8_50Hz_side_1")
+    data = read_OctMI_session("W3E8_3")
+    dummy = read_OctMI_session("Dummy")

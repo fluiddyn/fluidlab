@@ -14,10 +14,11 @@ from fluidlab.powerdaq import PowerDAQBoard
 from fluidlab.timer import Timer
 
 from fluidlab.createfigs import CreateFigs
+
 SAVE_FIG = 0
 import matplotlib.pyplot as plt
 
-period = 2 # (s)
+period = 2  # (s)
 
 
 # initialize the board

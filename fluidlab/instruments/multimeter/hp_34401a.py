@@ -15,6 +15,7 @@ __all__ = ["HP34401a"]
 from fluidlab.instruments.iec60488 import IEC60488
 from fluidlab.instruments.features import FloatValue, QueryCommand
 
+
 class HP34401aValue(FloatValue):
     """
     Value class for HP34401a.
@@ -58,39 +59,39 @@ class HP34401aValue(FloatValue):
             command = self.command_get + " " + str(_range) + "," + str(resolution)
         else:
             command = self.command_get
-        result = self._convert_from_str(
-            self._interface.query(command))
+        result = self._convert_from_str(self._interface.query(command))
         self._check_value(result)
         return result
+
 
 class HP34401a(IEC60488):
     """Driver for the multimeter HP 34401a.
 
     """
-    
+
     def print_configuration(self):
         s = self.query_configuration().strip()
-        N=len(s)
-        s=s[1:(N-1)].split(' ')
-        t=s[1].split(",")
-        print('function=' + s[0] + ', range=' + t[0] + ', resolution=' + t[1])
+        N = len(s)
+        s = s[1:(N - 1)].split(" ")
+        t = s[1].split(",")
+        print("function=" + s[0] + ", range=" + t[0] + ", resolution=" + t[1])
+
 
 features = [
     HP34401aValue(
-        'ohm',
-        doc="""2-wire Ohm measurement""",
-        command_get=':MEAS:RES?'),
+        "ohm", doc="""2-wire Ohm measurement""", command_get=":MEAS:RES?"
+    ),
     HP34401aValue(
-        'ohm_4w',
-        doc="""4-wire Ohm measurement""",
-        command_get=':MEAS:FRES?'),
+        "ohm_4w", doc="""4-wire Ohm measurement""", command_get=":MEAS:FRES?"
+    ),
     HP34401aValue(
-        'vdc',
-        doc="""Voltage measurement""",
-        command_get=':MEAS:VOLT:DC?'),
+        "vdc", doc="""Voltage measurement""", command_get=":MEAS:VOLT:DC?"
+    ),
     QueryCommand(
-        'query_configuration',
-        'Query the multimeter present configuration and return a quoted string.',
-        'CONF?')]
+        "query_configuration",
+        "Query the multimeter present configuration and return a quoted string.",
+        "CONF?",
+    ),
+]
 
 HP34401a._build_class_with_features(features)

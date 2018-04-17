@@ -73,4 +73,14 @@ The drivers for the data acquisition boards are also gather in this package:
 """
 
 # Only real instruments in *, not features or iec60488, etc.
-__all__ = ["amplifier", "multiplexer", "multimeter", "sourcemeter", "powersupply", "funcgen", "chiller", "scope", "pressure_transducer"]
+__all__ = [
+    "amplifier",
+    "multiplexer",
+    "multimeter",
+    "sourcemeter",
+    "powersupply",
+    "funcgen",
+    "chiller",
+    "scope",
+    "pressure_transducer",
+]

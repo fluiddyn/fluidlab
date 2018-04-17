@@ -13,51 +13,60 @@ __all__ = ["Keithley2400"]
 from fluidlab.instruments.iec60488 import IEC60488
 from fluidlab.instruments.features import FloatValue, BoolValue
 
+
 class Keithley2400(IEC60488):
     """Driver for the sourcemeter Keithley 2400.
 
     """
 
+
 features = [
     FloatValue(
-        'idc',
+        "idc",
         doc="""Get output current/Set current setpoint""",
         command_get=':FUNC:CONC 0\n:FUNC "CURR"\n:FORM:ELEM CURR\n:READ?',
-        command_set=':SOUR:FUNC CURR\n:SOUR:CURR:MODE FIX\n:SOUR:CURR:RANG:AUTO ON\n :SOUR:CURR:LEVEL',
-        check_instrument_value=False),
-    BoolValue(
-        'onoff',
-        doc='Toggle output ON/OFF',
-        command_set=':OUTP',
+        command_set=":SOUR:FUNC CURR\n:SOUR:CURR:MODE FIX\n:SOUR:CURR:RANG:AUTO ON\n :SOUR:CURR:LEVEL",
         check_instrument_value=False,
-        true_string='ON',
-        false_string='OFF'),
+    ),
+    BoolValue(
+        "onoff",
+        doc="Toggle output ON/OFF",
+        command_set=":OUTP",
+        check_instrument_value=False,
+        true_string="ON",
+        false_string="OFF",
+    ),
     FloatValue(
-        'ohm_4w',
+        "ohm_4w",
         doc="""Read impedance in 4-wire mode""",
-        command_get=':SYST:RSEN ON\n:FUNC:CONC 0\n:RES:MODE MAN\n:FUNC "RES"\n:FORM:ELEM RES\n:READ?'),
+        command_get=':SYST:RSEN ON\n:FUNC:CONC 0\n:RES:MODE MAN\n:FUNC "RES"\n:FORM:ELEM RES\n:READ?',
+    ),
     FloatValue(
-        'ohm',
+        "ohm",
         doc="""Read impedance in 2-wire mode""",
-        command_get=':SYST:RSEN OFF\n:FUNC:CONC 0\n:RES:MODE MAN\n:FUNC "RES"\n:FORM:ELEM RES\n:READ?'),
+        command_get=':SYST:RSEN OFF\n:FUNC:CONC 0\n:RES:MODE MAN\n:FUNC "RES"\n:FORM:ELEM RES\n:READ?',
+    ),
     FloatValue(
-        'vdc',
+        "vdc",
         doc="""Read output voltage/set voltage setpoint""",
         command_get=':FUNC:CONC 0\n:FUNC "VOLT"\n:FORM:ELEM VOLT\n:READ?',
-        command_set=':SOUR:FUNC VOLT\n:SOUR:VOLT:MODE FIX\n:SOUR:VOLT:LEVEL',
-        check_instrument_value=False),
+        command_set=":SOUR:FUNC VOLT\n:SOUR:VOLT:MODE FIX\n:SOUR:VOLT:LEVEL",
+        check_instrument_value=False,
+    ),
     FloatValue(
-        'compliance_idc',
+        "compliance_idc",
         doc="""Set compliance current level""",
-        command_set=':SENS:CURR:DC:PROT:LEV',
-        command_get=':SENS:CURR:DC:PROT:LEV?',
-        check_instrument_value=False),
+        command_set=":SENS:CURR:DC:PROT:LEV",
+        command_get=":SENS:CURR:DC:PROT:LEV?",
+        check_instrument_value=False,
+    ),
     FloatValue(
-        'compliance_vdc',
+        "compliance_vdc",
         doc="""Set compliance voltage level""",
-        command_set=':SENS:VOLT:DC:PROT:LEV',
-        command_get=':SENS:VOLT:DC:PROT:LEV?',
-        check_instrument_value=False)]
+        command_set=":SENS:VOLT:DC:PROT:LEV",
+        command_get=":SENS:VOLT:DC:PROT:LEV?",
+        check_instrument_value=False,
+    ),
+]
 
 Keithley2400._build_class_with_features(features)
-

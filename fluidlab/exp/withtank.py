@@ -25,12 +25,13 @@ from fluidlab.exp.base import Experiment
 
 import sys
 
-if sys.platform.startswith('win'):
+if sys.platform.startswith("win"):
     import thread
 
     def handler(sig, hook=thread.interrupt_main):
         hook()
         return 1
+
 
 nu_pure_water = fluiddyn.constants.nu_pure_water
 
@@ -96,11 +97,11 @@ class ExperimentWithTank(Experiment):
     time_start : str
         Coding the time of creation.
     """
-    _base_dir = 'With_tank'
+    _base_dir = "With_tank"
 
-    def __init__(self, rhos=None, zs=None,
-                 params=None, description=None,
-                 str_path=None):
+    def __init__(
+        self, rhos=None, zs=None, params=None, description=None, str_path=None
+    ):
 
         # start the init. and find out if it is the first creation
         self._init_from_str(str_path)
@@ -111,21 +112,17 @@ class ExperimentWithTank(Experiment):
             if params is None:
                 params = {}
             if rhos is not None:
-                params['rhos'] = rhos
+                params["rhos"] = rhos
             if zs is not None:
-                params['zs'] = zs
+                params["zs"] = zs
 
             # verify if enough params have been given for the first creation
-            self._verify_params_first_creation(
-                params,
-                keys_needed=['rhos', 'zs']
-            )
+            self._verify_params_first_creation(params, keys_needed=["rhos", "zs"])
 
         # call the __init__ function of the inherited class
         super(ExperimentWithTank, self).__init__(
-            params=params, description=description,
-            str_path=str_path
-            )
+            params=params, description=description, str_path=str_path
+        )
 
         # then, the tank!
         if self.first_creation:
@@ -153,13 +150,10 @@ class ExperimentWithTank(Experiment):
         if len(params) == 0:
             return
 
-        rhos = params['rhos']
+        rhos = params["rhos"]
         Delta_rho = rhos[0] - rhos[-1]
 
-        self.params.update({
-            'nu': nu_pure_water,
-            'Delta_rho': Delta_rho
-        })
+        self.params.update({"nu": nu_pure_water, "Delta_rho": Delta_rho})
 
     def _create_tank(self):
         """Create the instance variable representing the tank.
@@ -168,19 +162,19 @@ class ExperimentWithTank(Experiment):
         (:class:`fluidlab.objects.tanks.StratifiedTank`).
 
         """
-        if 'H' in self.params:
-            H = self.params['H']
+        if "H" in self.params:
+            H = self.params["H"]
         else:
             H = 460
 
-        if 'S' in self.params:
-            S = self.params['S']
+        if "S" in self.params:
+            S = self.params["S"]
         else:
-            S = 80**2
+            S = 80 ** 2
 
-        if 'zs' in self.params:
-            zs = self.params['zs']
-            rhos = self.params['rhos']
+        if "zs" in self.params:
+            zs = self.params["zs"]
+            rhos = self.params["rhos"]
         else:
             zs = [0, H]
             rhos = [1.2, 1.]
@@ -190,26 +184,27 @@ class ExperimentWithTank(Experiment):
     def _save_tank(self):
         """Save the object representing the tank."""
         self.tank.save(self.path_save)
-        path_h5_file = self.path_save+'/params.h5'
-        with H5File(path_h5_file, 'r+') as f:
+        path_h5_file = self.path_save + "/params.h5"
+        with H5File(path_h5_file, "r+") as f:
             f.update_dict(
-                'classes',
-                dicttosave={'tank': self.tank.__class__.__name__})
-            f.update_dict(
-                'modules',
-                dicttosave={'tank': self.tank.__module__})
+                "classes", dicttosave={"tank": self.tank.__class__.__name__}
+            )
+            f.update_dict("modules", dicttosave={"tank": self.tank.__module__})
 
     def _load_tank(self, verbose=False):
         """Load the object representing the tank."""
-        path_h5_file = self.path_save+'/tank.h5'
+        path_h5_file = self.path_save + "/tank.h5"
         if os.path.exists(path_h5_file):
             self.tank = fluiddyn.create_object_from_file(path_h5_file)
         else:
             raise ValueError(
-"""WithTank experiment without tank.h5 file. path_save:
-"""+self.path_save)
+                """WithTank experiment without tank.h5 file. path_save:
+"""
+                + self.path_save
+            )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
 
     def test_fill_tank():
 
@@ -218,13 +213,12 @@ if __name__ == '__main__':
         Delta_rho = rho_max - rho_min
 
         z_max = 400
-        zs = z_max*np.array([0, 1./6, 5./6, 1])
-        rhos = rho_min + Delta_rho*np.array([1., 0.5, 0.5, 0.])
+        zs = z_max * np.array([0, 1. / 6, 5. / 6, 1])
+        rhos = rho_min + Delta_rho * np.array([1., 0.5, 0.5, 0.])
 
         exp = ExperimentWithTank(
-            description='Test fill tank.', params={},
-            str_path='Test'
-            )
+            description="Test fill tank.", params={}, str_path="Test"
+        )
 
         exp.tank.fill()
 
@@ -237,4 +231,4 @@ if __name__ == '__main__':
 
     # test_fill_tank()
 
-    exp = fluiddyn.load_exp('Exp_2014-08-16_20-39-13')
+    exp = fluiddyn.load_exp("Exp_2014-08-16_20-39-13")

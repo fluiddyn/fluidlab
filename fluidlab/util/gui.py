@@ -25,15 +25,16 @@ import time
 import datetime as dt
 
 from fluiddyn._version import __version__
+
 # from fluiddyn.util.daemons import DaemonThread as Daemon
 
 from fluidlab.objects.rotatingobjects import (
-    create_rotating_objects_kepler,
-    DaemonRunningRotatingObject,
-    RotatingObject)
+    create_rotating_objects_kepler, DaemonRunningRotatingObject, RotatingObject
+)
 
 
 class ElapsedTimeClock(ttk.Label):
+
     def __init__(self, parent, *args, **kwargs):
         ttk.Label.__init__(self, parent, *args, **kwargs)
         self.lasttime = ""
@@ -45,7 +46,7 @@ class ElapsedTimeClock(ttk.Label):
         # get the current local time from the PC
         now = dt.datetime(1, 1, 1).now()
         elapsedtime = now - self.zerotime
-        time2 = elapsedtime.strftime('%H:%M:%S')
+        time2 = elapsedtime.strftime("%H:%M:%S")
         # if time string has changed, update it
         if time2 != self.lasttime:
             self.lasttime = time2
@@ -58,6 +59,7 @@ class ElapsedTimeClock(ttk.Label):
 
 class FrameRotatingObject(ttk.Frame):
     """A simple frame for an object with a write function."""
+
     def __init__(self, master, obj, title=None, **kargs):
         self.obj = obj
         if title is None:
@@ -71,22 +73,20 @@ class FrameRotatingObject(ttk.Frame):
 
     def create_widgets(self):
 
-        label_title = ttk.Label(self, text=self.title, font='TkHeadingFont')
+        label_title = ttk.Label(self, text=self.title, font="TkHeadingFont")
         label_title.grid(column=0, row=0, padx=15)
 
-        label = ttk.Label(self, text='rotation rate:',
-                          font='TkHeadingFont')
+        label = ttk.Label(self, text="rotation rate:", font="TkHeadingFont")
         label.grid(column=0, row=1, padx=15)
 
         self.stringvar_rr = tk.StringVar()
-        self.stringvar_rr.set('{:5.2f}'.format(self.obj.rotation_rate))
+        self.stringvar_rr.set("{:5.2f}".format(self.obj.rotation_rate))
         self.label_rr = ttk.Label(
-            self, textvariable=self.stringvar_rr,
-            font='TkHeadingFont')
+            self, textvariable=self.stringvar_rr, font="TkHeadingFont"
+        )
         self.label_rr.grid(column=1, row=1, padx=15)
 
-        label = ttk.Label(self, text='rad/s',
-                          font='TkHeadingFont')
+        label = ttk.Label(self, text="rad/s", font="TkHeadingFont")
         label.grid(column=2, row=1, padx=15)
 
         self._redefine_write()
@@ -96,7 +96,7 @@ class FrameRotatingObject(ttk.Frame):
 
         def new_write(obj, string):
             # print(string)
-            self.stringvar_rr.set('{:7.3f}'.format(self.obj.rotation_rate))
+            self.stringvar_rr.set("{:7.3f}".format(self.obj.rotation_rate))
 
         # To dynamically overwrite an instance method:
         instancemethod = type(self.obj.write)
@@ -106,12 +106,12 @@ class FrameRotatingObject(ttk.Frame):
         # Docstring:
         #     instancemethod(function, instance, class)
         #     Create an instance method object.
-        self.obj.write = instancemethod(
-            new_write, self.obj, self.obj.__class__)
+        self.obj.write = instancemethod(new_write, self.obj, self.obj.__class__)
 
 
 class FrameWritingObject(ttk.Frame):
     """A simple frame for an object with a write function."""
+
     def __init__(self, master, obj, title=None, **kargs):
         self.obj = obj
         if title is None:
@@ -125,13 +125,11 @@ class FrameWritingObject(ttk.Frame):
 
     def create_widgets(self):
 
-        label_title = ttk.Label(self, text=self.title, font='TkHeadingFont')
+        label_title = ttk.Label(self, text=self.title, font="TkHeadingFont")
         label_title.grid(column=0, row=0, padx=15)
 
         self.text = ScrolledText(self, height=6)
-        self.text.grid(
-            column=0, row=1, padx=10, pady=10,
-            sticky=(N, W, E, S))
+        self.text.grid(column=0, row=1, padx=10, pady=10, sticky=(N, W, E, S))
 
         self._redefine_write()
 
@@ -140,10 +138,11 @@ class FrameWritingObject(ttk.Frame):
 
         def new_write(obj, string):
             print(string)
-            # unstable on Windows!!! bad solution...
-            # Have to find something better...
-            # self.text.insert(END, string+'\n')
-            # self.text.yview_moveto(1)
+
+        # unstable on Windows!!! bad solution...
+        # Have to find something better...
+        # self.text.insert(END, string+'\n')
+        # self.text.yview_moveto(1)
 
         # To dynamically overwrite an instance method:
         instancemethod = type(self.obj.write)
@@ -153,16 +152,15 @@ class FrameWritingObject(ttk.Frame):
         # Docstring:
         #     instancemethod(function, instance, class)
         #     Create an instance method object.
-        self.obj.write = instancemethod(
-            new_write, self.obj, self.obj.__class__)
+        self.obj.write = instancemethod(new_write, self.obj, self.obj.__class__)
 
 
 class MyDialogCloseWindow(SimpleDialog):
 
     def body(self, master):
         question = (
-"Do you really want to close the window\n"
-"and stop the experiment?")
+            "Do you really want to close the window\n" "and stop the experiment?"
+        )
         self.agree = False
         ttk.Label(master, text=question).grid()
 
@@ -172,12 +170,13 @@ class MyDialogCloseWindow(SimpleDialog):
 
 class MainFrameRunExp(ttk.Frame):
     """"""
+
     def __init__(self, root=None, exp=None):
 
         if root is None:
             root = tk.Tk()
         self.root = root
-        root.protocol('WM_DELETE_WINDOW', self.ask_if_has_to_be_deleted)
+        root.protocol("WM_DELETE_WINDOW", self.ask_if_has_to_be_deleted)
 
         if exp is not None:
             self._exp = exp
@@ -185,10 +184,10 @@ class MainFrameRunExp(ttk.Frame):
         f = font.nametofont("TkDefaultFont")
         f.configure(size=10)
 
-        f = font.nametofont('TkHeadingFont')
+        f = font.nametofont("TkHeadingFont")
         f.configure(size=14)
 
-        self.root.title('FluidDyn '+__version__)
+        self.root.title("FluidDyn " + __version__)
         ttk.Frame.__init__(self, root, padding="5 5 5 5")
         self.grid(column=0, row=0, sticky=(N, W, E, S))
         self.columnconfigure(0, weight=1)
@@ -199,35 +198,31 @@ class MainFrameRunExp(ttk.Frame):
 
     def create_widgets(self):
 
-        if hasattr(self, '_exp'):
-            label_exp = ttk.Label(
-                self, text='Experiment:', font='TkHeadingFont')
+        if hasattr(self, "_exp"):
+            label_exp = ttk.Label(self, text="Experiment:", font="TkHeadingFont")
             label_exp.grid(column=0, row=0, sticky=(W))
 
-            label_exp = ttk.Label(
-                self, text=self._exp.name_dir)
+            label_exp = ttk.Label(self, text=self._exp.name_dir)
             label_exp.grid(column=0, row=0)
 
-        self.clock = ElapsedTimeClock(self, font='TkHeadingFont')
+        self.clock = ElapsedTimeClock(self, font="TkHeadingFont")
         self.clock.grid(column=0, row=0, sticky=(N, E))
 
-        # self.button_hi = ttk.Button(self)
-        # self.button_hi["text"] = "Hello World\n(click me)"
-        # self.button_hi["command"] = self.say_hi
-        # self.button_hi.grid(padx=10, pady=10)
+    # self.button_hi = ttk.Button(self)
+    # self.button_hi["text"] = "Hello World\n(click me)"
+    # self.button_hi["command"] = self.say_hi
+    # self.button_hi.grid(padx=10, pady=10)
 
     # def say_hi(self):
     #     print("hi there, everyone!")
 
     def add_frame_object(self, obj, **kargs):
         """"""
-        self.frames_objects[obj.name] = FrameWritingObject(
-            self, obj, **kargs)
+        self.frames_objects[obj.name] = FrameWritingObject(self, obj, **kargs)
 
     def add_frame_rotating_object(self, obj, **kargs):
         """"""
-        self.frames_objects[obj.name] = FrameRotatingObject(
-            self, obj, **kargs)
+        self.frames_objects[obj.name] = FrameRotatingObject(self, obj, **kargs)
 
     def mainloop(self):
         for child in self.winfo_children():
@@ -241,7 +236,7 @@ class MainFrameRunExp(ttk.Frame):
             self.root.destroy()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     from fluidlab.exp.withconductivityprobe import DaemonMeasureProfiles
     import numpy as np
@@ -249,24 +244,25 @@ if __name__ == '__main__':
     def Omega_i(t):
         Omega = 1.
         period = 60
-        return Omega/2*(1 - np.cos(2*np.pi*t/period))
+        return Omega / 2 * (1 - np.cos(2 * np.pi * t / period))
 
-        # time_rampe = 10
-        # t = t/time_rampe
-        # if t < Omega:
-        #     ret = t*Omega
-        # elif t < 2*Omega:
-        #     ret = Omega*(2-t)
-        # else:
-        #     ret = 0
-        # return ret
+    # time_rampe = 10
+    # t = t/time_rampe
+    # if t < Omega:
+    #     ret = t*Omega
+    # elif t < 2*Omega:
+    #     ret = Omega*(2-t)
+    # else:
+    #     ret = 0
+    # return ret
 
     R_i = 100
-    R_o = 482/2
+    R_o = 482 / 2
     rc, rt = create_rotating_objects_kepler(Omega_i, R_i, R_o)
 
     import fluiddyn as fld
-    exp = fld.load_exp('Exp_Omega1=0.70_N0=1.80_2014-09-01_23-47-47')
+
+    exp = fld.load_exp("Exp_Omega1=0.70_N0=1.80_2014-09-01_23-47-47")
 
     mainframe = MainFrameRunExp(exp=exp)
     mainframe.add_frame_object(exp.profiles, column=0, row=3)
@@ -274,8 +270,8 @@ if __name__ == '__main__':
     mainframe.add_frame_object(rt, column=0, row=5)
 
     deamon_profiles = DaemonMeasureProfiles(
-        exp=exp, duration=600, period=10,
-        speed_measurements=400, speed_up=100)
+        exp=exp, duration=600, period=10, speed_measurements=400, speed_up=100
+    )
 
     daemon_rc = DaemonRunningRotatingObject(rc)
     daemon_rt = DaemonRunningRotatingObject(rt)
@@ -286,13 +282,3 @@ if __name__ == '__main__':
     daemon_rt.start()
 
     mainframe.mainloop()
-
-
-
-
-
-
-
-
-
-

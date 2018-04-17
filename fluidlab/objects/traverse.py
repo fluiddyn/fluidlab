@@ -22,14 +22,13 @@ from fluidlab.objects.boards import ObjectUsingBoard
 class Traverse(ObjectUsingBoard):
     """Represent a traverse."""
 
-    def __init__(self, board=None,
-                 position_start=300.,
-                 position_max=None,
-                 Deltaz=400.):
+    def __init__(
+        self, board=None, position_start=300., position_max=None, Deltaz=400.
+    ):
 
         super(Traverse, self).__init__(board=board)
 
-        self.mm_per_step = 454./3000  # (mm)
+        self.mm_per_step = 454. / 3000  # (mm)
 
         position_start = float(position_start)
         Deltaz = float(Deltaz)
@@ -39,14 +38,13 @@ class Traverse(ObjectUsingBoard):
             self.pos_max = position_start
         else:
             self.pos_max = float(position_max)
-        self.pos_min = self.pos_max-Deltaz
+        self.pos_min = self.pos_max - Deltaz
 
         self.board = board
 
-    def move_nb_steps(self,
-                      direction="up", nb_steps=200,
-                      steps_per_second=500,
-                      bloquing=False):
+    def move_nb_steps(
+        self, direction="up", nb_steps=200, steps_per_second=500, bloquing=False
+    ):
         """Moves `nb_steps` in the direction `direction`.
 
         Parameters
@@ -63,13 +61,14 @@ class Traverse(ObjectUsingBoard):
         bloquing : bool
            Whether or not the function should be bloquing.
         """
-        driving_signal = 2*np.ones([nb_steps*2])
+        driving_signal = 2 * np.ones([nb_steps * 2])
         driving_signal[::2] = 5
-        if direction == "up": driving_signal *= -1
+        if direction == "up":
+            driving_signal *= -1
 
-        self.board.aout(out0=driving_signal, frequency=steps_per_second*2)
+        self.board.aout(out0=driving_signal, frequency=steps_per_second * 2)
         if bloquing:
-            time_to_sleep = nb_steps/steps_per_second
+            time_to_sleep = nb_steps / steps_per_second
             # print(time_to_sleep)
             time.sleep(time_to_sleep)
 
@@ -85,8 +84,8 @@ class Traverse(ObjectUsingBoard):
         speed: number
            (in mm/s)
         """
-        nb_steps = abs(np.round(deltaz/self.mm_per_step))
-        steps_per_second = np.round(speed/self.mm_per_step)
+        nb_steps = abs(np.round(deltaz / self.mm_per_step))
+        steps_per_second = np.round(speed / self.mm_per_step)
 
         if deltaz > 0:
             direction = "up"
@@ -94,11 +93,13 @@ class Traverse(ObjectUsingBoard):
             direction = "down"
 
         self.move_nb_steps(
-            direction=direction, nb_steps=nb_steps,
+            direction=direction,
+            nb_steps=nb_steps,
             steps_per_second=steps_per_second,
-            bloquing=bloquing)
+            bloquing=bloquing,
+        )
 
-        deltaz = nb_steps*self.mm_per_step
+        deltaz = nb_steps * self.mm_per_step
         if direction == "down":
             deltaz *= -1
 
@@ -112,7 +113,7 @@ class Traverse(ObjectUsingBoard):
         elif self.position < self.pos_min:
             self.position = self.pos_min
 
-        # print('new position: {0:5.1f} mm'.format(self.position))
+    # print('new position: {0:5.1f} mm'.format(self.position))
 
     def gotopos(self, position, speed=100, bloquing=True):
         """Go as close as possible of a position"""
@@ -124,7 +125,7 @@ class Traverse(ObjectUsingBoard):
         self.move(deltaz=deltaz, speed=speed, bloquing=bloquing)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     from fluiddyn.util.timer import Timer
 
@@ -138,9 +139,9 @@ if __name__ == '__main__':
 
     timer = Timer(4)
     for i in xrange(2):
-        print('down')
+        print("down")
         traverse.move(deltaz=-distance, speed=100, bloquing=True)
-        print('up')
+        print("up")
         traverse.move(deltaz=distance, speed=50, bloquing=True)
-        print('wait')
+        print("wait")
         timer.wait_tick()

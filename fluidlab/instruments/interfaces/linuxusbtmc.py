@@ -24,6 +24,7 @@ from fluidlab.instruments.interfaces import QueryInterface
 
 
 class LinuxUSBTMCInterface(QueryInterface):
+
     def __init__(self, device=0):
         """
         Create a new LinuxUSBTMCInterface.
@@ -36,7 +37,7 @@ class LinuxUSBTMCInterface(QueryInterface):
 
         """
         if isinstance(device, bytes):
-            device = device.decode('ascii')
+            device = device.decode("ascii")
         if isinstance(device, Path):
             device = device.as_posix()
         if isinstance(device, int):
@@ -44,8 +45,8 @@ class LinuxUSBTMCInterface(QueryInterface):
 
         self.devname = device
         self.dev = os.open(device, os.O_RDWR)
-        self.write_termination = b'\n'
-        self.read_termination = b'\n'
+        self.write_termination = b"\n"
+        self.read_termination = b"\n"
 
     def __del__(self):
         if self.dev:
@@ -55,7 +56,7 @@ class LinuxUSBTMCInterface(QueryInterface):
         # On prend a priori des bytes, mais si on nous donne un str
         # on convertit à condition que ce soit du pur ascii
         if isinstance(message, str):
-            message = message.encode('ascii')
+            message = message.encode("ascii")
         if not message.endswith(self.write_termination):
             message += self.write_termination
         os.write(self.dev, message)
@@ -63,7 +64,7 @@ class LinuxUSBTMCInterface(QueryInterface):
     def readline(self, maxbytes=1024):
         msg = os.read(self.dev, maxbytes)
         if msg.endswith(self.read_termination):
-            N = len(msg)-len(self.read_termination)+1
+            N = len(msg) - len(self.read_termination) + 1
             msg = msg[:N]
         return msg
 
@@ -78,7 +79,7 @@ class LinuxUSBTMCInterface(QueryInterface):
         # un str (à condition ascii).
         # Si c'est un appareil qui renvoie autre chose que de l'ascii
         # utiliser readline.
-        return self.readline(maxbytes).decode('ascii')
+        return self.readline(maxbytes).decode("ascii")
 
     def query(self, command, time_delay=0.05, tracing=False, verbose=False):
         self.write(command)

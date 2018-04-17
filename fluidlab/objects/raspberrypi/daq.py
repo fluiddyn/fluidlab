@@ -12,12 +12,14 @@ except ImportError:
 
 import time
 
+
 class MCP3008SPI(object):
     """Analogic / digital conversion with the MCP3008 SPI ADC chip."""
+
     def __init__(self, differential=True):
         self.spi = spidev.SpiDev()
-        self.spi.open(0,0)
-        self.spi.max_speed_hz = int(1e6) # Hz
+        self.spi.open(0, 0)
+        self.spi.max_speed_hz = int(1e6)  # Hz
 
         self.differential = differential
         if self.differential:
@@ -33,23 +35,19 @@ class MCP3008SPI(object):
         # (=0), 3 bits coding the channel and 4 "don't care" bits)
         # byte3 = (8 "don't care" bits)
         data = [1]
-        data.append(self.bit_sgl_diff << 7  |  ( ((channel & 0b111) << 4)))
+        data.append(self.bit_sgl_diff << 7 | (((channel & 0b111) << 4)))
         data.append(0)
 
         # print('second byte send: {:08b}'.format(data[1]))
         self.spi.xfer2(data)
 
         # the return value is coded on 10 bits contained in data[1:]
-        return (data[1]<< 8) & 0b1100000000 | (data[2] & 0xff)
+        return (data[1] << 8) & 0b1100000000 | (data[2] & 0xff)
 
 
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     a2d = MCP3008SPI(differential=False)
 
     for i in range(3):
-        print('channel {:2d}:'.format(i), a2d.convert(i))
-
+        print("channel {:2d}:".format(i), a2d.convert(i))

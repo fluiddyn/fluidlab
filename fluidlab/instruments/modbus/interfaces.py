@@ -57,8 +57,9 @@ class ModbusInterface(Interface):
 
 class MinimalModbusInterface(ModbusInterface):
 
-    def __init__(self, port, method='rtu', slave_address=1, timeout=1):
+    def __init__(self, port, method="rtu", slave_address=1, timeout=1):
         import minimalmodbus
+
         self._modbus = minimalmodbus.Instrument(port, slave_address, method)
 
     def read_readonlybool(self, addresses):
@@ -67,6 +68,7 @@ class MinimalModbusInterface(ModbusInterface):
     def read_bool(self, addresses):
         if isinstance(addresses, collections.Iterable):
             return self._modbus.read_coils(addresses)
+
         elif isinstance(addresses, six.integer_types):
             return self._modbus.read_coil(addresses)
 
@@ -79,11 +81,14 @@ class MinimalModbusInterface(ModbusInterface):
     def read_int16(self, addresses):
         if isinstance(addresses, collections.Iterable) and len(addresses) == 2:
             return self._modbus.read_registers(addresses[0], addresses[1])
+
         elif isinstance(addresses, six.integer_types):
             return self._modbus.read_register(addresses)
+
         else:
             raise ValueError(
-                '`addresses` must be an int or an iterable of length 2')
+                "`addresses` must be an int or an iterable of length 2"
+            )
 
     def write_int16(self, address, values, signed=False):
         if isinstance(values, collections.Iterable):
@@ -91,7 +96,7 @@ class MinimalModbusInterface(ModbusInterface):
         elif isinstance(values, six.integer_types):
             self._modbus.write_register(address, values, signed=signed)
         else:
-            raise ValueError('`values` must be an int or an iterable of ints')
+            raise ValueError("`values` must be an int or an iterable of ints")
 
     def read_readonlyfloat32(self, addresses):
         raise NotImplementedError
@@ -105,7 +110,7 @@ class MinimalModbusInterface(ModbusInterface):
 
 class PyModbusInterface(ModbusInterface):
 
-    def __init__(self, port, method='rtu', timeout=1):
+    def __init__(self, port, method="rtu", timeout=1):
         try:
             if sys.version_info.major == 2:
                 from pymodbus.client.sync import ModbusSerialClient
@@ -113,12 +118,13 @@ class PyModbusInterface(ModbusInterface):
                 from pymodbus3.client.sync import ModbusSerialClient
         except ImportError:
             if sys.version_info.major == 2:
-                package_name = 'pymodbus'
+                package_name = "pymodbus"
             else:
-                package_name = 'pymodbus3'
+                package_name = "pymodbus3"
             raise ImportError(
-                'Can not import {}. '.format(package_name) +
-                'Is it installed? If not, try to install it.')
+                "Can not import {}. ".format(package_name)
+                + "Is it installed? If not, try to install it."
+            )
 
         self._modbus = ModbusSerialClient(method=method, port=port)
 

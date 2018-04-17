@@ -110,18 +110,25 @@ class I2LTaylorCouetteExp(TaylorCouetteExp):
         Coding the time of creation.
 
     """
-    _base_dir = os.path.join('TaylorCouette', 'I2L')
-    def __init__(self, 
-                 rho_min=None, rho_max=None,
-                 z_max=300.,
-                 Omega1=None, Omega2=0,
-                 R1=None, R2=261.,
-                 params=None,
-                 description=None,
-                 str_path=None,
-                 position_start=352., position_max=None, Deltaz=340.,
-                 need_board=True
-                 ):
+    _base_dir = os.path.join("TaylorCouette", "I2L")
+
+    def __init__(
+        self,
+        rho_min=None,
+        rho_max=None,
+        z_max=300.,
+        Omega1=None,
+        Omega2=0,
+        R1=None,
+        R2=261.,
+        params=None,
+        description=None,
+        str_path=None,
+        position_start=352.,
+        position_max=None,
+        Deltaz=340.,
+        need_board=True,
+    ):
         # start the init. and find out if it is the first creation
         self._init_from_str(str_path)
 
@@ -131,68 +138,63 @@ class I2LTaylorCouetteExp(TaylorCouetteExp):
 Initially two layers (I2L)...
 
 """
-            description =self._complete_description(
-                description_base, description=description)
+            description = self._complete_description(
+                description_base, description=description
+            )
 
             # initialise `params` with `params` and the other parameters
             if params is None:
                 params = {}
 
             if rho_min is None:
-                if 'rho_min' in params:
-                    rho_min = params['rho_min']
+                if "rho_min" in params:
+                    rho_min = params["rho_min"]
                 else:
                     rho_min = rho_pure_water
-            params['rho_min'] = rho_min
+            params["rho_min"] = rho_min
 
             if rho_max is not None:
-                params['rho_max'] = rho_max
+                params["rho_max"] = rho_max
             if z_max is not None:
-                params['z_max'] = z_max
+                params["z_max"] = z_max
             if Omega1 is not None:
-                params['Omega1'] = Omega1
+                params["Omega1"] = Omega1
             if Omega2 is not None:
-                params['Omega2'] = Omega2
+                params["Omega2"] = Omega2
             if R1 is not None:
-                params['R1'] = R1
+                params["R1"] = R1
             if R2 is not None:
-                params['R2'] = R2
+                params["R2"] = R2
 
             # verify if enough params have been given for the first creation
             self._verify_params_first_creation(
-                params, 
+                params,
                 keys_needed=[
-                    'rho_min', 'rho_max', 
-                    'z_max',
-                    'Omega1', 'Omega2','R1', 'R2']
+                    "rho_min", "rho_max", "z_max", "Omega1", "Omega2", "R1", "R2"
+                ],
             )
 
             # calculate the parameters needed for the inherited class
-            Delta_rho = params['rho_max'] - params['rho_min']
+            Delta_rho = params["rho_max"] - params["rho_min"]
 
-            zs_norm = np.array(  [0, 1./2, 1./2, 1])
-            rhos_norm = np.array([1., 1.,   0.,   0.])
+            zs_norm = np.array([0, 1. / 2, 1. / 2, 1])
+            rhos_norm = np.array([1., 1., 0., 0.])
 
-            zs = params['z_max']*zs_norm
-            rhos = params['rho_min'] + Delta_rho*rhos_norm
+            zs = params["z_max"] * zs_norm
+            rhos = params["rho_min"] + Delta_rho * rhos_norm
 
-            params.update({
-                'zs':zs, 
-                'rhos':rhos
-            })
+            params.update({"zs": zs, "rhos": rhos})
 
         # call the __init__ function of the inherited class
         super(I2LTaylorCouetteExp, self).__init__(
             params=params,
-            description=description, 
+            description=description,
             str_path=str_path,
-            position_start=position_start, 
-            position_max=position_start, Deltaz=Deltaz,
-            need_board=need_board
-            )
-
-
-
+            position_start=position_start,
+            position_max=position_start,
+            Deltaz=Deltaz,
+            need_board=need_board,
+        )
 
     def _create_self_params(self, params):
         r"""Calculate some parameters.
@@ -217,20 +219,14 @@ Initially two layers (I2L)...
         if len(params) == 0:
             return
 
-        R2 = self.params['R2']
-        U1 = self.params['U1']
-        Delta_rho = self.params['Delta_rho']
-        rhos = self.params['rhos']
+        R2 = self.params["R2"]
+        U1 = self.params["U1"]
+        Delta_rho = self.params["Delta_rho"]
+        rhos = self.params["rhos"]
 
-        Ri = R2*1e-3/U1**2 *g*Delta_rho/rhos.min()
+        Ri = R2 * 1e-3 / U1 ** 2 * g * Delta_rho / rhos.min()
 
-        self.params.update({
-            'Ri':Ri
-        })
-
-
-
-
+        self.params.update({"Ri": Ri})
 
     def _init_name_dir(self):
         """Init the name of the directory where the data are saved.
@@ -249,56 +245,46 @@ Initially two layers (I2L)...
         begin, end = super(I2LTaylorCouetteExp, self)._init_name_dir()
 
         self.name_dir = (
-            begin+
-            'Omega1={0:4.2f}_'.format(self.params['Omega1'])+
-            end)
+            begin + "Omega1={0:4.2f}_".format(self.params["Omega1"]) + end
+        )
         return begin, end
 
 
-
-
-
-
-period_rr = 60*60
-Omega1_max=2.
-Tramp = period_rr/2
+period_rr = 60 * 60
+Omega1_max = 2.
+Tramp = period_rr / 2
 
 
 def rotation_rate_from_t(t):
-    t = t%period_rr
-    if t<Tramp:
-        return Omega1_max*t/Tramp
+    t = t % period_rr
+    if t < Tramp:
+        return Omega1_max * t / Tramp
+
     else:
-        return Omega1_max*(1 - (t-Tramp)/Tramp)
-
-
-
+        return Omega1_max * (1 - (t - Tramp) / Tramp)
 
 
 def give_n_jump_by_modulo(t):
-    
-    rr = rotation_rate_from_t(t)/Omega1_max
+
+    rr = rotation_rate_from_t(t) / Omega1_max
     if rr < 0.1:
         return 4
+
     elif rr < 0.3:
         return 2
-    else: return 1
 
-
-
-
+    else:
+        return 1
 
 
 def load_exp_and_measure_profiles(str_path, daemon=None):
 
-    exp = load_exp(str_path=str_path,
-                   position_start=314., Deltaz=285.
-    )
+    exp = load_exp(str_path=str_path, position_start=314., Deltaz=285.)
     exp.sprobe.set_sample_rate(2000.)
 
-    T1 = 2*np.pi/exp.params['Omega1']
-    period = 2*T1
-    duration = 60*60*48
+    T1 = 2 * np.pi / exp.params["Omega1"]
+    period = 2 * T1
+    duration = 60 * 60 * 48
 
     if daemon is not None:
         daemon.start()
@@ -306,11 +292,14 @@ def load_exp_and_measure_profiles(str_path, daemon=None):
     else:
         inner_cylinder = None
 
-    exp.profiles.measure(duration=duration, period=period, 
-                         deltaz=284, speed_measurements=100, 
-                         speed_up=60,
-                         give_n_jump_by_modulo=give_n_jump_by_modulo,
-                         inner_cylinder=inner_cylinder
+    exp.profiles.measure(
+        duration=duration,
+        period=period,
+        deltaz=284,
+        speed_measurements=100,
+        speed_up=60,
+        give_n_jump_by_modulo=give_n_jump_by_modulo,
+        inner_cylinder=inner_cylinder,
     )
 
     if daemon is not None:
@@ -320,17 +309,14 @@ def load_exp_and_measure_profiles(str_path, daemon=None):
     return exp
 
 
+if __name__ == "__main__":
 
+    str_path = "Exp_Omega=1.00_2014-05-14_10-45-50"
 
-if __name__ == '__main__':
-
-    str_path = 'Exp_Omega=1.00_2014-05-14_10-45-50'
-
-
-    exp = load_exp(str_path=str_path,
-                   need_board=False
-                   # need_board=True
+    exp = load_exp(
+        str_path=str_path,
+        need_board=False
+        # need_board=True
     )
 
-    # exp.tank.profile.plot()
-
+# exp.tank.profile.plot()

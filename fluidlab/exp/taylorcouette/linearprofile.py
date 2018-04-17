@@ -124,16 +124,25 @@ class ILSTaylorCouetteExp(TaylorCouetteExp):
         exp.tank.fill(pumps=True)
 
     """
-    _base_dir = os.path.join('TaylorCouette', 'ILS')
-    def __init__(self, 
-                 rho_min=None, rho_max=None,
-                 N0=None, prop_homog=None,
-                 Omega1=None, Omega2=None,
-                 R1=None, R2=None,
-                 description=None, params=None,
-                 str_path=None,
-                 position_start=352., position_max=None, Deltaz=340.,
-                 need_board=True
+    _base_dir = os.path.join("TaylorCouette", "ILS")
+
+    def __init__(
+        self,
+        rho_min=None,
+        rho_max=None,
+        N0=None,
+        prop_homog=None,
+        Omega1=None,
+        Omega2=None,
+        R1=None,
+        R2=None,
+        description=None,
+        params=None,
+        str_path=None,
+        position_start=352.,
+        position_max=None,
+        Deltaz=340.,
+        need_board=True,
     ):
         # start the init. and find out if it is the first creation
         self._init_from_str(str_path)
@@ -145,76 +154,76 @@ Initially linear stratification (ILS)...
 
 """
             description = self._complete_description(
-                description_base, description=description)
+                description_base, description=description
+            )
 
             # initialise `params` with `params` and the other parameters
             if params is None:
                 params = {}
             if rho_min is None:
-                if 'rho_min' in params:
-                    rho_min = params['rho_min']
+                if "rho_min" in params:
+                    rho_min = params["rho_min"]
                 else:
                     rho_min = rho_pure_water
-            params['rho_min'] = rho_min
+            params["rho_min"] = rho_min
             if rho_max is not None:
-                params['rho_max'] = rho_max
+                params["rho_max"] = rho_max
             if N0 is not None:
-                params['N0'] = N0
+                params["N0"] = N0
             if prop_homog is not None:
-                params['prop_homog'] = prop_homog
+                params["prop_homog"] = prop_homog
             if Omega1 is not None:
-                params['Omega1'] = Omega1
+                params["Omega1"] = Omega1
             if Omega2 is not None:
-                params['Omega2'] = Omega2
+                params["Omega2"] = Omega2
             if R1 is not None:
-                params['R1'] = R1
+                params["R1"] = R1
             if R2 is not None:
-                params['R2'] = R2
+                params["R2"] = R2
 
             # verify if enough params have been given for the first creation
             self._verify_params_first_creation(
-                params, 
+                params,
                 keys_needed=[
-                    'rho_min', 'rho_max', 
-                    'N0', 'prop_homog',
-                    'Omega1', 'Omega2','R1', 'R2']
+                    "rho_min",
+                    "rho_max",
+                    "N0",
+                    "prop_homog",
+                    "Omega1",
+                    "Omega2",
+                    "R1",
+                    "R2",
+                ],
             )
 
             # calculate the parameters needed for the inherited class
-            Delta_rho = params['rho_max'] - params['rho_min']
+            Delta_rho = params["rho_max"] - params["rho_min"]
             if prop_homog is None:
-                prop_homog = params['prop_homog']
+                prop_homog = params["prop_homog"]
 
-            zs_norm = np.array(  [0, prop_homog/2, 1-prop_homog/2, 1])
-            rhos_norm = np.array([1., 1.,   0.,   0.])
+            zs_norm = np.array([0, prop_homog / 2, 1 - prop_homog / 2, 1])
+            rhos_norm = np.array([1., 1., 0., 0.])
             if N0 is None:
-                N0 = params['N0']
-            z_max = g*Delta_rho/(rho0*N0**2*(1-prop_homog))*1000 # (mm)
+                N0 = params["N0"]
+            z_max = g * Delta_rho / (
+                rho0 * N0 ** 2 * (1 - prop_homog)
+            ) * 1000  # (mm)
 
-            zs = z_max*zs_norm
-            rhos = rho_min + Delta_rho*rhos_norm
+            zs = z_max * zs_norm
+            rhos = rho_min + Delta_rho * rhos_norm
 
-            params.update({
-                'zs':zs, 
-                'rhos':rhos
-            })
+            params.update({"zs": zs, "rhos": rhos})
 
         # call the __init__ function of the inherited class
         super(ILSTaylorCouetteExp, self).__init__(
             params=params,
-            description=description, 
+            description=description,
             str_path=str_path,
-            position_start=position_start, 
-            position_max=position_start, Deltaz=Deltaz,
-            need_board=need_board
-            )
-
-
-
-
-
-
-
+            position_start=position_start,
+            position_max=position_start,
+            Deltaz=Deltaz,
+            need_board=need_board,
+        )
 
     def _create_self_params(self, params):
         r"""Calculate some parameters.
@@ -254,35 +263,26 @@ Initially linear stratification (ILS)...
         if len(params) == 0:
             return
 
-        R2 = self.params['R2']
+        R2 = self.params["R2"]
 
-        Uc = self.params['Uc']
-        U1 = self.params['U1']
-        Delta_rho = self.params['Delta_rho']
+        Uc = self.params["Uc"]
+        U1 = self.params["U1"]
+        Delta_rho = self.params["Delta_rho"]
 
-        zs = params['zs']
+        zs = params["zs"]
 
         if Delta_rho == 0:
             N0 = 0.
         else:
-            N0 = np.sqrt(g*Delta_rho/(rho0* (zs[2] - zs[1])/1e3))
+            N0 = np.sqrt(g * Delta_rho / (rho0 * (zs[2] - zs[1]) / 1e3))
 
-        hl = (A*Uc/N0 + c) *1e3
-        Ri_N = R2/U1**2 *N0**2 *hl *1e-6
+        hl = (A * Uc / N0 + c) * 1e3
+        Ri_N = R2 / U1 ** 2 * N0 ** 2 * hl * 1e-6
 
-        R1, nu, Omega1 = (self.params[k] for k in ['R1', 'nu', 'Omega1'])
-        Rb = A**2 * Omega1**3 * R1* (R2-R1) *1e-6  / (nu*N0**2)
+        R1, nu, Omega1 = (self.params[k] for k in ["R1", "nu", "Omega1"])
+        Rb = A ** 2 * Omega1 ** 3 * R1 * (R2 - R1) * 1e-6 / (nu * N0 ** 2)
 
-        self.params.update({
-            'N0':N0,
-            'hl':hl,
-            'Ri_N':Ri_N,
-            'Rb':Rb
-        })
-
-
-
-
+        self.params.update({"N0": N0, "hl": hl, "Ri_N": Ri_N, "Rb": Rb})
 
     def _init_name_dir(self):
         """Init the name of the directory where the data are saved.
@@ -301,34 +301,13 @@ Initially linear stratification (ILS)...
         begin, end = super(ILSTaylorCouetteExp, self)._init_name_dir()
 
         self.name_dir = (
-            begin+
-            'Omega1={0:4.2f}_'.format(self.params['Omega1'])+
-            'N0={0:4.2f}_'.format(self.params['N0'])+
-            end)
+            begin
+            + "Omega1={0:4.2f}_".format(self.params["Omega1"])
+            + "N0={0:4.2f}_".format(self.params["N0"])
+            + end
+        )
         return begin, end
 
 
-
-
-
-
-
-
-
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass
-
-
-
-
-
-
-
-
-
-
-
-

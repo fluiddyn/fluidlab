@@ -42,6 +42,7 @@ For example, with a computer without PowerDAQ board::
 
 from fluiddyn.io import _write_warning
 
+
 class FalseBoard(object):
     """Represent a false acquisition board.
 
@@ -51,22 +52,25 @@ class FalseBoard(object):
 
     """
     works = False
+
     def __getattr__(self, key):
-        raise AttributeError('You tried to use a false acquisition board.')
+        raise AttributeError("You tried to use a false acquisition board.")
+
     def __bool__(self):
         """For python => 3.0"""
         return False
+
     def __nonzero__(self):
         """For python < 3"""
         return False
 
 
-
 try:
-   from .powerdaq import PowerDAQBoard
+    from .powerdaq import PowerDAQBoard
 except ImportError:
     _write_warning(
-       'Warning:\n    no fluidlab.objects.boards.powerdaq (use FalseBoard).')
+        "Warning:\n    no fluidlab.objects.boards.powerdaq (use FalseBoard)."
+    )
     PowerDAQBoard = FalseBoard
 
 
@@ -76,23 +80,19 @@ if nidaqnx.works:
     NIDAQBoard = nidaqnx.NIDAQBoard
 else:
     _write_warning(
-       'Warning:\n    '
-       'no fluidlab.objects.boards.nidaqnx.NIDAQBoard (use FalseBoard).')
+        "Warning:\n    "
+        "no fluidlab.objects.boards.nidaqnx.NIDAQBoard (use FalseBoard)."
+    )
     NIDAQBoard = FalseBoard
-
-
-
-
-
 
 
 class ObjectUsingBoard(object):
     """Useful to write classes for objects using a board."""
+
     def __init__(self, board=None, VERBOSE=False):
         if board is None and VERBOSE:
             print(
-"""Warning: none instance of the class PowerDAQBoard (or NIDAQBoard)
+                """Warning: none instance of the class PowerDAQBoard (or NIDAQBoard)
 has been given. Some functions need the board."""
             )
         self.board = board
-

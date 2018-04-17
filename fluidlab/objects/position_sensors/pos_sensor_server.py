@@ -27,11 +27,13 @@ class PositionSensorService(rpyc.Service):
     def exposed_set_absolute_origin(self, value=0.):
         return self.sensor.set_absolute_origin(value=value)
 
+
 if __name__ == "__main__":
 
     PositionSensorService.sensor = PositionSensorService.cls_sensor()
 
     from rpyc.utils.server import ThreadedServer
+
     t = ThreadedServer(PositionSensorService, port=18861)
 
     t.start()

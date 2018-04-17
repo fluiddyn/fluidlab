@@ -12,10 +12,10 @@ class SimpleTestCase(unittest.TestCase):
 
         with stdout_redirected():
 
-            dev = Device2('ASRL2::INSTR', backend='@sim')
+            dev = Device2("ASRL2::INSTR", backend="@sim")
 
         idn = dev.get_idn()
-        self.assertEqual(idn, u'SCPI,MOCK,VERSION_1.0\n')
+        self.assertEqual(idn, u"SCPI,MOCK,VERSION_1.0\n")
 
         dev.voltage.set(2)
         voltage = dev.voltage.get()
@@ -33,11 +33,11 @@ class SimpleTestCase(unittest.TestCase):
             dev.output_enabled = True
 
         with self.assertRaises(AttributeError):
-            dev.get('aaaaa')
+            dev.get("aaaaa")
 
         with self.assertRaises(ValueError):
-            dev.get('interface')
+            dev.get("interface")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

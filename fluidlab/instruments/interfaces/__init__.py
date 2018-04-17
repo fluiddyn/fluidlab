@@ -34,6 +34,7 @@ class Interface(object):
 
 
 class QueryInterface(Interface):
+
     def write(self, s):
         raise NotImplementedError
 
@@ -42,24 +43,24 @@ class QueryInterface(Interface):
 
     def query(self, s):
         raise NotImplementedError
-        
+
     def close(self):
         pass
-        
+
     def __enter__(self):
         return self
-    
+
     def __exit__(self, type_, value, cb):
         self.close()
-        
 
 
 class FalseInterface(QueryInterface):
+
     def write(self, s):
         print(s)
 
     def read(self):
-        print('just return 0 since it is a false Interface class.')
+        print("just return 0 since it is a false Interface class.")
         return 0
 
     def query(self, s):

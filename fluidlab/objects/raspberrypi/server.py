@@ -6,6 +6,7 @@ Defines a rpyc server.
 """
 
 import os
+
 try:
     from rpyc import SlaveService
     from rpyc.utils.server import ThreadedServer
@@ -28,11 +29,11 @@ class RaspberryPiService(SlaveService):
     #     pass
 
     def exposed_init_with_client(
-            self,
-            FLUIDLAB_PATH_client,
-            name_exp=None,
-            path_exp_client=None,
-            open_client=None
+        self,
+        FLUIDLAB_PATH_client,
+        name_exp=None,
+        path_exp_client=None,
+        open_client=None,
     ):
         FLUIDLAB_PATH_client = os.path.normpath(FLUIDLAB_PATH_client)
 
@@ -40,9 +41,8 @@ class RaspberryPiService(SlaveService):
             path_exp_client = os.path.normpath(path_exp_client)
 
             if path_exp_client.startswith(FLUIDLAB_PATH_client):
-                path_relative = path_exp_client[
-                    len(FLUIDLAB_PATH_client)+1:]
-                path_relative = path_relative.replace('\\', '/')
+                path_relative = path_exp_client[len(FLUIDLAB_PATH_client) + 1:]
+                path_relative = path_relative.replace("\\", "/")
                 path_exp = os.path.join(FLUIDLAB_PATH, path_relative)
             else:  # a little bit strange, but why not...
                 path_exp = os.path.join(FLUIDLAB_PATH, path_exp_client)
@@ -50,9 +50,10 @@ class RaspberryPiService(SlaveService):
             path_exp = None
 
         self.torque = TorqueRaspberryPi(
-            path_exp=path_exp, name_exp=name_exp,
+            path_exp=path_exp,
+            name_exp=name_exp,
             path_exp_client=path_exp_client,
-            open_client=open_client
+            open_client=open_client,
         )
 
         self.exposed_torque = self.torque
@@ -60,10 +61,12 @@ class RaspberryPiService(SlaveService):
         self.open_client = open_client
 
     def exposed_measure(self, duration, sample_rate, SAVE=True):
-        if not hasattr(self, 'torque'):
+        if not hasattr(self, "torque"):
             raise ValueError(
-"""ServiceRaspberryPi should be firt initialized with its function
-init_with_client.""")
+                """ServiceRaspberryPi should be firt initialized with its function
+init_with_client."""
+            )
+
         return self.torque.measure(duration, sample_rate, SAVE)
 
     # def exposed_transfer_from_raspberrypi(self, files=None):
@@ -74,15 +77,16 @@ init_with_client.""")
     def exposed_open(self, filename, mode="r"):
         return open(filename, mode)
 
-    # def save_in_client(self, path_file):
-    #     print('path_file', path_file)
 
-    #     name_file = ''
-    #     path_local = self.torque
+# def save_in_client(self, path_file):
+#     print('path_file', path_file)
 
-    #     with open(path_local):
-    #         with self.remote_open(path_file, 'w') as f:
-    #             pass
+#     name_file = ''
+#     path_local = self.torque
+
+#     with open(path_local):
+#         with self.remote_open(path_file, 'w') as f:
+#             pass
 
 
 if __name__ == "__main__":

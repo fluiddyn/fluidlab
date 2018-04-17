@@ -18,7 +18,7 @@ import u3
 from fluiddyn.util import time_as_str
 
 
-path_save = os.path.join(os.path.expanduser("~"), '.fluidlab')
+path_save = os.path.join(os.path.expanduser("~"), ".fluidlab")
 if not os.path.exists(path_save):
     os.mkdir(path_save)
 
@@ -53,13 +53,14 @@ class PositionSensor(object):
     """
 
     def __init__(self, port=4):
-        print('start init position sensor')
+        print("start init position sensor")
         self.daq_u3 = u3.U3()
-        self.daq_u3.configIO(TimerCounterPinOffset=port,
-                             NumberOfTimersEnabled=2, FIOAnalog=0)
+        self.daq_u3.configIO(
+            TimerCounterPinOffset=port, NumberOfTimersEnabled=2, FIOAnalog=0
+        )
         self.daq_u3.getFeedback(u3.Timer0Config(8), u3.Timer1Config(8))
 
-        self.meter_per_increment = 0.000105/4
+        self.meter_per_increment = 0.000105 / 4
 
         try:
             self._shift_absolute_pos, self._shift_relative_pos = self.load()
@@ -69,11 +70,11 @@ class PositionSensor(object):
 
         atexit.register(self.save)
         signal.signal(signal.SIGTERM, sig_handler)
-        print(time_as_str() + ': position sensor initialized.')
+        print(time_as_str() + ": position sensor initialized.")
         sys.stdout.flush()
 
     def get_value_counter(self):
-        print('get_value_counter')
+        print("get_value_counter")
         return self.daq_u3.getFeedback(u3.QuadratureInputTimer())[0]
 
     def get_relative_position(self):
@@ -87,8 +88,9 @@ class PositionSensor(object):
     def reset_counter_to_zero(self):
         self._shift_relative_pos = self.get_relative_position()
         self._shift_absolute_pos = self.get_absolute_position()
-        self.daq_u3.getFeedback(u3.Timer0(UpdateReset=True),
-                                u3.Timer1(UpdateReset=True))
+        self.daq_u3.getFeedback(
+            u3.Timer0(UpdateReset=True), u3.Timer1(UpdateReset=True)
+        )
 
     def set_relative_origin(self, value=0.):
         rel_pos = self.get_relative_position()
@@ -101,18 +103,22 @@ class PositionSensor(object):
     def save(self):
         abs_pos = self.get_absolute_position()
         rel_pos = self.get_relative_position()
-        print('save positions:', [abs_pos, rel_pos])
+        print("save positions:", [abs_pos, rel_pos])
         data = np.array([abs_pos, rel_pos])
         date = time_as_str()
-        path = os.path.join(path_save, 'positions_sensor.txt')
+        path = os.path.join(path_save, "positions_sensor.txt")
 
         np.savetxt(
-            path, data, fmt='%.8e',
-            header=date + ': positions (absolute and relative, m)')
+            path,
+            data,
+            fmt="%.8e",
+            header=date + ": positions (absolute and relative, m)",
+        )
 
     def load(self):
-        path = os.path.join(path_save, 'positions_sensor.txt')
+        path = os.path.join(path_save, "positions_sensor.txt")
         return np.loadtxt(path)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sensor = PositionSensor()

@@ -8,7 +8,7 @@ configuration values as module attributes.
 
 from fluiddyn.util.userconfig import load_user_conf_files
 
-config = load_user_conf_files('fluidlab')
+config = load_user_conf_files("fluidlab")
 del load_user_conf_files
 
 glob = globals()

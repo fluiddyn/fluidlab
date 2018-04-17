@@ -16,10 +16,23 @@ from time import sleep
 
 from fluidlab.instruments.interfaces import QueryInterface
 
+
 class SerialInterface(QueryInterface):
-    def __init__(self, port, baudrate=9600, bytesize=8,
-                 parity='N', stopbits=1, timeout=1, xonxoff=False,
-                 rtscts=False, dsrdtr=False, eol=None, multilines=False):
+
+    def __init__(
+        self,
+        port,
+        baudrate=9600,
+        bytesize=8,
+        parity="N",
+        stopbits=1,
+        timeout=1,
+        xonxoff=False,
+        rtscts=False,
+        dsrdtr=False,
+        eol=None,
+        multilines=False,
+    ):
         """
         if eol is not None, the serial port is wrapped into TextIOWrapper to
         allow readline to wait for an eol which is not \n
@@ -27,44 +40,56 @@ class SerialInterface(QueryInterface):
 
         # open serial port
         sp = serial.Serial(
-            port=port, baudrate=baudrate, bytesize=bytesize,
-            parity=parity, stopbits=stopbits, timeout=timeout,
-            xonxoff=xonxoff, rtscts=rtscts, dsrdtr=dsrdtr)
+            port=port,
+            baudrate=baudrate,
+            bytesize=bytesize,
+            parity=parity,
+            stopbits=stopbits,
+            timeout=timeout,
+            xonxoff=xonxoff,
+            rtscts=rtscts,
+            dsrdtr=dsrdtr,
+        )
         self._lowlevel = self.serial_port = sp
         self.close = sp.close
         self.eol = eol
         self.multilines = multilines
         if eol is not None:
-            self.ser_io = io.TextIOWrapper(io.BufferedRWPair(sp, sp, 1),
-                                           newline = eol,
-                                           line_buffering = True)
-            
+            self.ser_io = io.TextIOWrapper(
+                io.BufferedRWPair(sp, sp, 1), newline=eol, line_buffering=True
+            )
+
     def write(self, *args):
         if self.eol is not None:
             return self.ser_io.write(*args)
+
         # ensure no unicode strings sent to serial_port.write
-        args = [a.encode('ascii') if isinstance(a, str) else a for a in args]
+        args = [a.encode("ascii") if isinstance(a, str) else a for a in args]
         return self.serial_port.write(*args)
-        
+
     def readline(self, *args):
         if self.eol is not None:
             return self.ser_io.readline(*args)
+
         return self.serial_port.readline(*args)
-    
+
     def readlines(self, *args):
         if self.eol is not None:
             return self.ser_io.readlines(*args)
+
         return self.serial_port.readlines(*args)
-        
+
     def read(self):
         if self.multilines:
             result = self.readlines()
-            return '\n'.join(result)
+            return "\n".join(result)
+
         else:
             result = self.readline()
             if isinstance(result, str):
                 return result
-            return b'\n'.join(result.splitlines())
+
+            return b"\n".join(result.splitlines())
 
     def query(self, command, latence=0.):
         self.write(command)
@@ -72,10 +97,10 @@ class SerialInterface(QueryInterface):
         return self.read()
 
 
-if __name__ == '__main__':
-    interface = SerialInterface('/dev/ttyUSB0')
+if __name__ == "__main__":
+    interface = SerialInterface("/dev/ttyUSB0")
 
-    print(interface.query(b'*IDN?\r\n', latence=1))
-    print(interface.query(b'*IDN?\r\n'))
-    print(interface.query(b'ISET1?\r\n'))
-    print(interface.query(b'HELP?\r\n', latence=0))
+    print(interface.query(b"*IDN?\r\n", latence=1))
+    print(interface.query(b"*IDN?\r\n"))
+    print(interface.query(b"ISET1?\r\n"))
+    print(interface.query(b"HELP?\r\n", latence=0))

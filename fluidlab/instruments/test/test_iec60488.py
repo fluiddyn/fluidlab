@@ -24,8 +24,8 @@ class SimpleTestCase(unittest.TestCase):
             instr.status_enable_register.get()
             instr.status_enable_register.set(50)
 
-            instr.get('status_enable_register')
-            instr.set('status_enable_register', 1)
+            instr.get("status_enable_register")
+            instr.set("status_enable_register", 1)
 
             # coming from Trigger
             instr.trigger()
@@ -38,11 +38,11 @@ class SimpleTestCase(unittest.TestCase):
             instr.status_enable_register = True
 
         with self.assertRaises(AttributeError):
-            instr.get('status_enble_register')
+            instr.get("status_enble_register")
 
         with self.assertRaises(ValueError):
-            instr.get('interface')
+            instr.get("interface")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

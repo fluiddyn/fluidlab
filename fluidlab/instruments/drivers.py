@@ -20,8 +20,7 @@ import re
 import platform
 import six
 
-from fluidlab.instruments.interfaces import (
-    Interface, FalseInterface)
+from fluidlab.instruments.interfaces import Interface, FalseInterface
 
 from fluidlab.instruments.features import SuperValue
 
@@ -36,6 +35,7 @@ class Driver(object):
       The interface used to communicate with the instrument.
 
     """
+
     @classmethod
     def _build_class_with_features(cls, features):
         for feature in features:
@@ -45,7 +45,7 @@ class Driver(object):
         if not interface:
             interface = FalseInterface()
         elif not isinstance(interface, Interface):
-            raise ValueError('interface should be an Interface.')
+            raise ValueError("interface should be an Interface.")
 
         self._interface = self.interface = interface
 
@@ -58,12 +58,15 @@ class Driver(object):
                 v._driver = self
 
     def __setattr__(self, k, v):
-        if (not isinstance(v, SuperValue) and
-                k in dir(self) and
-                isinstance(getattr(self, k), SuperValue)):
+        if (
+            not isinstance(v, SuperValue)
+            and k in dir(self)
+            and isinstance(getattr(self, k), SuperValue)
+        ):
             raise ValueError(
-                k + ' is associated with a quantity in the instrument. '
-                'Do not set this value by assignment. Use a set function.')
+                k + " is associated with a quantity in the instrument. "
+                "Do not set this value by assignment. Use a set function."
+            )
 
         super(Driver, self).__setattr__(k, v)
 
@@ -88,17 +91,16 @@ class Driver(object):
                 error_class = ValueError
 
         if error_class:
-            raise error_class(name + ' is not a value of this instrument')
+            raise error_class(name + " is not a value of this instrument")
 
         return value
-        
+
     def __enter__(self):
         self.interface.__enter__()
         return self
-    
+
     def __exit__(self, type_, value, cb):
         self.interface.__exit__(type_, value, cb)
-    
 
 
 class VISADriver(Driver):
@@ -114,14 +116,16 @@ class VISADriver(Driver):
       Defines the backend used by pyvisa ("@py", "@ni", "@sim"...)
 
     """
-    def __init__(self, interface=None, backend='@py'):
+
+    def __init__(self, interface=None, backend="@py"):
 
         if isinstance(interface, six.string_types):
             from fluidlab.instruments.interfaces.visa import PyvisaInterface
+
             interface = PyvisaInterface(interface, backend=backend)
 
         super(VISADriver, self).__init__(interface)
 
 
-if __name__ == '__main__':
-    driver = Driver('ASRL4::INSTR', backend='@sim')
+if __name__ == "__main__":
+    driver = Driver("ASRL4::INSTR", backend="@sim")

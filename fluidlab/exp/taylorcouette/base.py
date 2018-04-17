@@ -215,18 +215,24 @@ class TaylorCouetteExp(ExpWithConductivityProbe):
         Coding the time of creation.
 
     """
-    _base_dir = os.path.join('TaylorCouette', 'Base')
+    _base_dir = os.path.join("TaylorCouette", "Base")
 
-    def __init__(self,
-                 zs=None, rhos=None,
-                 Omega1=None, Omega2=None,
-                 R1=None, R2=None,
-                 params=None,
-                 description=None,
-                 str_path=None,
-                 position_start=352., position_max=None, Deltaz=340.,
-                 need_board=True
-                 ):
+    def __init__(
+        self,
+        zs=None,
+        rhos=None,
+        Omega1=None,
+        Omega2=None,
+        R1=None,
+        R2=None,
+        params=None,
+        description=None,
+        str_path=None,
+        position_start=352.,
+        position_max=None,
+        Deltaz=340.,
+        need_board=True,
+    ):
 
         # start the init. and find out if it is the first creation
         self._init_from_str(str_path)
@@ -239,30 +245,32 @@ Experiment in a Taylor-Couette.
 This tank is 520 mm high. The radius of the outer cylinder is
 approximately {:5.0f} mm.
 
-""".format(R2 or params['R2'])
+""".format(
+                R2 or params["R2"]
+            )
             description = self._complete_description(
-                description_base, description=description)
+                description_base, description=description
+            )
 
             # initialise `params` with `params` and the other parameters
             if params is None:
                 params = {}
             if rhos is not None:
-                params['rhos'] = rhos
+                params["rhos"] = rhos
             if zs is not None:
-                params['zs'] = zs
+                params["zs"] = zs
             if Omega1 is not None:
-                params['Omega1'] = Omega1
+                params["Omega1"] = Omega1
             if Omega2 is not None:
-                params['Omega2'] = Omega2
+                params["Omega2"] = Omega2
             if R1 is not None:
-                params['R1'] = R1
+                params["R1"] = R1
             if R2 is not None:
-                params['R2'] = R2
+                params["R2"] = R2
 
             # verify if enough params have been given for the first creation
             self._verify_params_first_creation(
-                params,
-                keys_needed=['rhos', 'zs', 'Omega1', 'Omega2', 'R1', 'R2']
+                params, keys_needed=["rhos", "zs", "Omega1", "Omega2", "R1", "R2"]
             )
 
         # call the __init__ function of the inherited class
@@ -271,9 +279,10 @@ approximately {:5.0f} mm.
             description=description,
             str_path=str_path,
             position_start=position_start,
-            position_max=position_start, Deltaz=Deltaz,
-            need_board=need_board)
-
+            position_max=position_start,
+            Deltaz=Deltaz,
+            need_board=need_board,
+        )
 
     def _create_self_params(self, params):
         r"""Calculate some parameters.
@@ -321,67 +330,62 @@ approximately {:5.0f} mm.
         if len(params) == 0:
             return
 
-        zs = params['zs']
+        zs = params["zs"]
         zmax = zs[-1] - zs[0]
 
         try:
-            Omega1 = params['Omega1']
-            Omega2 = params['Omega2']
+            Omega1 = params["Omega1"]
+            Omega2 = params["Omega2"]
         except KeyError:
-            Omega1 = params['Omega']
+            Omega1 = params["Omega"]
             Omega2 = 0.
-            self.params['Omega1'] = Omega1
-            self.params['Omega2'] = Omega2
+            self.params["Omega1"] = Omega1
+            self.params["Omega2"] = Omega2
 
-        mu_o = Omega2/Omega1
+        mu_o = Omega2 / Omega1
 
-        R1 = params['R1']
-        R2 = params['R2']
+        R1 = params["R1"]
+        R2 = params["R2"]
 
         if R1 not in [50, 100, 150]:
-            raise ValueError('Are you sure of the value of R1?')
+            raise ValueError("Are you sure of the value of R1?")
 
-        eta_i = R1/R2
+        eta_i = R1 / R2
         DeltaR = R2 - R1
-        Gamma = zmax/DeltaR
+        Gamma = zmax / DeltaR
 
-        U1 = R1*Omega1 *1e-3  # (m/s)
-        U2 = R2*Omega2 *1e-3  # (m/s)
-        Uc = np.sqrt(DeltaR/R1)*U1
+        U1 = R1 * Omega1 * 1e-3  # (m/s)
+        U2 = R2 * Omega2 * 1e-3  # (m/s)
+        Uc = np.sqrt(DeltaR / R1) * U1
 
-        nu = self.params['nu']
-        Re = U1*DeltaR/nu *1e-3
-        Ta = 2*DeltaR/(R1+R2)**2 * Re**2 *1e3
+        nu = self.params["nu"]
+        Re = U1 * DeltaR / nu * 1e-3
+        Ta = 2 * DeltaR / (R1 + R2) ** 2 * Re ** 2 * 1e3
 
-        Re_o = U2*DeltaR/nu_pure_water *1e-3
+        Re_o = U2 * DeltaR / nu_pure_water * 1e-3
         Re_s = Re - Re_o
-        Re_m = (Re_o + Re)/2
+        Re_m = (Re_o + Re) / 2
 
-        Delta_rho = self.params['Delta_rho']
-        Ri = g*Delta_rho/rho0 *R2*1e-3 / U1**2
+        Delta_rho = self.params["Delta_rho"]
+        Ri = g * Delta_rho / rho0 * R2 * 1e-3 / U1 ** 2
 
-        self.params.update({
-            'mu_o': mu_o,
-            'eta_i': eta_i,
-            'DeltaR': DeltaR,
-            'Gamma': Gamma,
-            'U1': U1, 'U2': U2,
-            'Uc': Uc,
-            'Re': Re,
-            'Ta': Ta,
-            'Re_o': Re_o,
-            'Re_s': Re_s,
-            'Re_m': Re_m,
-            'Ri': Ri
-        })
-
-
-
-
-
-
-
-
+        self.params.update(
+            {
+                "mu_o": mu_o,
+                "eta_i": eta_i,
+                "DeltaR": DeltaR,
+                "Gamma": Gamma,
+                "U1": U1,
+                "U2": U2,
+                "Uc": Uc,
+                "Re": Re,
+                "Ta": Ta,
+                "Re_o": Re_o,
+                "Re_s": Re_s,
+                "Re_m": Re_m,
+                "Ri": Ri,
+            }
+        )
 
     def _create_tank(self):
         """Create the instance variable representing the tank.
@@ -391,40 +395,29 @@ approximately {:5.0f} mm.
 
         """
         # print(self.params)
-        if 'R1' in self.params:
-            R1 = self.params['R1']
+        if "R1" in self.params:
+            R1 = self.params["R1"]
         else:
             R1 = 100.
 
-        if 'R2' in self.params:
-            R2 = self.params['R2']
+        if "R2" in self.params:
+            R2 = self.params["R2"]
         else:
             R2 = 261.
 
-        if 'H' in self.params:
-            H = self.params['H']
+        if "H" in self.params:
+            H = self.params["H"]
         else:
             H = 520.
 
-        if 'zs' in self.params:
-            zs = self.params['zs']
-            rhos = self.params['rhos']
+        if "zs" in self.params:
+            zs = self.params["zs"]
+            rhos = self.params["rhos"]
         else:
             zs = [0, H]
             rhos = [1.2, 1.]
 
-        self.tank = TaylorCouette(Rin=R1, Rout=R2, H=H,
-                                  z=zs, rho=rhos)
-
-
-
-
-
-
-
-
-
-
+        self.tank = TaylorCouette(Rin=R1, Rout=R2, H=H, z=zs, rho=rhos)
 
 
 def create_exp(rho_max=1.146, z_max=400):
@@ -432,16 +425,16 @@ def create_exp(rho_max=1.146, z_max=400):
     rho_min = 1.
     Delta_rho = rho_max - rho_min
 
-#     zs_norm = np.array([0, 1./6, 5./6, 1])
-#     rhos_norm = np.array([1., 0.5, 0.5, 0.])
-#     description = """
-# Profil: strong linear stratification at the bottom and
-# top. Unstratified in the middle.
+    #     zs_norm = np.array([0, 1./6, 5./6, 1])
+    #     rhos_norm = np.array([1., 0.5, 0.5, 0.])
+    #     description = """
+    # Profil: strong linear stratification at the bottom and
+    # top. Unstratified in the middle.
 
-# """
+    # """
 
-    zs_norm = np.array(  [0,  1./4, 1./2, 1./2, 3./4, 1])
-    rhos_norm = np.array([1., 1.,   2./3, 1./3, 0.,   0.])
+    zs_norm = np.array([0, 1. / 4, 1. / 2, 1. / 2, 3. / 4, 1])
+    rhos_norm = np.array([1., 1., 2. / 3, 1. / 3, 0., 0.])
     description = """
 Profil: two homogeneous layers at the bottom and top; two layers with
 a linear stratification and a step in the middle.
@@ -455,92 +448,76 @@ taken into account.
 
 """
 
-    zs = z_max*zs_norm
-    rhos = rho_min + Delta_rho*rhos_norm
+    zs = z_max * zs_norm
+    rhos = rho_min + Delta_rho * rhos_norm
     exp = TaylorCouetteExp(zs=zs, rhos=rhos, description=description)
 
     return exp
 
 
-
-
-
-
-
-
 def load_exp_and_measure_profiles(str_path):
 
-    exp = load_exp(str_path=str_path,
-                   position_start=374., Deltaz=362.
-    )
+    exp = load_exp(str_path=str_path, position_start=374., Deltaz=362.)
     exp.sprobe.set_sample_rate(2000.)
 
-    period = 2*T1
-    duration = 60*60*30
+    period = 2 * T1
+    duration = 60 * 60 * 30
 
-    n_jump_by_modulo = np.array(
-        [1, 1,   4,   4, 1, 1,   4,    4])
-    ts_jump_by_modulo = np.array(
-        [0, 0.5, 0.5, 5, 5, 5.5, 5.5, 48])*60*60
+    n_jump_by_modulo = np.array([1, 1, 4, 4, 1, 1, 4, 4])
+    ts_jump_by_modulo = np.array([0, 0.5, 0.5, 5, 5, 5.5, 5.5, 48]) * 60 * 60
 
-    exp.profiles.measure(duration=duration, period=period,
-                         deltaz=362, speed_measurements=100,
-                         speed_up=60,
-                         n_jump_by_modulo=n_jump_by_modulo,
-                         ts_jump_by_modulo=ts_jump_by_modulo
+    exp.profiles.measure(
+        duration=duration,
+        period=period,
+        deltaz=362,
+        speed_measurements=100,
+        speed_up=60,
+        n_jump_by_modulo=n_jump_by_modulo,
+        ts_jump_by_modulo=ts_jump_by_modulo,
     )
 
     exp.profiles.plot()
     return exp
 
 
-
-
-
-
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     Omega1 = 1.
 
-    exp = TaylorCouetteExp(
-        rhos=[1.1, 1], zs=[0, 200], Omega1=Omega1, R1=150)
+    exp = TaylorCouetteExp(rhos=[1.1, 1], zs=[0, 200], Omega1=Omega1, R1=150)
 
 
-    # exp = create_exp()
+# exp = create_exp()
 
-    # str_path = 'Exp_Omega=0.73_N0=1.83_2014-03-25_12-43-48'
+# str_path = 'Exp_Omega=0.73_N0=1.83_2014-03-25_12-43-48'
 
-    # exp = load_exp_and_measure_profiles(str_path)
+# exp = load_exp_and_measure_profiles(str_path)
 
-    # exp = load_exp(str_path=str_path,
-    #                need_board=False
-    #                # need_board=True
-    # )
-
-
-    # exp.tank.fill(pumps=True)
+# exp = load_exp(str_path=str_path,
+#                need_board=False
+#                # need_board=True
+# )
 
 
-    # times_minmax = np.array([0*60, 10*60])+60*300
-    # times_minmax = None
-    # exp.profiles.plot_2d(ind_file_profiles=1, SAVE_FIG=False,
-    #                      times_minmax=times_minmax)
-
-    # exp.profiles.plot(ind_file_profils=1, SAVE_FIG=False,
-    #                   times_minmax=times_minmax)
+# exp.tank.fill(pumps=True)
 
 
+# times_minmax = np.array([0*60, 10*60])+60*300
+# times_minmax = None
+# exp.profiles.plot_2d(ind_file_profiles=1, SAVE_FIG=False,
+#                      times_minmax=times_minmax)
 
-    # exp.sprobe.set_sample_rate(200.)
-    # exp.sprobe.measure(duration=0.1, VERBOSE=True)
-    # exp.sprobe.measure(duration=0.1, VERBOSE=True)
-    # exp.sprobe.measure(duration=2., VERBOSE=True)
-
-    # exp.sprobe.plot_calibrations()
+# exp.profiles.plot(ind_file_profils=1, SAVE_FIG=False,
+#                   times_minmax=times_minmax)
 
 
-    # exp.sprobe.move(deltaz=40, speed=60, bloquing=True)
-    # exp.sprobe.move(deltaz=500, speed=100, bloquing=True)
+# exp.sprobe.set_sample_rate(200.)
+# exp.sprobe.measure(duration=0.1, VERBOSE=True)
+# exp.sprobe.measure(duration=0.1, VERBOSE=True)
+# exp.sprobe.measure(duration=2., VERBOSE=True)
+
+# exp.sprobe.plot_calibrations()
+
+
+# exp.sprobe.move(deltaz=40, speed=60, bloquing=True)
+# exp.sprobe.move(deltaz=500, speed=100, bloquing=True)

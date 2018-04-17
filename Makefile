@@ -5,6 +5,9 @@ develop:
 clean_so:
 	find fluidlab -name "*.so" -delete
 
+black:
+	black -l 82 fluidlab
+
 tests:
 	python -m unittest discover
 

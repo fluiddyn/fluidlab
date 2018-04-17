@@ -29,8 +29,9 @@ def load_exp(str_path=None, *args, **kwargs):
     idepth = -1
     while path is None and idepth < depth_path_max:
         idepth += 1
-        paths = glob.glob(io.FLUIDLAB_PATH+'/' +
-                          idepth*'*/' + '*' + str_path + '*')
+        paths = glob.glob(
+            io.FLUIDLAB_PATH + "/" + idepth * "*/" + "*" + str_path + "*"
+        )
         if len(paths) > 0:
             path = paths[0]
 
@@ -39,21 +40,24 @@ def load_exp(str_path=None, *args, **kwargs):
             """Haven't been able to find a path corresponding to str_path.
 You can try to increase the value of the constant depth_path_max
 (FLUIDLAB_PATH: {}
-str_path: {}).""".format(io.FLUIDLAB_PATH, str_path))
+str_path: {}).""".format(
+                io.FLUIDLAB_PATH, str_path
+            )
+        )
 
-    path_h5_file = path + '/params.h5'
+    path_h5_file = path + "/params.h5"
 
     # temporary... for compatibility
-    with h5py.File(path_h5_file, 'r+') as f:
+    with h5py.File(path_h5_file, "r+") as f:
         keys = f.attrs.keys()
-        if 'name_class_exp' in keys and 'class_name' not in keys:
-            f.attrs['class_name'] = f.attrs['name_class_exp']
-        if 'module_exp' in keys and 'module_name' not in keys:
-            f.attrs['module_name'] = f.attrs['module_exp']
+        if "name_class_exp" in keys and "class_name" not in keys:
+            f.attrs["class_name"] = f.attrs["name_class_exp"]
+        if "module_exp" in keys and "module_name" not in keys:
+            f.attrs["module_name"] = f.attrs["module_exp"]
 
-    with h5py.File(path_h5_file, 'r') as f:
-        class_name = f.attrs['class_name']
-        module_exp = f.attrs['module_name']
+    with h5py.File(path_h5_file, "r") as f:
+        class_name = f.attrs["class_name"]
+        module_exp = f.attrs["module_name"]
 
     if isinstance(class_name, np.ndarray):
         class_name = class_name[0]
@@ -68,13 +72,15 @@ str_path: {}).""".format(io.FLUIDLAB_PATH, str_path))
 
     return Exp(*args, str_path=path, **kwargs)
 
+
 def make_ip_as_str(ip_modbus):
-    list_ip = ip_modbus.split('.')
-    ip_as_str = list_ip[0] + '_'
+    list_ip = ip_modbus.split(".")
+    ip_as_str = list_ip[0] + "_"
     for index in range(1, len(list_ip)):
-        ip_as_str += list_ip[index] + '_'
+        ip_as_str += list_ip[index] + "_"
     return ip_as_str
 
-if __name__ == '__main__':
-    ip_modbus = '192.168.28.11'
+
+if __name__ == "__main__":
+    ip_modbus = "192.168.28.11"
     ip_as_str = make_ip_as_str(ip_modbus)

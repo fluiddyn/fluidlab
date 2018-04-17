@@ -23,8 +23,9 @@ from fluidlab._version import __version__
 
 try:
     from fluidlab.util import load_exp
-    
+
     import fluiddyn as fld
+
     fld.load_exp = load_exp
     del fld
 except AttributeError:
@@ -32,4 +33,4 @@ except AttributeError:
     # therefore load_exp import fails.
     # Not all setups require load_exp, therefore issue a warning
     # here instead of raising an uncaught exception.
-    print('Warning: load_exp is not available.')
+    print("Warning: load_exp is not available.")

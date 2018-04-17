@@ -19,12 +19,15 @@ import os
 import shutil
 
 import datetime
+
 # import time
 
 # import glob
 import json
+
 # import h5py
 import inspect
+
 # from importlib import import_module
 
 import fluiddyn
@@ -35,7 +38,8 @@ from fluiddyn.util import time_as_str
 
 
 import sys
-if sys.platform.startswith('win'):
+
+if sys.platform.startswith("win"):
     import win32api, thread
 
     def handler(sig, hook=thread.interrupt_main):
@@ -44,9 +48,11 @@ if sys.platform.startswith('win'):
 
 
 class NumpyAwareJSONEncoder(json.JSONEncoder):
+
     def default(self, obj):
         if isinstance(obj, np.ndarray) and obj.ndim == 1:
-                return [x for x in obj]
+            return [x for x in obj]
+
         return json.JSONEncoder.default(self, obj)
 
 
@@ -100,12 +106,9 @@ class Experiment(object):
         Coding the time of creation.
 
     """
-    _base_dir = 'Base_exp'
+    _base_dir = "Base_exp"
 
-    def __init__(self, params=None,
-                 description=None,
-                 str_path=None
-                 ):
+    def __init__(self, params=None, description=None, str_path=None):
 
         # start the init. and find out if it is the first creation
         self._init_from_str(str_path)
@@ -117,7 +120,7 @@ class Experiment(object):
             if description is not None:
                 self.description = description
             else:
-                self.description = 'Experiment'
+                self.description = "Experiment"
             # init name from self.params
             self._init_name_dir()
             # end init and save on the hard disk
@@ -129,7 +132,7 @@ class Experiment(object):
             self._create_self_params(self.params)
 
         # This corrects a bug that I do not understand...
-        if sys.platform.startswith('win'):
+        if sys.platform.startswith("win"):
             win32api.SetConsoleCtrlHandler(handler, 1)
 
     def _init_from_str(self, str_path):
@@ -148,7 +151,7 @@ class Experiment(object):
             or will be saved.
 
         """
-        if not hasattr(self, 'first_creation'):
+        if not hasattr(self, "first_creation"):
             join = os.path.join
             if str_path is not None:
                 str_path = os.path.expanduser(str_path)
@@ -157,12 +160,12 @@ class Experiment(object):
             elif os.path.isabs(str_path):
                 self.path_save = str_path
             elif not str_path.startswith(self._base_dir):
-                self.path_save = join(FLUIDLAB_PATH,
-                                      self._base_dir, str_path)
+                self.path_save = join(FLUIDLAB_PATH, self._base_dir, str_path)
             else:
                 self.path_save = join(FLUIDLAB_PATH, str_path)
             self.first_creation = not os.path.exists(
-                join(self.path_save, 'params.h5'))
+                join(self.path_save, "params.h5")
+            )
 
     def _create_self_params(self, params):
         """Initialise the dictionary params.
@@ -190,8 +193,7 @@ class Experiment(object):
         """
         for k in keys_needed:
             if k not in params:
-                raise AttributeError(
-                    'This class needs the key "{}".'.format(k))
+                raise AttributeError('This class needs the key "{}".'.format(k))
 
     def _init_name_dir(self):
         """Initialise the name of the directory where the data are saved.
@@ -210,9 +212,9 @@ class Experiment(object):
             coding the time of creation.
 
         """
-        begin = 'Exp_'
+        begin = "Exp_"
         end = time_as_str()
-        self.name_dir = begin+end
+        self.name_dir = begin + end
         return begin, end
 
     def _complete_description(self, description_class, description=None):
@@ -232,8 +234,9 @@ class Experiment(object):
         """
         if description is None:
             return description_class
+
         else:
-            return description_class+description
+            return description_class + description
 
     def _save_basic_infos(self):
         """Save some basic information on the experiment."""
@@ -242,86 +245,91 @@ class Experiment(object):
         if not os.path.exists(self.path_save):
             os.makedirs(self.path_save)
 
-        path_h5_file = self.path_save+'/params.h5'
-        path_txt_file = self.path_save+'/description.txt'
+        path_h5_file = self.path_save + "/params.h5"
+        path_txt_file = self.path_save + "/description.txt"
 
-        if (os.path.exists(path_h5_file) or
-                os.path.exists(path_txt_file)):
+        if os.path.exists(path_h5_file) or os.path.exists(path_txt_file):
             raise ValueError(
-                'Cannot save in the directory\n' + self.path_save +
-"""because at least one file where the data should be saved already
-exists.""")
+                "Cannot save in the directory\n"
+                + self.path_save
+                + """because at least one file where the data should be saved already
+exists."""
+            )
 
-        with H5File(path_h5_file, 'w') as f:
-            f.attrs['class_name'] = self.__class__.__name__
+        with H5File(path_h5_file, "w") as f:
+            f.attrs["class_name"] = self.__class__.__name__
 
             module_exp = self.__module__
-            if module_exp == '__main__':
+            if module_exp == "__main__":
                 # if the module where the class is defined has been
                 # run as a script, module_exp == '__main__' and this
                 # is not an useful information to save.
-                path_mod = os.path.abspath(inspect.getsourcefile(
-                    self.__class__))
-                namep = 'fluiddyn'
+                path_mod = os.path.abspath(inspect.getsourcefile(self.__class__))
+                namep = "fluiddyn"
                 if namep in path_mod:
-                    pypath_mod = namep+path_mod.split(namep, 1)[1][:-3]
-                    module_exp = pypath_mod.replace(
-                        '/', '.').replace('\\', '.')
+                    pypath_mod = namep + path_mod.split(namep, 1)[1][:-3]
+                    module_exp = pypath_mod.replace("/", ".").replace("\\", ".")
                 else:
                     raise ValueError(
-"""Experiment classes has to be defined in the package, otherwise they
+                        """Experiment classes has to be defined in the package, otherwise they
 can not be loaded automatically. Otherwise, you can properly import
-the module (such as __name__ != '__main__') and it should work.""")
+the module (such as __name__ != '__main__') and it should work."""
+                    )
 
-            f.attrs['module_name'] = str(module_exp)
+            f.attrs["module_name"] = str(module_exp)
 
-            f.attrs['time start'] = self.time_start
-            f.attrs['name_dir'] = self.name_dir
-            f.attrs['description'] = self.description
+            f.attrs["time start"] = self.time_start
+            f.attrs["name_dir"] = self.name_dir
+            f.attrs["description"] = self.description
 
-            f.save_dict('params', self.params)
+            f.save_dict("params", self.params)
 
-            f.save_dict('classes', {})
-            f.save_dict('modules', {})
+            f.save_dict("classes", {})
+            f.save_dict("modules", {})
 
-        with open(path_txt_file, 'w') as f:
+        with open(path_txt_file, "w") as f:
             f.write(
-"""This file was created by the Python software FluidDyn {}.\n
-""".format(fluiddyn.__version__))
+                """This file was created by the Python software FluidDyn {}.\n
+""".format(
+                    fluiddyn.__version__
+                )
+            )
 
-            f.write('description = """'+self.description+'"""')
-            f.write('\n\nparameters = ')
-            f.write(json.dumps(
-                self.params, sort_keys=True,
-                cls=NumpyAwareJSONEncoder, indent=2
-            )+'\n')
+            f.write('description = """' + self.description + '"""')
+            f.write("\n\nparameters = ")
+            f.write(
+                json.dumps(
+                    self.params,
+                    sort_keys=True,
+                    cls=NumpyAwareJSONEncoder,
+                    indent=2,
+                )
+                + "\n"
+            )
 
     def _load_basic_infos(self, verbose=False):
         """Load some basic information on the experiments."""
-        path_h5_file = self.path_save+'/params.h5'
-        with H5File(path_h5_file, 'r') as f:
-            self.time_start = f.attrs['time start']
-            self.name_dir = f.attrs['name_dir']
-            self.description = f.attrs['description']
-            self.params = f.load_dict('params')
+        path_h5_file = self.path_save + "/params.h5"
+        with H5File(path_h5_file, "r") as f:
+            self.time_start = f.attrs["time start"]
+            self.name_dir = f.attrs["name_dir"]
+            self.description = f.attrs["description"]
+            self.params = f.load_dict("params")
 
     def save_script(self):
         """Save the file from where this function is called."""
-        dest = os.path.join(self.path_save, 'Saved_scripts')
+        dest = os.path.join(self.path_save, "Saved_scripts")
         if not os.path.exists(dest):
             os.mkdir(dest)
         stack = inspect.stack()
         path_caller = stack[1][1]
         name_file = os.path.basename(path_caller)
-        name_file_dest = name_file+'_'+time_as_str()
+        name_file_dest = name_file + "_" + time_as_str()
         shutil.copyfile(path_caller, os.path.join(dest, name_file_dest))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    exp = Experiment(
-        params=None,
-        description=None,
-        str_path=None)
+    exp = Experiment(params=None, description=None, str_path=None)
 
-    # exp = fluiddyn.load_exp('Exp_2014-08-16_15-47-00')
+# exp = fluiddyn.load_exp('Exp_2014-08-16_15-47-00')

@@ -5,7 +5,8 @@ import numpy as np
 
 
 def make_signal_double_frame(
-        time_between_pairs, time_expo, delta_t, nb_nodes=256):
+    time_between_pairs, time_expo, delta_t, nb_nodes=256
+):
 
     """
 
@@ -51,15 +52,16 @@ def make_signal_double_frame(
 
     # Check potential errors
     if delta_t - time_expo < 0:
-        raise ValueError('No double frame possible. \n'
-                         'Choose lower exposure time')
+        raise ValueError(
+            "No double frame possible. \n" "Choose lower exposure time"
+        )
 
-    n_e = int(ceil(time_expo/time_between_nodes))
+    n_e = int(ceil(time_expo / time_between_nodes))
     time_expo = n_e * time_between_nodes
 
     # Check if n_d (number of nodes delta_t - time_expo) is an integer
     t_0 = delta_t - time_expo
-    n_d = int(ceil(t_0/time_between_nodes))
+    n_d = int(ceil(t_0 / time_between_nodes))
     t_0 = n_d * time_between_nodes
 
     delta_t = t_0 + time_expo
@@ -86,22 +88,23 @@ def make_signal_double_frame(
     return times, volts, time_expo, delta_t, time_between_nodes
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     time_between_pairs = 5.
     time_expo = 0.1
     delta_t = 0.5
     n = 256
 
-    times1, volts1, time_expo, delta_t, time_between_nodes = \
-        make_signal_double_frame(
-            time_between_pairs, time_expo, delta_t, n)
+    times1, volts1, time_expo, delta_t, time_between_nodes = make_signal_double_frame(
+        time_between_pairs, time_expo, delta_t, n
+    )
 
     import matplotlib.pyplot as plt
+
     fig = plt.figure()
     ax = fig.gca()
-    ax.set_xlabel('time (s)')
-    ax.set_ylabel('volts (V)')
+    ax.set_xlabel("time (s)")
+    ax.set_ylabel("volts (V)")
     ax.plot(times1, volts1)
 
     plt.show()

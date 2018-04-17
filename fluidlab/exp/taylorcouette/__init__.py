@@ -18,5 +18,3 @@ Provides:
 
 
 from fluidlab.exp.taylorcouette.base import TaylorCouetteExp, A, c
-
-
