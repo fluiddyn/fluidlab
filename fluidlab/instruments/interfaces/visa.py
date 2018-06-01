@@ -44,6 +44,7 @@ class PyvisaInterface(QueryInterface):
         verbose=False,
         tracing=False,
     ):
+        #input('Sending '+message+'?')
         return self.pyvisa_instr.write(message, termination, encoding)
 
     def read(self, termination=None, encoding=None, verbose=False, tracing=False):
