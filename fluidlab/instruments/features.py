@@ -167,8 +167,10 @@ class Value(SuperValue):
     def get(self, channel=0):
         """Get the value from the instrument.
            Optional argument 'channel' is used for multichannel instrument.
-           Then command_get should include '%d'
+           Then command_get should include '{channel:}'
         """
+        if isinstance(channel, list) or isinstance(channel, tuple):
+            return [self.get(c) for c in channel]
         if self.pause_instrument > 0:
             time.sleep(self.pause_instrument)
         command = self.command_get
