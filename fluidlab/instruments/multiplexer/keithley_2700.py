@@ -99,14 +99,16 @@ class Keithley2700(IEC60488):
             self.interface.write('SENS:FUNC "{:}", {:}'.format(functionName, ListeChan))
             
             # Set range on specified channels
-            for chan, rang in self.Range.items():
-                self.interface.write("SENS:{func:}:RANG {rang:},(@{chan:})".format(func=functionName,
-                                                                                   rang=rang,
-                                                                                   chan=chan))
-            chan_auto = [c for c in channelList if c not in self.Range]
-            for chan in chan_auto:
-                self.interface.write("SENS:{func:}:RANG:AUTO ON,(@{chan:})".format(func=functionName,
-                                                                                   chan=chan))
+            for chan in channelList:
+                if chan in self.Range:
+                    self.interface.write(\
+                        "SENS:{func:}:RANG {rang:},(@{chan:})".format(func=functionName,
+                                                                      rang=self.Range[chan],
+                                                                      chan=chan))
+                else:
+                    self.interface.write(\
+                        "SENS:{func:}:RANG:AUTO ON,(@{chan:})".format(func=functionName,
+                                                                      chan=chan))
             
             # Set NPLC
             max_nplc = None
