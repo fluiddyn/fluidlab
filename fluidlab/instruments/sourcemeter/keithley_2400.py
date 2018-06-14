@@ -19,8 +19,14 @@ class Keithley2400(IEC60488):
 
     """
 
-
 features = [
+    BoolValue(
+        "front",
+        doc="True if route is using Front. False if Rear.",
+        true_string="FRONT",
+        false_string="REAR",
+        command_get=":ROUT:TERM?",
+        command_set=":ROUT:TERM"),
     FloatValue(
         "idc",
         doc="""Get output current/Set current setpoint""",

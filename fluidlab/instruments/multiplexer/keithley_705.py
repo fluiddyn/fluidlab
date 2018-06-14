@@ -18,7 +18,7 @@ class Keithley705(IEC60488):
     """
 
     def query_identification(self):
-        self.interface.write("R X")
+        self.open_all_channels()
         return self.interface.read().strip()
 
     def close_channel(self, chan, display=True):
@@ -30,6 +30,9 @@ class Keithley705(IEC60488):
         self.interface.write("N{chan:03d} X".format(chan=chan))
         if display:
             self.interface.write("B{chan:03d} X".format(chan=chan))
+
+    def open_all_channels(self):
+        self.interface.write("R X")
 
     def display(self, string=None):
         if string is not None:
