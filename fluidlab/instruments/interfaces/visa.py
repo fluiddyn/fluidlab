@@ -50,8 +50,8 @@ class PyvisaInterface(QueryInterface):
     def read(self, termination=None, encoding=None, verbose=False, tracing=False):
         return self.pyvisa_instr.read(termination, encoding)
 
-    def query(self, message, delay=None, verbose=False, tracing=False):
-        return self.pyvisa_instr.query(message, delay)
+    def query(self, message, time_delay=None, verbose=False, tracing=False):
+        return self.pyvisa_instr.query(message, time_delay)
 
 
 if __name__ == "__main__":

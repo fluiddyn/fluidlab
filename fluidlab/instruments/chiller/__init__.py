@@ -8,7 +8,8 @@ Provides:
    :toctree:
 
    lauda
+   julabo
 
 """
 
-__all__ = ["lauda"]
+__all__ = ["lauda", "julabo"]

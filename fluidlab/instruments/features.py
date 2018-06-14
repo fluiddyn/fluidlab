@@ -176,21 +176,27 @@ class Value(SuperValue):
         command = self.command_get
         if self.channel_argument:
             command = command.format(channel=channel)
-        result = self._convert_from_str(self._interface.query(command))
+        if self.pause_instrument > 0:
+            result = self._convert_from_str(self._interface.query(command,
+                                                 time_delay=self.pause_instrument))
+        else:
+            result = self._convert_from_str(self._interface.query(command))
         self._check_value(result)
         return result
 
     def set(self, value, channel=0):
         """Set the value in the instrument.
            Optional argument 'channel' is used for multichannel instrument.
-           Then command_set argument should include '%d'
+           Then command_set argument should include '{channel:}' and '{value:}'
         """
         if self.pause_instrument > 0:
             time.sleep(self.pause_instrument)
         self._check_value(value)
         if self.channel_argument:
+            # here we don't call _convert_as_str to allow the user to choose
+            # the desired format in the command_set string
             command = self.command_set.format(
-                channel=channel, value=self._convert_as_str(value)
+                channel=channel, value=value
             )
         else:
             command = self.command_set + " " + self._convert_as_str(value)
