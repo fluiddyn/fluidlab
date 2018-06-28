@@ -11,7 +11,7 @@
 __all__ = ["Keithley2400"]
 
 from fluidlab.instruments.iec60488 import IEC60488
-from fluidlab.instruments.features import FloatValue, BoolValue
+from fluidlab.instruments.features import FloatValue, BoolValue, FloatScientificValue
 
 
 class Keithley2400(IEC60488):
@@ -27,7 +27,7 @@ features = [
         false_string="REAR",
         command_get=":ROUT:TERM?",
         command_set=":ROUT:TERM"),
-    FloatValue(
+    FloatScientificValue(
         "idc",
         doc="""Get output current/Set current setpoint""",
         command_get=':FUNC:CONC 0\n:FUNC "CURR"\n:FORM:ELEM CURR\n:READ?',
@@ -52,21 +52,21 @@ features = [
         doc="""Read impedance in 2-wire mode""",
         command_get=':SYST:RSEN OFF\n:FUNC:CONC 0\n:RES:MODE MAN\n:FUNC "RES"\n:FORM:ELEM RES\n:READ?',
     ),
-    FloatValue(
+    FloatScientificValue(
         "vdc",
         doc="""Read output voltage/set voltage setpoint""",
         command_get=':FUNC:CONC 0\n:FUNC "VOLT"\n:FORM:ELEM VOLT\n:READ?',
         command_set=":SOUR:FUNC VOLT\n:SOUR:VOLT:MODE FIX\n:SOUR:VOLT:LEVEL",
         check_instrument_value=False,
     ),
-    FloatValue(
+    FloatScientificValue(
         "compliance_idc",
         doc="""Set compliance current level""",
         command_set=":SENS:CURR:DC:PROT:LEV",
         command_get=":SENS:CURR:DC:PROT:LEV?",
         check_instrument_value=False,
     ),
-    FloatValue(
+    FloatScientificValue(
         "compliance_vdc",
         doc="""Set compliance voltage level""",
         command_set=":SENS:VOLT:DC:PROT:LEV",
