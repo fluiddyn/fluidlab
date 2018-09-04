@@ -83,4 +83,5 @@ __all__ = [
     "chiller",
     "scope",
     "pressure_transducer",
+    "motor_controller",
 ]
