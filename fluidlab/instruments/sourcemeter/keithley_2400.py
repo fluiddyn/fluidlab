@@ -73,6 +73,20 @@ features = [
         command_get=":SENS:VOLT:DC:PROT:LEV?",
         check_instrument_value=False,
     ),
+    FloatScientificValue(
+        "range_vdc",
+        doc="""Set adequate range voltage for the given expected voltage""",
+        command_set=":SOUR:VOLT:RANG",
+        command_get=":SOUR:VOLT:RANG?",
+        check_instrument_value=False,
+    ),    
+        FloatScientificValue(
+        "range_idc",
+        doc="""Set adequate current voltage for the given expected current""",
+        command_set=":SOUR:CURR:RANG",
+        command_get=":SOUR:CURR:RANG?",
+        check_instrument_value=False,
+    ),
 ]
 
 Keithley2400._build_class_with_features(features)
