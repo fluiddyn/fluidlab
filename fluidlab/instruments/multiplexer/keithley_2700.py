@@ -16,6 +16,7 @@ import time
 from clint.textui import colored
 from fluidlab.instruments.iec60488 import IEC60488
 from fluidlab.instruments.features import SuperValue, BoolValue
+from fluidlab.instruments.interfaces.linuxgpib import GPIBInterface
 
 class Keithley2700(IEC60488):
     """Driver for the multiplexer Keithley 2700 Series
@@ -27,13 +28,13 @@ class Keithley2700(IEC60488):
         self.Range = dict()
         self.NPLC = dict()
     
-    def set_range(self, channelNumber, manualRange=False, rangeValue=None):
+    def set_range(self, *, channelNumber=1, manualRange=False, rangeValue=None):
         if not manualRange and channelNumber in self.Range:
             del self.Range[channelNumber]
         elif manualRange:
             self.Range[channelNumber] = rangeValue
             
-    def set_nplc(self, channelNumber, nplcValue):
+    def set_nplc(self, *, channelNumber=1, nplcValue=1.0):
         """
         This function sets the integration time of the ADC.
         This time is expressed in terms of line frequency (PLC). It spans
@@ -48,10 +49,16 @@ class Keithley2700(IEC60488):
         """
         nplcValue = float(nplcValue)
         self.NPLC[channelNumber] = nplcValue
+
         
     def scan(self, channelList, functionName, samplesPerChan,
              sampleRate, verbose):
-        """ Initiates a scan"""
+        """ 
+        Initiates a scan
+
+        If channelList == [1] and samplesPerChan = 1, a one-shot front measurement is
+        performed.
+        """
         
         # Make sure channelList is iterable
         try:
@@ -77,9 +84,49 @@ class Keithley2700(IEC60488):
             
         if channelList == [1]:
             # Lecture en face avant
-            data = self.interface.query("MEAS:{:}?".format(functionName))
+            chan = 1
+            
+            self.clear_status()
+            self.interface.write("TRAC:CLE") # clear buffer
+            self.interface.write("INIT:CONT OFF") # disable continuous initialisation
+            self.interface.write('SENS:FUNC "{func:}"'.format(func=functionName))
+
+            # Set range
+            if chan in self.Range:
+                self.interface.write(\
+                    "SENS:{func:}:RANG {rang:}".format(func=functionName,
+                                                       rang=self.Range[chan]))
+            else:
+                self.interface.write(\
+                    "SENS:{func:}:RANG:AUTO ON".format(func=functionName))
+            
+            # Set NPLC
+            max_nplc = None
+            if chan in self.NPLC:
+                nplc = self.NPLC[chan]
+            else:
+                nplc = 1.0 # med (default value)
+            if max_nplc is None or nplc > max_nplc:
+                max_nplc = nplc
+            self.interface.write("SENS:{func:}:NPLC {nplc:}".format(func=functionName,
+                                                                    nplc=nplc))
+            self.interface.write("FORM:ELEM READ,TST,CHAN")
+            data = self.interface.query("READ?".format(functionName),
+                                        time_delay=nplc/50.0)
+            start = time.monotonic()
+            total_timeout = 5.0+nplc/50
+            while not data.endswith('\n'):
+                # time_delay was insufficiant
+                time.sleep(0.1)
+                data += self.interface.read()
+                if time.monotonic()-start > total_timeout:
+                    print('Timeout!')
+                    break
+            #print(data)
             parsed = data.split(",")
             values = parsed[0]
+            return (float(values),)
+
         else:
             ListeChan = "(@" +\
                         ",".join([str(c) for c in channelList]) +\
@@ -176,7 +223,7 @@ class Keithley2700(IEC60488):
                     try:
                         data += self.interface.read()
                         start_fetch = time.monotonic() # reset if something was returned
-                    except:
+                    except Exception:
                         print('Timeout reading on interface')
                     nread = len(data.split(','))//3
                     if nread == npoints:
@@ -198,7 +245,11 @@ class Keithley2700(IEC60488):
             
             # Parsing data
             #print(data.strip())
-            data = np.array([float(x) for x in data.split(",")])
+            try:
+                data = np.array([float(x) for x in data.split(",")])
+            except ValueError:
+                print("K2700 returned:", data)
+                raise
             #print(data.size//3, "values returned")
             if data.size//3 != npoints:
                 raise ValueError('Not all points were fetched')
@@ -239,7 +290,7 @@ class Keithley2700Value(SuperValue):
 
         setattr(Driver, name, self)
 
-        def get(self, chanList, samplesPerChan=1, sampleRate=None, verbose=None):
+        def get(self, chanList=[1], samplesPerChan=1, sampleRate=None, verbose=None):
             """Get """ + name
             if verbose is None:
                 # default is verbose for acquisitions
@@ -291,16 +342,23 @@ features = [
 Keithley2700._build_class_with_features(features)
 
 if __name__ == '__main__':
-    with Keithley2700('GPIB0::16::INSTR') as km:
-        print('Front/Read switch:', km.front.get())
-        print('Single channel one-shot measurement')
-        print(km.vdc.get(101))
-        print('Multiple channel one-shot measurement')
-        R1, R2 = km.ohm.get([101,102])
-        print(R1,R2)
-        print('Single channel timeseries')
-        ts, R = km.ohm.get(101, samplesPerChan=100, sampleRate=10.0)
-        print('actual frame rate:', 1/np.mean(ts[1:]-ts[:-1]), 'Hz')
-        import matplotlib.pyplot as plt
-        plt.plot(ts, R, 'o')
-        plt.show()
+    with Keithley2700(GPIBInterface(0,16)) as km:
+        front = km.front.get()
+        print('Front/Read switch:', front)
+        if front:
+            km.set_range(manualRange=False)
+            km.set_nplc(nplcValue=10.0)
+            v = km.vdc.get()
+            print('v =', v)
+        else:
+            print('Single channel one-shot measurement')
+            print(km.vdc.get(101))
+            print('Multiple channel one-shot measurement')
+            R1, R2 = km.ohm.get([101,102])
+            print(R1,R2)
+            print('Single channel timeseries')
+            ts, R = km.ohm.get(101, samplesPerChan=100, sampleRate=10.0)
+            print('actual frame rate:', 1/np.mean(ts[1:]-ts[:-1]), 'Hz')
+            import matplotlib.pyplot as plt
+            plt.plot(ts, R, 'o')
+            plt.show()
