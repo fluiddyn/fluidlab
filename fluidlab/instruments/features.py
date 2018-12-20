@@ -374,7 +374,7 @@ class FloatValue(NumberValue):
         return float(value)
 
 class FloatScientificValue(NumberValue):
-    _fmt = "{:.1e}"
+    _fmt = "{:.5e}"
     
     def _convert_from_str(self, value):
         return float(value)
