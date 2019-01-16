@@ -37,26 +37,28 @@ features = [
     TtiCpx400dpUnitValue(
         "vdc",
         doc="Get actual voltage/Set voltage setpoint on specified channel",
-        command_set="V{channel} {value}",
-        command_get="V{channel}O?",
+        command_set="V{channel:d} {value}",
+        command_get="V{channel:d}O?",
         channel_argument=True,
         check_instrument_value=False,
     ),
     TtiCpx400dpUnitValue(
         "idc",
         doc="Get actual current/Set current setpoint on specified channel",
-        command_set="I{channel} {value}",
-        command_get="I{channel}O?",
+        command_set="I{channel:d} {value}",
+        command_get="I{channel:d}O?",
         channel_argument=True,
         check_instrument_value=False,
     ),
     BoolValue(
         "onoff",
         doc="Toogle output ON/OFF for specified channel",
-        command_set="OP{channel} {value}",
-        command_get="OP{channel}?",
+        command_set="OP{channel:d} {value}",
+        command_get="OP{channel:d}?",
         channel_argument=True,
         check_instrument_value=False,
+        true_string="1",
+        false_string="0",
     ),
     BoolValue(
         "onoffall",
@@ -64,6 +66,8 @@ features = [
         command_set="OPALL ",
         channel_argument=False,
         check_instrument_value=False,
+        true_string="1",
+        false_string="0",
     ),
 ]
 
