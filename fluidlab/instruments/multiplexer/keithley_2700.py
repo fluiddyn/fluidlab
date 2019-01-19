@@ -16,7 +16,6 @@ import time
 from clint.textui import colored
 from fluidlab.instruments.iec60488 import IEC60488
 from fluidlab.instruments.features import SuperValue, BoolValue
-from fluidlab.instruments.interfaces.linuxgpib import GPIBInterface
 
 class Keithley2700(IEC60488):
     """Driver for the multiplexer Keithley 2700 Series
@@ -342,6 +341,7 @@ features = [
 Keithley2700._build_class_with_features(features)
 
 if __name__ == '__main__':
+    from fluidlab.instruments.interfaces.linuxgpib import GPIBInterface
     with Keithley2700(GPIBInterface(0,16)) as km:
         front = km.front.get()
         print('Front/Read switch:', front)
