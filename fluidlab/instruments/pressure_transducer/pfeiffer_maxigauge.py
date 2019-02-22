@@ -99,9 +99,7 @@ class PfeifferMaxiGaugeOnOffValue(PfeifferMaxiGaugeValue):
             pass
 
     def get(self):
-        msg = super().get(
-            parameter=b",0,0,0,0,0,0"
-        )
+        msg = super().get(parameter=b",0,0,0,0,0,0")
         return [s == b"1" for s in msg]
 
 

@@ -32,9 +32,7 @@ class HP33120a_ShapeValue(SuperValue):
     }
 
     def __init__(self):
-        super().__init__(
-            "shape", doc="Shape of the output signal"
-        )
+        super().__init__("shape", doc="Shape of the output signal")
 
     def set(self, value):
         if value not in self.shapes.keys():

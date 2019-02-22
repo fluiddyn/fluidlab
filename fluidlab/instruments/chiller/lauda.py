@@ -69,9 +69,7 @@ class LaudaOnOffValue(LaudaValue):
     Supported_ROM = [1200]
 
     def __init__(self):
-        super().__init__(
-            name="onoff", command_get="IN_MODE_02\r"
-        )
+        super().__init__(name="onoff", command_get="IN_MODE_02\r")
 
     def get(self):
         if self._driver.rom in LaudaOnOffValue.Supported_ROM:

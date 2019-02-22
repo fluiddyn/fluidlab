@@ -70,9 +70,7 @@ class Agilent33220a_Vrms(SuperValue):
 
 class Agilent33220a_Frequency(SuperValue):
     def __init__(self):
-        super().__init__(
-            "frequency", doc="Wave frequency"
-        )
+        super().__init__("frequency", doc="Wave frequency")
 
     def set(self, value):
         (iFunc, iFreq, iAmpl, iOffset) = self._driver.get_generator_state()
@@ -117,9 +115,7 @@ class Agilent33220a(
     def configure_am(self, vrms_min, vrms_max, freq, am_freq):
         self.interface.write("OUTP:LOAD INF")
         self.interface.write("VOLT:UNIT VRMS")
-        self.interface.write(
-            f"APPL:SIN {freq}, {vrms_max}, 0.0"
-        )
+        self.interface.write(f"APPL:SIN {freq}, {vrms_max}, 0.0")
         self.interface.write("AM:INT:FUNC SQU")
         self.interface.write(f"AM:INT:FREQ {am_freq}")
         self.interface.write(
@@ -158,9 +154,7 @@ class Agilent33220a(
         """
 
         self.interface.write("OUTP:LOAD INF")
-        self.interface.write(
-            f"APPL:SQU {freq} HZ, 5 VPP, +2.5 V"
-        )
+        self.interface.write(f"APPL:SQU {freq} HZ, 5 VPP, +2.5 V")
         self.interface.write("BURS:MODE TRIG")
         self.interface.write(f"BURS:NCYC {ncycles}")
         self.interface.write("BURS:PHAS 0")

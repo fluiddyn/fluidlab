@@ -103,9 +103,7 @@ class Keithley2700(IEC60488):
                     )
                 )
             else:
-                self.interface.write(
-                    f"SENS:{functionName}:RANG:AUTO ON"
-                )
+                self.interface.write(f"SENS:{functionName}:RANG:AUTO ON")
 
             # Set NPLC
             max_nplc = None
@@ -115,13 +113,9 @@ class Keithley2700(IEC60488):
                 nplc = 1.0  # med (default value)
             if max_nplc is None or nplc > max_nplc:
                 max_nplc = nplc
-            self.interface.write(
-                f"SENS:{functionName}:NPLC {nplc}"
-            )
+            self.interface.write(f"SENS:{functionName}:NPLC {nplc}")
             self.interface.write("FORM:ELEM READ,TST,CHAN")
-            data = self.interface.query(
-                f"READ?", time_delay=nplc / 50.0
-            )
+            data = self.interface.query(f"READ?", time_delay=nplc / 50.0)
             start = time.monotonic()
             total_timeout = 5.0 + nplc / 50
             while not data.endswith("\n"):
@@ -152,9 +146,7 @@ class Keithley2700(IEC60488):
             self.interface.write("SAMP:COUN {:}".format(len(channelList)))
 
             # Measurement subsystem
-            self.interface.write(
-                f'SENS:FUNC "{functionName}", {ListeChan}'
-            )
+            self.interface.write(f'SENS:FUNC "{functionName}", {ListeChan}')
 
             # Set range on specified channels
             for chan in channelList:

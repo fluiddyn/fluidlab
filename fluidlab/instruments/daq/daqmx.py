@@ -177,10 +177,7 @@ def read_analog(
         volt_max = [volt_max] * nb_resources
 
     # check samples_per_chan
-    if (
-        not isinstance(samples_per_chan, int)
-        or samples_per_chan <= 0
-    ):
+    if not isinstance(samples_per_chan, int) or samples_per_chan <= 0:
         raise ValueError("samples_per_chan has to be a positive integer.")
 
     # prepare coupling_types
@@ -199,9 +196,7 @@ def read_analog(
     possible_keys_coupling = _coupling_values.keys()
     for coupling in coupling_types:
         if coupling not in possible_keys_coupling:
-            raise ValueError(
-                f"Bad value in coupling_types, got: {coupling}"
-            )
+            raise ValueError(f"Bad value in coupling_types, got: {coupling}")
 
     if verbose:
         print("DAQmx: Create Task")
@@ -277,13 +272,15 @@ def read_analog(
         if verbose:
             if samples_per_chan < 1000:
                 verbose_text += str(samples_per_chan) + " samp/chan @ "
-            elif samples_per_chan < 1000000:
+            elif samples_per_chan < 1_000_000:
                 verbose_text += str(samples_per_chan / 1000) + " kSamp/chan @ "
             else:
-                verbose_text += str(samples_per_chan / 1000000) + " MSamp/chan @ "
+                verbose_text += (
+                    str(samples_per_chan / 1_000_000) + " MSamp/chan @ "
+                )
             if sample_rate < 1000:
                 verbose_text += "%.2f Hz using OnboardClock)" % sample_rate
-            elif sample_rate < 1000000:
+            elif sample_rate < 1_000_000:
                 verbose_text += "%.2f kHz using OnboardClock)" % (
                     sample_rate / 1000.0
                 )
@@ -448,7 +445,7 @@ def write_analog(
                 verbose_text = (
                     verbose_text + str(samples_per_chan) + " samp/chan @ "
                 )
-            elif samples_per_chan < 1000000:
+            elif samples_per_chan < 1_000_000:
                 verbose_text = (
                     verbose_text + str(samples_per_chan / 1000) + " kSamp/chan @ "
                 )
@@ -462,7 +459,7 @@ def write_analog(
                 verbose_text = verbose_text + (
                     "%.2f Hz using OnboardClock)" % sample_rate
                 )
-            elif sample_rate < 1000000:
+            elif sample_rate < 1_000_000:
                 verbose_text = verbose_text + (
                     "%.2f kHz using OnboardClock)" % (sample_rate / 1000.0)
                 )
@@ -624,6 +621,4 @@ if __name__ == "__main__":
 
     signals = np.cos(np.linspace(0, 2 * np.pi, 100))
     signals = np.vstack((signals, signals + 2))
-    write_analog(
-        [f"dev1/ao{i}" for i in (0, 2)], 10, signals, blocking=True
-    )
+    write_analog([f"dev1/ao{i}" for i in (0, 2)], 10, signals, blocking=True)

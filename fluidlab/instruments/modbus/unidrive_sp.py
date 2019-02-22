@@ -174,9 +174,7 @@ class BaseUnidriveSP(ModbusDriver):
                     " one of the FluidLab user configuration files."
                 )
 
-        super().__init__(
-            port=port, method="rtu", timeout=timeout, module=module
-        )
+        super().__init__(port=port, method="rtu", timeout=timeout, module=module)
 
         mode = self.mode.get()
         if hasattr(self, "_mode") and self._mode_cls != mode:
@@ -704,19 +702,13 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
 
     def get_target_rotation_rate(self):
         """Get the target rotation rate in rpm."""
-        count = attempt(
-            super().get_target_rotation_rate
-        )
+        count = attempt(super().get_target_rotation_rate)
 
         if count > 1 and (self.isprint_error or self.isprintall):
             print_warning("got rotation at the " + str(count) + "th attempt")
 
     def start_rotation(self, speed=None, direction=None):
-        count = attempt(
-            super().start_rotation,
-            speed,
-            direction,
-        )
+        count = attempt(super().start_rotation, speed, direction)
 
         if count > 1 and (self.isprint_error or self.isprintall):
             print_warning(
@@ -757,17 +749,11 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
 
         if acc >= 0:
             count = attempt(
-                super().acceleration_time.set,
-                acc,
-                check,
-                maxattempt=maxattempt,
+                super().acceleration_time.set, acc, check, maxattempt=maxattempt
             )
         else:
             count = attempt(
-                super().deceleration_time.set,
-                acc,
-                check,
-                maxattempt=maxattempt,
+                super().deceleration_time.set, acc, check, maxattempt=maxattempt
             )
 
         if count == maxattempt + 1:

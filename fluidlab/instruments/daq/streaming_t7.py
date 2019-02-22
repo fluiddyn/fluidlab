@@ -113,9 +113,7 @@ class T7:
         for indout, out in enumerate(OUT_NAMES):
             outAddress = ljm.nameToAddress(OUT_NAMES[indout])[0]
             ljm.eWriteName(handle, f"STREAM_OUT{indout}_ENABLE", 0)
-            ljm.eWriteName(
-                handle, f"STREAM_OUT{indout}_TARGET", outAddress
-            )
+            ljm.eWriteName(handle, f"STREAM_OUT{indout}_TARGET", outAddress)
 
             buffer_size = volt[indout].size * 2
 
@@ -132,9 +130,7 @@ class T7:
             ljm.eWriteName(handle, f"STREAM_OUT{indout}_ENABLE", 1)
 
         for indout, out in enumerate(OUT_NAMES):
-            self.write_out_buffer(
-                f"STREAM_OUT{indout}_BUFFER_F32", volt[indout]
-            )
+            self.write_out_buffer(f"STREAM_OUT{indout}_BUFFER_F32", volt[indout])
             ljm.eWriteName(
                 handle, f"STREAM_OUT{indout}_LOOP_SIZE", volt[indout].size
             )
@@ -167,9 +163,7 @@ class T7:
         for indout, out in enumerate(OUT_NAMES):
             outAddress = ljm.nameToAddress(OUT_NAMES[indout])[0]
             ljm.eWriteName(handle, f"STREAM_OUT{indout}_ENABLE", 0)
-            ljm.eWriteName(
-                handle, f"STREAM_OUT{indout}_TARGET", outAddress
-            )
+            ljm.eWriteName(handle, f"STREAM_OUT{indout}_TARGET", outAddress)
 
             buffer_size = volt[indout].size * 2
             if is_power2(buffer_size):
@@ -188,9 +182,7 @@ class T7:
             ljm.eWriteName(
                 handle, f"STREAM_OUT{indout}_LOOP_SIZE", volt[indout].size
             )
-            self.write_out_buffer(
-                f"STREAM_OUT{indout}_BUFFER_F32", volt[indout]
-            )
+            self.write_out_buffer(f"STREAM_OUT{indout}_BUFFER_F32", volt[indout])
             ljm.eWriteName(handle, f"STREAM_OUT{indout}_SET_LOOP", 0)
 
         # Scanlist
@@ -223,10 +215,7 @@ class T7:
                 t = 0.0
                 while t <= total_time:
                     if dt is not None:
-                        print(
-                            f"\r{i}/{nb_ticks}; time ~= {t:.3f} s",
-                            end="",
-                        )
+                        print(f"\r{i}/{nb_ticks}; time ~= {t:.3f} s", end="")
                         sys.stdout.flush()
                         i += 1
                     time.sleep(dt)

@@ -156,9 +156,7 @@ class TorqueRaspberryPi(Torque):
             if wdir.endswith("Torque"):
                 path_exp = wdir.split()[0]
 
-        super().__init__(
-            path_exp=path_exp, name_exp=name_exp
-        )
+        super().__init__(path_exp=path_exp, name_exp=name_exp)
 
     def measure(self, duration, sample_rate, hastosave=True):
 

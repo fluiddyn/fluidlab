@@ -68,9 +68,9 @@ class IsoTechIPS2303S(Driver):
 
     """
 
-    def __init__(self, baudrate=115200):
+    def __init__(self, baudrate=115_200):
 
-        if baudrate not in [9600, 57600, 115200]:
+        if baudrate not in [9600, 57600, 115_200]:
             raise ValueError("baudrate has to be in [9600, 57600, 115200].")
 
         port = None
@@ -132,7 +132,7 @@ class IsoTechIPS2303S(Driver):
 
         self.interface.write(f"TRACK{value}\n")
 
-    def set_baud(self, baud=115200):
+    def set_baud(self, baud=115_200):
         """Set baud rate for the serial communication.
 
         parameters
@@ -142,7 +142,7 @@ class IsoTechIPS2303S(Driver):
           The baud rate (symbol per second).
 
         """
-        if baud == 115200:
+        if baud == 115_200:
             value = 0
         elif baud == 57600:
             value = 1

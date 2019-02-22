@@ -539,9 +539,7 @@ class Traverse:
 
             if it % 10 == 0:
                 print(
-                    "traverse "
-                    + self.ip_modbus
-                    + f", it = {it}, t = {t:.4f} s"
+                    "traverse " + self.ip_modbus + f", it = {it}, t = {t:.4f} s"
                 )
                 sys.stdout.flush()
 
@@ -584,7 +582,7 @@ class Traverses:
             ip_addresses = ["192.168.28.11", "192.168.28.12", "192.168.28.13"]
 
         if const_positions is None:
-            const_positions = [1.046875] * 3
+            const_positions = [1.046_875] * 3
 
         if offset_abs is None:
             offset_abs = [0.0] * 3
