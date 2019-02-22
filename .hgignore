@@ -47,3 +47,5 @@ dist*
 scripts\Experiments\path_working_exp.txt
 
 *.DS_Store
+
+.coverage/*

@@ -64,7 +64,7 @@ if os.path.exists(path_PowerDAQ):
     ext_modules.append(ext_PowerDAQ)
 
 
-install_requires = ['fluiddyn >= 0.0.12a0', 'pyusb', 'minimalmodbus']
+install_requires = ['fluiddyn >= 0.0.12a0', 'pyusb', 'minimalmodbus', 'clint']
 # Even though we also use scipy, we don't require its installation
 # because it can be heavy to install.
 if has_cython:
@@ -112,7 +112,6 @@ setup(name='fluidlab',
           'Programming Language :: Cython'],
       packages=find_packages(exclude=['doc', 'digiflow', 'examples']),
       install_requires=install_requires,
-      extras_require={'doc': ['Sphinx>=1.1', 'numpydoc', 'clint']},
       scripts=['bin/fluid_stop_pumps.py'],
       cmdclass={"build_ext": build_ext},
       ext_modules=ext_modules)
