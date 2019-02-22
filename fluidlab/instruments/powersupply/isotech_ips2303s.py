@@ -29,7 +29,7 @@ class FloatValueIPS(FloatValue):
 
         command_get = command_set + "?\r\n"
 
-        super(FloatValueIPS, self).__init__(
+        super().__init__(
             name=name, doc=doc, command_set=command_set, command_get=command_get
         )
 
@@ -85,7 +85,7 @@ class IsoTechIPS2303S(Driver):
             port, baudrate=baudrate, bytesize=8, parity="N", stopbits=1, timeout=1
         )
 
-        super(IsoTechIPS2303S, self).__init__(interface)
+        super().__init__(interface)
 
     def set_beep(self, ok_for_beep=True):
         """Set beep on or off."""
@@ -93,7 +93,7 @@ class IsoTechIPS2303S(Driver):
             value = 1
         else:
             value = 0
-        self.interface.write("BEEP{}\n".format(value))
+        self.interface.write(f"BEEP{value}\n")
 
     def set_output_state(self, on=True):
         """Set output state on or off.
@@ -105,7 +105,7 @@ class IsoTechIPS2303S(Driver):
             value = 1
         else:
             value = 0
-        self.interface.write("OUT{}\n".format(value))
+        self.interface.write(f"OUT{value}\n")
 
     def set_operation_mode(self, tracking="independent"):
         """Set the operation mode (tracking).
@@ -130,7 +130,7 @@ class IsoTechIPS2303S(Driver):
                 "tracking has to be in ['independent', 'series', 'parallel']"
             )
 
-        self.interface.write("TRACK{}\n".format(value))
+        self.interface.write(f"TRACK{value}\n")
 
     def set_baud(self, baud=115200):
         """Set baud rate for the serial communication.
@@ -149,7 +149,7 @@ class IsoTechIPS2303S(Driver):
         else:
             raise ValueError("baud has to be in [115200, 57600]")
 
-        self.interface.write("BAUD{}\n".format(value))
+        self.interface.write(f"BAUD{value}\n")
         self.interface.serial_port.baudrate = baud
 
     def print_device_help(self):
@@ -222,25 +222,25 @@ for channel in [1, 2]:
     features.extend(
         [
             FloatValueIPS(
-                "iset{}".format(channel),
-                doc="Target output current for channel {} (A).".format(channel),
-                command_set="ISET{}".format(channel),
+                f"iset{channel}",
+                doc=f"Target output current for channel {channel} (A).",
+                command_set=f"ISET{channel}",
             ),
             FloatValueIPS(
-                "vset{}".format(channel),
-                doc="Target output voltage for channel {} (V).".format(channel),
-                command_set="VSET{}".format(channel),
+                f"vset{channel}",
+                doc=f"Target output voltage for channel {channel} (V).",
+                command_set=f"VSET{channel}",
             ),
             QueryCommand(
-                "get_iout{}".format(channel),
-                "Get the actual current for channel {} (A).".format(channel),
-                "IOUT{}?\r\n".format(channel),
+                f"get_iout{channel}",
+                f"Get the actual current for channel {channel} (A).",
+                f"IOUT{channel}?\r\n",
                 parse_result=_parse_to_float,
             ),
             QueryCommand(
-                "get_vout{}".format(channel),
-                "Get the actual voltage for channel {}. (V)".format(channel),
-                "VOUT{}?\r\n".format(channel),
+                f"get_vout{channel}",
+                f"Get the actual voltage for channel {channel}. (V)",
+                f"VOUT{channel}?\r\n",
                 parse_result=_parse_to_float,
             ),
         ]

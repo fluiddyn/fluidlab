@@ -50,7 +50,7 @@ except ImportError:
     from scipy.misc import imread
 
 
-class SerieOfArrays(object):
+class SerieOfArrays:
     """Serie of arrays used for post-processing.
 
     Parameters
@@ -115,7 +115,7 @@ class SerieOfArraysFromFiles(SerieOfArrays):
 
     def __init__(self, path, index_slices=None):
 
-        super(SerieOfArraysFromFiles, self).__init__(path)
+        super().__init__(path)
 
         self.base_name = "".join(
             itertools.takewhile(str.isalpha, self.filename_given)
@@ -333,7 +333,7 @@ class SerieOfArraysFromFiles(SerieOfArrays):
         self._index_slices = index_slices
 
 
-class SeriesOfArrays(object):
+class SeriesOfArrays:
     """Series of arrays.
 
     This class can be used to produce series of arrays from a

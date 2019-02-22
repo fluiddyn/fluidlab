@@ -24,7 +24,7 @@ uint16max = 2 ** 16 - 1
 
 
 def sig_handler(signo, frame):
-    print("sig_handler({}, {})".format(signo, frame))
+    print(f"sig_handler({signo}, {frame})")
     sys.exit(0)
 
 
@@ -78,7 +78,7 @@ modes = {
 }
 
 
-class Motor(object):
+class Motor:
     def __init__(
         self,
         ip_modbus="192.168.28.21",
@@ -324,10 +324,10 @@ class Motor(object):
 
     def get_state(self):
         return (
-            "error: {}\nquick_stop: {}".format(self.error, self.quick_stop)
+            f"error: {self.error}\nquick_stop: {self.quick_stop}"
             + "mode:"
             + hex(self.mode)
-            + "\nde: {}; me: {}; mt: {}\n".format(self.de, self.me, self.mt)
+            + f"\nde: {self.de}; me: {self.me}; mt: {self.mt}\n"
             + "x_add1: {}; x_end: {}; x_err: {}\n".format(
                 self.x_add1, self.x_end, self.x_err
             )

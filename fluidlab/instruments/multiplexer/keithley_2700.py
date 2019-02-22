@@ -93,7 +93,7 @@ class Keithley2700(IEC60488):
             self.interface.write(
                 "INIT:CONT OFF"
             )  # disable continuous initialisation
-            self.interface.write('SENS:FUNC "{func:}"'.format(func=functionName))
+            self.interface.write(f'SENS:FUNC "{functionName}"')
 
             # Set range
             if chan in self.Range:
@@ -104,7 +104,7 @@ class Keithley2700(IEC60488):
                 )
             else:
                 self.interface.write(
-                    "SENS:{func:}:RANG:AUTO ON".format(func=functionName)
+                    f"SENS:{functionName}:RANG:AUTO ON"
                 )
 
             # Set NPLC
@@ -116,11 +116,11 @@ class Keithley2700(IEC60488):
             if max_nplc is None or nplc > max_nplc:
                 max_nplc = nplc
             self.interface.write(
-                "SENS:{func:}:NPLC {nplc:}".format(func=functionName, nplc=nplc)
+                f"SENS:{functionName}:NPLC {nplc}"
             )
             self.interface.write("FORM:ELEM READ,TST,CHAN")
             data = self.interface.query(
-                "READ?".format(functionName), time_delay=nplc / 50.0
+                f"READ?", time_delay=nplc / 50.0
             )
             start = time.monotonic()
             total_timeout = 5.0 + nplc / 50
@@ -147,13 +147,13 @@ class Keithley2700(IEC60488):
             # Set up the trigger subsystem
             if samplesPerChan > 1:
                 self.interface.write("TRIG:SOUR TIM")
-                self.interface.write("TRIG:TIM {:}".format(timeInterval))
-            self.interface.write("TRIG:COUN {:}".format(samplesPerChan))
+                self.interface.write(f"TRIG:TIM {timeInterval}")
+            self.interface.write(f"TRIG:COUN {samplesPerChan}")
             self.interface.write("SAMP:COUN {:}".format(len(channelList)))
 
             # Measurement subsystem
             self.interface.write(
-                'SENS:FUNC "{:}", {:}'.format(functionName, ListeChan)
+                f'SENS:FUNC "{functionName}", {ListeChan}'
             )
 
             # Set range on specified channels
@@ -187,7 +187,7 @@ class Keithley2700(IEC60488):
                 )
 
             # Starts scan
-            self.interface.write("ROUT:SCAN {:}".format(ListeChan))
+            self.interface.write(f"ROUT:SCAN {ListeChan}")
             self.interface.write("ROUT:SCAN:TSO IMM")
             self.interface.write("ROUT:SCAN:LSEL INT")
 

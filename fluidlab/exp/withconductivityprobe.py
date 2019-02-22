@@ -47,7 +47,7 @@ from fluidlab.objects.probes import MovingConductivityProbe
 
 class DaemonMeasureProfiles(Daemon):
     def __init__(self, exp, **kargs):
-        super(DaemonMeasureProfiles, self).__init__()
+        super().__init__()
         self._exp = exp
         self.kargs = kargs
 
@@ -55,7 +55,7 @@ class DaemonMeasureProfiles(Daemon):
         self._exp.profiles.measure(**self.kargs)
 
 
-class Profiles(object):
+class Profiles:
     """Represent a set of profiles.
 
     Parameters
@@ -134,7 +134,7 @@ class Profiles(object):
         if time_probe_moving > period:
             raise ValueError(
                 "period is too short. time_probe_moving: "
-                + "{0:5.2f} s".format(time_probe_moving)
+                + f"{time_probe_moving:5.2f} s"
             )
 
         path_dir = self.path_save
@@ -156,7 +156,7 @@ class Profiles(object):
             except AttributeError as e:
                 if not try_without_probe:
                     fld.io._write_warning(
-                        "Warning:\    "
+                        r"Warning:\    "
                         "Using the flag try_without_probe "
                         "in withconductivityprobe.py."
                     )
@@ -168,7 +168,7 @@ class Profiles(object):
             raise ValueError("duration < period !")
 
         self.write(
-            "total duration for the measurements: {0:8.1f} min".format(
+            "total duration for the measurements: {:8.1f} min".format(
                 float(nb_loops) * period / 60
             )
         )
@@ -186,7 +186,7 @@ class Profiles(object):
                     rotation_rate = inner_cylinder.rotation_rate
 
                 self.write(
-                    "index profile loop: {0:5d} ;  ".format(il)
+                    f"index profile loop: {il:5d} ;  "
                     + "time - t0: "
                     + str(datetime.timedelta(seconds=time_since_start))
                 )
@@ -263,10 +263,10 @@ class Profiles(object):
 
             pos_start = dict_profiles["pos_start"]
             speed_measurements = dict_profiles["speed_measurements"]
-            self.write("speed_measurements: {}".format(speed_measurements))
+            self.write(f"speed_measurements: {speed_measurements}")
 
             sample_rate = dict_profiles["sample_rate"]
-            self.write("sample_rate: {}".format(sample_rate))
+            self.write(f"sample_rate: {sample_rate}")
 
             deltaz = speed_measurements / sample_rate
             zTaylor = pos_start + deltaz * np.linspace(0, -nbz, nbz)
@@ -307,10 +307,10 @@ class Profiles(object):
 
         pos_start = dict_profiles["pos_start"]
         speed_measurements = dict_profiles["speed_measurements"]
-        self.write("speed_measurements: {}".format(speed_measurements))
+        self.write(f"speed_measurements: {speed_measurements}")
 
         sample_rate = dict_profiles["sample_rate"]
-        self.write("sample_rate: {}".format(sample_rate))
+        self.write(f"sample_rate: {sample_rate}")
 
         deltaz = speed_measurements / sample_rate
 
@@ -334,7 +334,7 @@ class Profiles(object):
             times = decimate(times, q=q, nwindow=nwindow)
             self.write(" ended")
 
-        self.write("nbz: {}".format(nbz))
+        self.write(f"nbz: {nbz}")
 
         zTaylor = pos_start + deltaz * np.linspace(0, -nbz, nbz)
 
@@ -371,9 +371,9 @@ class Profiles(object):
         ax2 = ax.twiny()
         tOmega = 1000 * np.arange(10.0)
         t_inmin = tOmega / self._exp.params["Omega1"] / 60
-        ax2.set_xlabel("$t\Omega_1/1000$")
+        ax2.set_xlabel(r"$t\Omega_1/1000$")
         ax2.set_xticks(t_inmin)
-        labs = ["{0:3.0f}".format(number / 1000) for number in tOmega]
+        labs = ["{:3.0f}".format(number / 1000) for number in tOmega]
         ax2.set_xticklabels(labs)
         ax2.set_xlim(ax.get_xlim())
 
@@ -471,7 +471,7 @@ class ExpWithConductivityProbe(ExperimentWithTank):
     ):
 
         # call the __init__ function of the inherited class
-        super(ExpWithConductivityProbe, self).__init__(
+        super().__init__(
             rhos=rhos,
             zs=zs,
             params=params,

@@ -70,11 +70,11 @@ while t < total_time:
 
     if t - t_last_print > 1 - time_step/2.:
         t_last_print = t
-        print('time till start: {:8.5} s'.format(t))
+        print(f'time till start: {t:8.5} s')
         data_table.update_figures()
         send_email_if_has_to()
 
     t = timer.wait_tick()
 
-print('Time end: {:8.5} s'.format(t))
+print(f'Time end: {t:8.5} s')
 show()

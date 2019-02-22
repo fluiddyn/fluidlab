@@ -65,7 +65,7 @@ class ConductivityProbe(ObjectUsingBoard):
         VALVE=True,
     ):
 
-        super(ConductivityProbe, self).__init__(board=board)
+        super().__init__(board=board)
 
         self.channel = channel
 
@@ -146,7 +146,7 @@ with extreme densities with the following volume ratio: """
             # measure voltages
 
             answer = query.query(
-                "\nPut the probe in solution with rho = {0}\n".format(rho)
+                f"\nPut the probe in solution with rho = {rho}\n"
                 + "Ready? [Y / no, cancel the calibration] "
             )
 
@@ -162,7 +162,7 @@ with extreme densities with the following volume ratio: """
                     f.write(repr(volts))
                 volt = np.median(volts)
                 voltages[ir] = volt
-                print("solution rho: {0} ; voltage: {1}".format(rho, volt))
+                print(f"solution rho: {rho} ; voltage: {volt}")
                 happy = query.query_yes_no("Are you happy with this measurement?")
 
         # load all saved calibrations
@@ -372,11 +372,11 @@ used instead."""
         volt = volts.mean()
         rho = rhos.mean()
         print(
-            "    rho_real: {:7.5f},\n".format(rho_real)
+            f"    rho_real: {rho_real:7.5f},\n"
             + "mean measurement;\n"
-            + "    rho: {:7.5f}, volt: {:7.5f}\n".format(rho, volt)
+            + f"    rho: {rho:7.5f}, volt: {volt:7.5f}\n"
             + "For the calibration file:\n"
-            + "    {:7.5f} {:7.5f}".format(rho_real, volt)
+            + f"    {rho_real:7.5f} {volt:7.5f}"
         )
 
         if hastoplot:
@@ -461,9 +461,9 @@ class MovingConductivityProbe(ConductivityProbe, Traverse):
 
         duration = abs(deltaz / speed)
 
-        super(MovingConductivityProbe, self).move(deltaz=deltaz, speed=speed)
+        super().move(deltaz=deltaz, speed=speed)
 
-        return super(MovingConductivityProbe, self).measure(
+        return super().measure(
             duration, sample_rate=sample_rate, return_time=return_time
         )
 

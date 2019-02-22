@@ -48,7 +48,7 @@ while t < total_time:
 
     if t - t_last_print > 1 - time_step/2.:
         t_last_print = t
-        print('time till start: {:8.5} s'.format(t))
+        print(f'time till start: {t:8.5} s')
         data_table.update_figures()
         session.logger.send_email_if_has_to(figures=data_table.figures)
 
@@ -58,6 +58,6 @@ if raise_error:
     print("let's raise a ValueError to see what it gives.")
     raise ValueError('The flag raise_error is True...')
 
-print('Time end: {:8.5} s'.format(t))
+print(f'Time end: {t:8.5} s')
 
 show()

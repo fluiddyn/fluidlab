@@ -49,7 +49,7 @@ if hostname in hostnames_measuring:
         board.Error = Error
 
 
-class Torque(object):
+class Torque:
     """A `Torque` object handles torque measurements."""
 
     def __init__(self, path_exp=None, name_exp=None):
@@ -156,7 +156,7 @@ class TorqueRaspberryPi(Torque):
             if wdir.endswith("Torque"):
                 path_exp = wdir.split()[0]
 
-        super(TorqueRaspberryPi, self).__init__(
+        super().__init__(
             path_exp=path_exp, name_exp=name_exp
         )
 
@@ -228,7 +228,7 @@ class TorqueClient(Torque):
 
     def __init__(self, path_exp=None, name_exp=None, connect=True):
 
-        super(TorqueClient, self).__init__(path_exp=path_exp, name_exp=name_exp)
+        super().__init__(path_exp=path_exp, name_exp=name_exp)
 
         if connect:
             # host = 'localhost'

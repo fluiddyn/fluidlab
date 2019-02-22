@@ -35,7 +35,7 @@ class HPFloatValue(SuperValue):
     def __init__(
         self, name, doc="", unit_str="", command_set=None, command_get=None
     ):
-        super(HPFloatValue, self).__init__(name, doc=doc)
+        super().__init__(name, doc=doc)
         self.unit_str = unit_str
         self.command_set = command_set
         self.command_get = command_get
@@ -50,7 +50,7 @@ class HPFloatValue(SuperValue):
 
 class HPBoolValue(SuperValue):
     def __init__(self, name, doc="", command_set=None):
-        super(HPBoolValue, self).__init__(name, doc=doc)
+        super().__init__(name, doc=doc)
         self.command_set = command_set
 
     def set(self, value):

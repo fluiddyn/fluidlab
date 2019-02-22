@@ -27,7 +27,7 @@ import re
 
 class Agilent33220a_Vdc(SuperValue):
     def __init__(self):
-        super(Agilent33220a_Vdc, self).__init__("vdc", doc="DC voltage")
+        super().__init__("vdc", doc="DC voltage")
 
     def set(self, value):
         self._interface.write("OUTP:LOAD INF")
@@ -44,7 +44,7 @@ class Agilent33220a_Vdc(SuperValue):
 
 class Agilent33220a_Vrms(SuperValue):
     def __init__(self):
-        super(Agilent33220a_Vrms, self).__init__("vrms", doc="RMS voltage")
+        super().__init__("vrms", doc="RMS voltage")
 
     def set(self, value):
         self._interface.write("OUTP:LOAD INF")
@@ -70,7 +70,7 @@ class Agilent33220a_Vrms(SuperValue):
 
 class Agilent33220a_Frequency(SuperValue):
     def __init__(self):
-        super(Agilent33220a_Frequency, self).__init__(
+        super().__init__(
             "frequency", doc="Wave frequency"
         )
 
@@ -118,10 +118,10 @@ class Agilent33220a(
         self.interface.write("OUTP:LOAD INF")
         self.interface.write("VOLT:UNIT VRMS")
         self.interface.write(
-            "APPL:SIN {freq:}, {ampl:}, 0.0".format(freq=freq, ampl=vrms_max)
+            f"APPL:SIN {freq}, {vrms_max}, 0.0"
         )
         self.interface.write("AM:INT:FUNC SQU")
-        self.interface.write("AM:INT:FREQ {freq:}".format(freq=am_freq))
+        self.interface.write(f"AM:INT:FREQ {am_freq}")
         self.interface.write(
             "AM:DEPT {ratio:d}".format(
                 ratio=int(100.0 * (1.0 - (vrms_min / vrms_max)))
@@ -159,10 +159,10 @@ class Agilent33220a(
 
         self.interface.write("OUTP:LOAD INF")
         self.interface.write(
-            "APPL:SQU {freq:} HZ, 5 VPP, +2.5 V".format(freq=freq)
+            f"APPL:SQU {freq} HZ, 5 VPP, +2.5 V"
         )
         self.interface.write("BURS:MODE TRIG")
-        self.interface.write("BURS:NCYC {ncycles:}".format(ncycles=ncycles))
+        self.interface.write(f"BURS:NCYC {ncycles}")
         self.interface.write("BURS:PHAS 0")
         self.interface.write("TRIG:SOUR BUS")
         self.interface.write("BURS:STAT ON")

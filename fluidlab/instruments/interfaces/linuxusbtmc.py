@@ -40,7 +40,7 @@ class LinuxUSBTMCInterface(QueryInterface):
         if isinstance(device, Path):
             device = device.as_posix()
         if isinstance(device, int):
-            device = "/dev/usbtmc{:d}".format(device)
+            device = f"/dev/usbtmc{device:d}"
 
         self.devname = device
         self.dev = os.open(device, os.O_RDWR)

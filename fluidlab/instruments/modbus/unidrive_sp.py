@@ -174,7 +174,7 @@ class BaseUnidriveSP(ModbusDriver):
                     " one of the FluidLab user configuration files."
                 )
 
-        super(BaseUnidriveSP, self).__init__(
+        super().__init__(
             port=port, method="rtu", timeout=timeout, module=module
         )
 
@@ -244,7 +244,7 @@ class Value(DecimalInt16Value):
         self._menu, self._parameter, address = _compute_from_param_str(
             parameter_str
         )
-        super(Value, self).__init__(
+        super().__init__(
             name, doc, address, number_of_decimals=number_of_decimals
         )
 
@@ -254,14 +254,14 @@ class StringValue(Int16StringValue):
         self._menu, self._parameter, address = _compute_from_param_str(
             parameter_str
         )
-        super(StringValue, self).__init__(name, doc, int_dict, address)
+        super().__init__(name, doc, int_dict, address)
 
     def set(self, value, check=True):
         """Set the Value to value.
         If check equals 1, checks that the value was properly set.
         To disable this function, enter check = 0
         """
-        super(StringValue, self).set(value)
+        super().set(value)
         if check:
             self._check_value(value)
 
@@ -677,7 +677,7 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
         """Set the target rotation rate in rpm."""
 
         count = attempt(
-            super(ServoUnidriveSPCaptureError, self).set_target_rotation_rate,
+            super().set_target_rotation_rate,
             rotation_rate,
             check,
             maxattempt=maxattempt,
@@ -705,7 +705,7 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
     def get_target_rotation_rate(self):
         """Get the target rotation rate in rpm."""
         count = attempt(
-            super(ServoUnidriveSPCaptureError, self).get_target_rotation_rate
+            super().get_target_rotation_rate
         )
 
         if count > 1 and (self.isprint_error or self.isprintall):
@@ -713,7 +713,7 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
 
     def start_rotation(self, speed=None, direction=None):
         count = attempt(
-            super(ServoUnidriveSPCaptureError, self).start_rotation,
+            super().start_rotation,
             speed,
             direction,
         )
@@ -730,7 +730,7 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
             print("start rotation at " + str(speed) + " rpm")
 
     def stop_rotation(self):
-        count = attempt(super(ServoUnidriveSPCaptureError, self).stop_rotation)
+        count = attempt(super().stop_rotation)
 
         if count > 1 and (self.isprint_error or self.isprintall):
             print_warning("stop rotation at the " + str(count) + "th attempt")
@@ -738,7 +738,7 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
             print("stop rotation")
 
     def unlock(self):
-        count = attempt(super(ServoUnidriveSPCaptureError, self).unlock)
+        count = attempt(super().unlock)
 
         if count > 1 and (self.isprint_error or self.isprintall):
             print_warning("unlocked at the " + str(count) + "th attempt")
@@ -746,7 +746,7 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
             print("unlocked")
 
     def lock(self):
-        count = attempt(super(ServoUnidriveSPCaptureError, self).lock)
+        count = attempt(super().lock)
         if count > 1 and (self.isprint_error or self.isprintall):
             print_warning("unlocked at the " + str(count) + "th attempt")
         elif self.isprintall:
@@ -757,14 +757,14 @@ class ServoUnidriveSPCaptureError(ServoUnidriveSP):
 
         if acc >= 0:
             count = attempt(
-                super(ServoUnidriveSPCaptureError, self).acceleration_time.set,
+                super().acceleration_time.set,
                 acc,
                 check,
                 maxattempt=maxattempt,
             )
         else:
             count = attempt(
-                super(ServoUnidriveSPCaptureError, self).deceleration_time.set,
+                super().deceleration_time.set,
                 acc,
                 check,
                 maxattempt=maxattempt,

@@ -32,7 +32,7 @@ class HP33120a_ShapeValue(SuperValue):
     }
 
     def __init__(self):
-        super(HP33120a_ShapeValue, self).__init__(
+        super().__init__(
             "shape", doc="Shape of the output signal"
         )
 

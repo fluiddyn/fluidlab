@@ -18,7 +18,7 @@ from fluidlab.instruments.modbus.unidrive_sp import (
     OpenLoopUnidriveSP, example_linear_ramps)
 
 
-class FalseMotor(object):
+class FalseMotor:
     def __init__(self):
         self.rr = 0.
 
@@ -43,7 +43,7 @@ class FalseMotor(object):
 
 class GraphicalDriver(QtGui.QWidget):
     def __init__(self, class_motor=OpenLoopUnidriveSP):
-        super(GraphicalDriver, self).__init__()
+        super().__init__()
 
         # initialization of the motor driver
         try:

@@ -81,7 +81,7 @@ class FrameRotatingObject(ttk.Frame):
         label.grid(column=0, row=1, padx=15)
 
         self.stringvar_rr = tk.StringVar()
-        self.stringvar_rr.set("{:5.2f}".format(self.obj.rotation_rate))
+        self.stringvar_rr.set(f"{self.obj.rotation_rate:5.2f}")
         self.label_rr = ttk.Label(
             self, textvariable=self.stringvar_rr, font="TkHeadingFont"
         )
@@ -97,7 +97,7 @@ class FrameRotatingObject(ttk.Frame):
 
         def new_write(obj, string):
             # print(string)
-            self.stringvar_rr.set("{:7.3f}".format(self.obj.rotation_rate))
+            self.stringvar_rr.set(f"{self.obj.rotation_rate:7.3f}")
 
         # To dynamically overwrite an instance method:
         instancemethod = type(self.obj.write)

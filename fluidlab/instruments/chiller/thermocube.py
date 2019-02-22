@@ -91,7 +91,7 @@ def thermocube_message(
 
 class ThermocubeValue(Value):
     def __init__(self, name, control_parameter=ControlParameter_NO):
-        super(ThermocubeValue, self).__init__(
+        super().__init__(
             name,
             doc=control_parameter.description,
             command_set=None,
@@ -142,7 +142,7 @@ class Thermocube(Driver):
             rtscts=False,
             dsrdtr=False,
         )
-        super(Thermocube, self).__init__(interface)
+        super().__init__(interface)
 
 
 features = [

@@ -31,7 +31,7 @@ except (IOError, ImportError, NotImplementedError):
 import numpy as np
 
 
-class NIDAQBoard(object):
+class NIDAQBoard:
     """Handle for a National Instrument board (NIDAQNX)."""
 
     def __init__(self):
@@ -39,7 +39,7 @@ class NIDAQBoard(object):
         self.works = True
 
 
-class AnalogicOutput(object):
+class AnalogicOutput:
     """Analogic output."""
 
     def __init__(self):
@@ -52,7 +52,7 @@ class AnalogicOutput(object):
 
         for i in range(2):
             self.tasks[i].CreateAOVoltageChan(
-                "Dev2/ao{:1d}".format(i), "", 0, 5.0, daq.DAQmx_Val_Volts, ""
+                f"Dev2/ao{i:1d}", "", 0, 5.0, daq.DAQmx_Val_Volts, ""
             )
             self.tasks[i].StartTask()
 
@@ -81,7 +81,7 @@ class AnalogicOutput(object):
             )
 
 
-class AnalogicInput(object):
+class AnalogicInput:
     """Analogic input."""
 
     def __init__(self):

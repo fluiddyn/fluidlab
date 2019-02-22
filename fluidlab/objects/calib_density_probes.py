@@ -47,7 +47,7 @@ def prepare_calibration(rho_min=1, rho_max=1.18, nb_solutions=6):
     )
 
 
-class Calibration(object):
+class Calibration:
     def __init__(self, path_rho, path_temp=None):
         self.path_rho = path_rho
 
@@ -189,7 +189,7 @@ class Calibration(object):
             return
 
         answer = query.query(
-            "\nPut the probe in solution with rho = {}\n".format(rho)
+            f"\nPut the probe in solution with rho = {rho}\n"
             + "Ready? [Y / no, cancel the calibration] "
         )
 

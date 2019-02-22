@@ -49,16 +49,16 @@ class StanfordSR830SenseValue(FloatValue):
     ]
 
     def __init__(self):
-        super(StanfordSR830SenseValue, self).__init__(
+        super().__init__(
             "sen", doc="""Input sense""", command_get="SENS ?", command_set="SENS"
         )
 
     def get(self):
-        value = super(StanfordSR830SenseValue, self).get()
+        value = super().get()
         return self.sense_values[int(value)]
 
     def set(self, value):
-        super(StanfordSR830SenseValue, self).set(sense_values.index(value))
+        super().set(sense_values.index(value))
 
 
 class StanfordSR830TCValue(FloatValue):
@@ -86,7 +86,7 @@ class StanfordSR830TCValue(FloatValue):
     ]
 
     def __init__(self):
-        super(StanfordSR830TCValue, self).__init__(
+        super().__init__(
             "tc",
             doc="""Time constant""",
             command_get="OFLT ?",
@@ -95,11 +95,11 @@ class StanfordSR830TCValue(FloatValue):
         )
 
     def get(self):
-        value = super(StanfordSR830TCValue, self).get()
+        value = super().get()
         return self.tc_values[int(value)]
 
     def set(self, value):
-        super(StanfordSR830TCValue, self).set(self.tc_values.index(value))
+        super().set(self.tc_values.index(value))
 
 
 class StanfordSR830OffsetValue(FloatValue):

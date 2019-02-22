@@ -35,7 +35,7 @@ def is_new_file(str_name):
         time.sleep(0.1)
 
 
-class PIV2D(object):
+class PIV2D:
     """Trigger cameras for PIV 2D (single and double frame)
 
     Use a T7 board (Labjack).
@@ -94,7 +94,7 @@ class PIV2D(object):
             "\n" + "-" * 79 + "\n\n" + "Settings in Camware software\n\n"
             '- trigger Mode to "Ext Exp Start"\n'
             "- frame rate >= {} Hz\n".format(1.0 / time_between_frames)
-            + "- exposure <= {} s \n".format(time_between_frames)
+            + f"- exposure <= {time_between_frames} s \n"
             + '- acquire Mode to "Auto"\n'
             '- I/O Signal: tick only "Exposure Trigger"\n'
         )
@@ -180,8 +180,8 @@ class PIV2D(object):
         # be an integer
         scansPerRead = scanRate
 
-        print("scanRate = {}".format(scanRate))
-        print("ScansPerRead = {}".format(scansPerRead))
+        print(f"scanRate = {scanRate}")
+        print(f"ScansPerRead = {scansPerRead}")
 
         TOTAL_NUM_CHANNELS = len(IN_NAMES) + len(OUT_NAMES)
 
@@ -193,7 +193,7 @@ class PIV2D(object):
             "\n" + "-" * 79 + "\n\n" + "Settings in Camware software\n\n"
             '- trigger Mode to "Ext Exp Start"\n'
             "- frame rate >= {} Hz\n".format(1.0 / time_between_frames)
-            + "- exposure <= {} s \n".format(time_expo)
+            + f"- exposure <= {time_expo} s \n"
             + '- acquire Mode to "Auto"\n'
             '- I/O Signal: tick only "Exposure Trigger"\n'
             "- number of images = {}".format(2 * nb_couples)

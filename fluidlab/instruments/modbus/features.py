@@ -41,7 +41,7 @@ from fluidlab.instruments.features import SuperValue
 
 
 def _custom_formatwarning(message, category, filename, lineno, line=None):
-    return "{}:{}: {}: {}\n".format(filename, lineno, category.__name__, message)
+    return f"{filename}:{lineno}: {category.__name__}: {message}\n"
 
 
 warnings.formatwarning = _custom_formatwarning
@@ -51,7 +51,7 @@ warnings.simplefilter("always", UserWarning)
 class Value(SuperValue):
     def __init__(self, name, doc="", adress=0):
         self._adress = adress
-        super(Value, self).__init__(name, doc)
+        super().__init__(name, doc)
 
 
 class ReadOnlyBoolValue(Value):
@@ -83,10 +83,10 @@ class Int16Value(Value):
 class DecimalInt16Value(Int16Value):
     def __init__(self, name, doc="", address=0, number_of_decimals=0):
         self._number_of_decimals = number_of_decimals
-        super(DecimalInt16Value, self).__init__(name, doc, address)
+        super().__init__(name, doc, address)
 
     def get(self):
-        raw_value = super(DecimalInt16Value, self).get()
+        raw_value = super().get()
 
         if self._number_of_decimals == 0:
             return raw_value
@@ -104,7 +104,7 @@ class DecimalInt16Value(Int16Value):
         else:
             raw_int = int(value * 10 ** self._number_of_decimals)
 
-        super(DecimalInt16Value, self).set(raw_int, signed)
+        super().set(raw_int, signed)
 
         if check:
             self._check_value(value)
@@ -128,7 +128,7 @@ class Int16StringValue(SuperValue):
         for k in int_dict:
             string_dict[int_dict[k]] = k
         self._string_dict = string_dict
-        super(Int16StringValue, self).__init__(name, doc)
+        super().__init__(name, doc)
 
     def get(self):
         return self._int_dict[self._interface.read_int16(self._adress)]

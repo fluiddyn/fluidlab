@@ -121,7 +121,7 @@ class ExperimentWithTank(Experiment):
             self._verify_params_first_creation(params, keys_needed=["rhos", "zs"])
 
         # call the __init__ function of the inherited class
-        super(ExperimentWithTank, self).__init__(
+        super().__init__(
             params=params, description=description, str_path=str_path
         )
 
@@ -146,7 +146,7 @@ class ExperimentWithTank(Experiment):
             Containing parameters.
 
         """
-        super(ExperimentWithTank, self)._create_self_params(params)
+        super()._create_self_params(params)
 
         if len(params) == 0:
             return

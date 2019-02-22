@@ -33,9 +33,9 @@ def make_loop_function(dt, total_time):
         timer = Timer(dt)
         t = 0
         while t < total_time:
-            print('loop dt = {:5.3f}, t = {:7.5f}'.format(dt, t))
+            print(f'loop dt = {dt:5.3f}, t = {t:7.5f}')
             t = timer.wait_tick()
-        print('end of loop dt = {:5.3f}, t = {:7.5f}'.format(dt, t))
+        print(f'end of loop dt = {dt:5.3f}, t = {t:7.5f}')
     return loop
 
 

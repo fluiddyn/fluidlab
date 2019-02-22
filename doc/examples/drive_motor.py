@@ -11,7 +11,7 @@ timer = Timer(time_between_ticks=5)
 
 print('Enter in a loop for 3 ticks.')
 for i in range(3):
-    print('  Enter in the block of the loop. i = {}.'.format(i))
+    print(f'  Enter in the block of the loop. i = {i}.')
     print('  Start rotation with a frequency of 2 Hz.')
     motor.start_rotation(2)
 

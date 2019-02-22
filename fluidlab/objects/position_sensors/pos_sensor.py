@@ -27,7 +27,7 @@ def sig_handler(signo, frame):
     sys.exit(0)
 
 
-class PositionSensor(object):
+class PositionSensor:
     """Communicate with the position sensor (2 output signals A and B in
     quadrature) via an acquisition card LabJack U3-HV.
 

@@ -39,7 +39,7 @@ class PfeifferMaxiGaugeException(Exception):
 
 class PfeifferMaxiGaugeValue(Value):
     def __init__(self, name, doc="", mnemonic=b""):
-        super(PfeifferMaxiGaugeValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set=None,
@@ -59,11 +59,11 @@ class PfeifferMaxiGaugeValue(Value):
 
 class PfeifferMaxiGaugePressureValue(PfeifferMaxiGaugeValue):
     def get(self, sensor):
-        if isinstance(sensor, six.integer_types):
+        if isinstance(sensor, int):
             sensor = str(sensor).encode("ascii")
         elif isinstance(sensor, (list, tuple, np.ndarray)):
             return [self.get(sen) for sen in sensor]
-        msg = super(PfeifferMaxiGaugePressureValue, self).get(parameter=sensor)
+        msg = super().get(parameter=sensor)
         p = msg.split(b",")
         status = int(p[0])
         value = float(p[1])
@@ -94,12 +94,12 @@ class PfeifferMaxiGaugeOnOffValue(PfeifferMaxiGaugeValue):
             lambda a, b: a + b, [b",2" if b else b",1" for b in booleans]
         )
         try:
-            super(PfeifferMaxiGaugeOnOffValue, self).set(msg)
+            super().set(msg)
         except PfeifferMaxiGaugeException:
             pass
 
     def get(self):
-        msg = super(PfeifferMaxiGaugeOnOffValue, self).get(
+        msg = super().get(
             parameter=b",0,0,0,0,0,0"
         )
         return [s == b"1" for s in msg]
@@ -118,7 +118,7 @@ class PfeifferMaxiGauge(Driver):
             rtscts=False,
             dsrdtr=False,
         )
-        super(PfeifferMaxiGauge, self).__init__(interface)
+        super().__init__(interface)
         self.debug = debug
         self.clear_interface()
         print("Pfeiffer MaxiGauge:", self.program_version().decode("ascii"))

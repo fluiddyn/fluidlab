@@ -15,7 +15,7 @@ from fluidlab.objects.galvanometer import Galva
 from .util import wait_for_file, save_exp
 
 
-class PIVScan(object):
+class PIVScan:
     def __init__(self):
         self.galva = Galva()
         self.t7 = self.galva.t7
@@ -175,8 +175,8 @@ class PIVScan(object):
             nb_levels=nb_levels,
             time_between_frames=time_between_frames,
         )
-        print("volt = {}".format(volt))
-        print("frequency = {}".format(frequency))
+        print(f"volt = {volt}")
+        print(f"frequency = {frequency}")
         tup = t[volt[0].argmax()] + time_expo
         scansPerRead = frequency
         scanRate = frequency
@@ -205,7 +205,7 @@ class PIVScan(object):
         # to avoid a strange bug
         for indout, out in enumerate(OUT_NAMES):
             t7.write_out_buffer(
-                "STREAM_OUT{}_BUFFER_F32".format(indout), 0 * volt[indout]
+                f"STREAM_OUT{indout}_BUFFER_F32", 0 * volt[indout]
             )
 
         scanRate = ljm.eStreamStart(
@@ -215,7 +215,7 @@ class PIVScan(object):
         time.sleep(time_between_pairs)
         for indout, out in enumerate(OUT_NAMES):
             t7.write_out_buffer(
-                "STREAM_OUT{}_BUFFER_F32".format(indout), 0 * volt[indout]
+                f"STREAM_OUT{indout}_BUFFER_F32", 0 * volt[indout]
             )
 
         time.sleep(time_between_pairs)
@@ -253,7 +253,7 @@ class PIVScan(object):
                 time.sleep(2 * time_between_frames)
                 for indout, out in enumerate(OUT_NAMES):
                     t7.write_out_buffer(
-                        "STREAM_OUT{}_BUFFER_F32".format(indout), volt[indout]
+                        f"STREAM_OUT{indout}_BUFFER_F32", volt[indout]
                     )
                 t = timer.wait_tick()
         except KeyboardInterrupt:
@@ -644,7 +644,7 @@ def double_saw_tooth2(vmin, vmax, time_expo, nb_levels, time_between_frames):
     time_between_frames = t[np.argwhere(volt0 == vmin)][2]
     pylab.plot(time_between_frames * np.ones(2), [0, 5], "k")
     pylab.show()
-    print("time_between_frames is set to {}s".format(time_between_frames))
+    print(f"time_between_frames is set to {time_between_frames}s")
     return volt, freq, time_between_frames, t
 
 

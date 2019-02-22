@@ -32,7 +32,7 @@ class ThorlabsS110(Driver):
             eol="\r",
             multilines=True,
         )
-        super(ThorlabsS110, self).__init__(interface)
+        super().__init__(interface)
 
 
 features = [

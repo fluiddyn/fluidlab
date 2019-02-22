@@ -25,7 +25,7 @@ except (OSError, subprocess.CalledProcessError):
     pass
 else:
     with open('fluidlab/_hg_rev.py', 'w') as f:
-        f.write('hg_rev = "{}"\n'.format(hg_rev))
+        f.write(f'hg_rev = "{hg_rev}"\n')
 
 # Get the long description from the relevant file
 here = os.path.abspath(os.path.dirname(__file__))

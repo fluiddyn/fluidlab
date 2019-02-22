@@ -59,7 +59,7 @@ class DensityProfile(FunctionLinInterp):
     """
 
     def __init__(self, z, rho):
-        super(DensityProfile, self).__init__(z, rho)
+        super().__init__(z, rho)
         if any([r1 < r2 for r1, r2 in zip(rho, rho[1:])]):
             raise ValueError("rho must decrease!", rho)
 
@@ -106,12 +106,12 @@ class Surface(FunctionLinInterp):
     """
 
     def __init__(self, z, S):
-        super(Surface, self).__init__(z, S)
+        super().__init__(z, S)
         self.z = np.array(z, dtype=float)
         self.S = np.array(S, dtype=float)
 
 
-class StratifiedTank(object):
+class StratifiedTank:
     """Represent a tank with a density profile.
 
     Parameters
@@ -314,9 +314,9 @@ end of the tube out of the tank. Are you ready?"""
         flowrate_tot = 0.8 * pumps.flow_rates_max.min()  # (ml/min)
         time_fill = vol_to_pump / flowrate_tot
 
-        print("flowrate_tot: {0:6.2f} ml/min".format(flowrate_tot))
-        print("vol_to_pump: {0:6.2f} ml".format(vol_to_pump))
-        print("time for the filling: {0:5.2f} min".format(time_fill))
+        print(f"flowrate_tot: {flowrate_tot:6.2f} ml/min")
+        print(f"vol_to_pump: {vol_to_pump:6.2f} ml")
+        print(f"time for the filling: {time_fill:5.2f} min")
 
         rhomin = np.min(self.profile.rho)
         rhomax = np.max(self.profile.rho)
@@ -379,7 +379,7 @@ end of the tube out of the tank. Are you ready?"""
                 timer.wait_tick()
 
             print(
-                "volume pumped / volume to pump = {0:5.4f}".format(
+                "volume pumped / volume to pump = {:5.4f}".format(
                     vol_pumped / vol_to_pump
                 ),
                 end="\r",
@@ -460,7 +460,7 @@ class TaylorCouette(StratifiedTank):
 
         self.Rin = Rin
         self.Rout = Rout
-        super(TaylorCouette, self).__init__(
+        super().__init__(
             H=H,
             S=np.pi * (self.Rout ** 2 - self.Rin ** 2),
             z=z,

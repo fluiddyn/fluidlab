@@ -262,7 +262,7 @@ class NewportXpsRL:
         return NewportXpsRLControllerStatus(int(response))
 
     def Login(self, username, password):
-        status, response = self.query("Login({:}, {:}".format(username, password))
+        status, response = self.query(f"Login({username}, {password}")
         if status != 0:
             raise NewportXpsRLError(status, response)
 
@@ -273,7 +273,7 @@ class NewportXpsRL:
         """
 
         status, response = self.query(
-            "GroupPositionSetpointGet({:}, double *)".format(groupname)
+            f"GroupPositionSetpointGet({groupname}, double *)"
         )
         if status != 0:
             raise NewportXpsRLError(status, response)
@@ -286,7 +286,7 @@ class NewportXpsRL:
         """
 
         status, response = self.query(
-            "GroupPositionCurrentGet({:}, double *)".format(groupname)
+            f"GroupPositionCurrentGet({groupname}, double *)"
         )
         if status != 0:
             raise NewportXpsRLError(status, response)
@@ -298,7 +298,7 @@ class NewportXpsRL:
         """
 
         status, response = self.query(
-            "GroupPositionTargetGet({:}, double *)".format(groupname)
+            f"GroupPositionTargetGet({groupname}, double *)"
         )
         if status != 0:
             raise NewportXpsRLError(status, response)

@@ -35,7 +35,7 @@ from fluidlab.util.util import make_ip_as_str
 
 volt_no_movement = 2.5
 
-path_dir = os.path.expanduser("~\.fluidlab")
+path_dir = os.path.expanduser(r"~\.fluidlab")
 if not os.path.exists(path_dir):
     os.makedirs(path_dir)
 
@@ -59,7 +59,7 @@ def define_track_profilometer(
     return times, speeds, positions
 
 
-class Traverse(object):
+class Traverse:
     def __init__(self, ip_modbus=None, const_position=1.062, offset_abs=None):
         self.motor = Motor(ip_modbus=ip_modbus, disable_limit_switches=False)
         self.movement_allowed = True
@@ -194,7 +194,7 @@ class Traverse(object):
             )
 
             with open(path, "w") as f:
-                f.write("coef_meter_per_rot = {}".format(coef_meter_per_rot))
+                f.write(f"coef_meter_per_rot = {coef_meter_per_rot}")
 
         # Use the calibration coefficient
         self._coef_meter_per_rot = coef_meter_per_rot
@@ -330,7 +330,7 @@ class Traverse(object):
             ):
                 break
 
-            print("profile number {}".format(i_period))
+            print(f"profile number {i_period}")
             print("go down")
             self.go_to(z_min, speed_down)
             print("go up")
@@ -448,7 +448,7 @@ class Traverse(object):
         f.write(
             "# track_profiler "
             + self.ip_modbus
-            + "\n# time since epock: {}".format(t_start)
+            + f"\n# time since epock: {t_start}"
             + "\n# time(s), position (m)\n"
         )
         f.flush()
@@ -460,7 +460,7 @@ class Traverse(object):
         v_sent.append(v)
         t_sent.append(time() - t_start)
         self.set_target_speed(v)
-        f.write("{:.4f},{:.4f}\n".format(t, x))
+        f.write(f"{t:.4f},{x:.4f}\n")
         f.flush()
 
         timer.wait_tick()
@@ -528,7 +528,7 @@ class Traverse(object):
             x_measured.append(x)
             v_sent.append(v_target)
 
-            f.write("{:.4f},{:.4f}\n".format(t, x))
+            f.write(f"{t:.4f},{x:.4f}\n")
             f.flush()
 
             if self.motor.state != "Operation Enabled (6)":
@@ -541,7 +541,7 @@ class Traverse(object):
                 print(
                     "traverse "
                     + self.ip_modbus
-                    + ", it = {}, t = {:.4f} s".format(it, t)
+                    + f", it = {it}, t = {t:.4f} s"
                 )
                 sys.stdout.flush()
 
@@ -561,7 +561,7 @@ class Traverse(object):
         t_sent.append(time() - t_start)
         self.set_target_speed(v)
 
-        f.write("{:.4f},{:.4f}\n".format(t, x))
+        f.write(f"{t:.4f},{x:.4f}\n")
         f.flush()
         f.close()
         timer.wait_tick()
@@ -578,7 +578,7 @@ class Traverse(object):
         return self.x_measured
 
 
-class Traverses(object):
+class Traverses:
     def __init__(self, ip_addresses=None, const_positions=None, offset_abs=None):
         if ip_addresses is None:
             ip_addresses = ["192.168.28.11", "192.168.28.12", "192.168.28.13"]
@@ -708,7 +708,7 @@ class Traverses(object):
             f.write(
                 time_as_str(2) + "\nmake_profiles(z_min="
                 "{}, z_max={}, speed_down={},\n".format(z_min, z_max, speed_down)
-                + "              speed_up={},\n".format(speed_up)
+                + f"              speed_up={speed_up},\n"
                 + "              period={}, nb_periods={})\n".format(
                     period, nb_periods
                 )
@@ -725,7 +725,7 @@ class Traverses(object):
             ):
                 break
 
-            print("profile number {}".format(i_period))
+            print(f"profile number {i_period}")
             print("go down")
             self.go_to(z_min, speed_down)
             print("go up")
@@ -794,7 +794,7 @@ class Traverses(object):
                 "# time start (since Epoch): {:.4f} s ({})\n".format(
                     timer.tstart, ctime(timer.tstart)
                 )
-                + "# {} traverse(s)\n".format(nb_traverses)
+                + f"# {nb_traverses} traverse(s)\n"
                 + "# time, position\n"
             )
             t_loop = 0.0
@@ -810,8 +810,8 @@ class Traverses(object):
                     if s != "":
                         s += ","
                     pos = positions[it]
-                    s += "{:.4f},{:.4f}".format(t, pos)
-                f.write(s + "\n".format(t, pos))
+                    s += f"{t:.4f},{pos:.4f}"
+                f.write(s + f"\n")
                 t_loop = timer.wait_tick()
 
     def record_positions_async(self, duration, dtime=0.2):

@@ -12,7 +12,7 @@ import fluiddyn as fld
 
 
 def Omega2_pseudo_keplerian(Omega1, R1, R2, gamma):
-    """Return the Omega2 computed using the Kepler scaling law.
+    r"""Return the Omega2 computed using the Kepler scaling law.
 
     Parameters
     ----------

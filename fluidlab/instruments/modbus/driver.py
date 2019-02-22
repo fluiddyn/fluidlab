@@ -33,4 +33,4 @@ class ModbusDriver(Driver):
 
         interface = Interface(port, method, timeout)
 
-        super(ModbusDriver, self).__init__(interface)
+        super().__init__(interface)

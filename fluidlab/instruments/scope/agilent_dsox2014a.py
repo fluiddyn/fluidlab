@@ -78,7 +78,7 @@ class AgilentDSOX2014a(
             self.interface.write(":DIGitize")
         self.interface.write(":WAVeform:FORMat " + format_output)
         self.interface.write(":WAVeform:POINts " + str(nb_points))
-        self.interface.write(":WAVeform:SOURce CHAN{:}".format(channel))
+        self.interface.write(f":WAVeform:SOURce CHAN{channel}")
 
         # read the raw data
         self.interface.write(":WAVeform:DATA?")
@@ -155,32 +155,32 @@ features = [
 for channel in range(1, 3):
     features += [
         FloatValue(
-            "channel{}_probe_attenuation".format(channel),
+            f"channel{channel}_probe_attenuation",
             doc="""The probe attenuation ratio.""",
-            command_set=":CHANnel{}:PROBe".format(channel),
+            command_set=f":CHANnel{channel}:PROBe",
         ),
         FloatValue(
-            "channel{}_range".format(channel),
+            f"channel{channel}_range",
             doc="""The vertical full-scale range value (in volt).""",
-            command_set=":CHANnel{}:range".format(channel),
+            command_set=f":CHANnel{channel}:range",
         ),
         FloatValue(
-            "channel{}_scale".format(channel),
+            f"channel{channel}_scale",
             doc="""The number of units per division of the channel.""",
-            command_set=":CHANnel{}:SCALe".format(channel),
+            command_set=f":CHANnel{channel}:SCALe",
         ),
         StringValue(
-            "channel{}_coupling".format(channel),
+            f"channel{channel}_coupling",
             doc="""The type of input coupling for the channel.
 
 It can be set to "AC" or "DC".""",
-            command_set=":CHANnel{}:COUPling".format(channel),
+            command_set=f":CHANnel{channel}:COUPling",
             valid_values=["ac", "dc"],
         ),
         BoolValue(
-            "channel{}_display".format(channel),
+            f"channel{channel}_display",
             doc="""A boolean setting the display of the channel.""",
-            command_set=":CHANnel{}:DISPlay".format(channel),
+            command_set=f":CHANnel{channel}:DISPlay",
         ),
     ]
 

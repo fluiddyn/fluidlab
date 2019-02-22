@@ -40,7 +40,7 @@ from fluiddyn.io.mycsv import CSVFile
 from fluiddyn.util import time_as_str
 
 
-class Session(object):
+class Session:
     """Experimental session
 
     Base class representing an experimental session. A session
@@ -187,7 +187,7 @@ class Session(object):
         return self.data_tables[name]
 
 
-class DataTable(object):
+class DataTable:
     """Data table for time series
 
     Parameters
@@ -467,7 +467,7 @@ class SessionWithDefaultParams(Session):
         email_title = params.email.title
         email_delay = params.email.delay
 
-        super(SessionWithDefaultParams, self).__init__(
+        super().__init__(
             path=path,
             name=name,
             info=info,

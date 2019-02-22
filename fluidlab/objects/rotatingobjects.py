@@ -64,7 +64,7 @@ class RotatingObject(ObjectUsingBoard):
 
         if board is None:
             board = NIDAQBoard()
-        super(RotatingObject, self).__init__(board=board)
+        super().__init__(board=board)
 
         if hasattr(rotation_rate, "__call__"):
             self.rotation_rate_vs_t = rotation_rate
@@ -111,7 +111,7 @@ class RotatingObject(ObjectUsingBoard):
     def set_rotation_rate(self, rotation_rate):
         self.rotation_rate = rotation_rate
         if self.board.works:
-            self.write("{:22s}; rot. rate: {}".format(self.name, rotation_rate))
+            self.write(f"{self.name:22s}; rot. rate: {rotation_rate}")
             voltage = self._voltage_from_rotation_rate(rotation_rate)
             if voltage < 0:
                 voltage = 0
@@ -122,7 +122,7 @@ class RotatingObject(ObjectUsingBoard):
             self.board.out.set_voltage(voltage, channels=self.channel)
 
     def calibrate(self, voltage=3):
-        self.write("calibration with voltage: {0:6.2f}".format(voltage))
+        self.write(f"calibration with voltage: {voltage:6.2f}")
         self._set_voltage(voltage)
         self.write("Please measure the period.")
 
@@ -137,10 +137,10 @@ class RotatingObject(ObjectUsingBoard):
 
     def calibrate_with_period(self, period=8):
 
-        self.write("Calibrate with period: {0:6.2f}".format(period))
+        self.write(f"Calibrate with period: {period:6.2f}")
         voltage = self._voltage_from_rotation_rate(2 * np.pi / period)
         self.write(
-            "it should correspond to a voltage of {0:6.2f}".format(voltage)
+            f"it should correspond to a voltage of {voltage:6.2f}"
         )
 
         period = self.calibrate(voltage)
@@ -244,7 +244,7 @@ class RotatingTable(RotatingObject):
 
 class DaemonRunningRotatingObject(Daemon):
     def __init__(self, rotating_object):
-        super(DaemonRunningRotatingObject, self).__init__()
+        super().__init__()
         self.ro = rotating_object
 
     def run(self):
@@ -268,7 +268,7 @@ class DaemonRunningRotatingObject(Daemon):
         ro.write("exit loop")
 
     def stop(self):
-        super(DaemonRunningRotatingObject, self).stop()
+        super().stop()
 
 
 def create_rotating_objects_pseudokepler(Omega_i, R_i, R_o, gamma):

@@ -29,7 +29,7 @@ class PinchValve(ObjectUsingBoard):
 
     def __init__(self, board=None, channel=0):
 
-        super(PinchValve, self).__init__(board=board)
+        super().__init__(board=board)
         self.channel = channel
         self.close()
 
@@ -43,7 +43,7 @@ class PinchValve(ObjectUsingBoard):
         return ContextManagerOpenedValve(self)
 
 
-class ContextManagerOpenedValve(object):
+class ContextManagerOpenedValve:
     def __init__(self, valve):
         self.valve = valve
 
@@ -55,7 +55,7 @@ class ContextManagerOpenedValve(object):
         self.valve.close()
 
 
-class FalseContextManager(object):
+class FalseContextManager:
     def __enter__(self):
         return self
 

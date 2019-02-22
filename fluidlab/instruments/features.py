@@ -51,7 +51,7 @@ import six
 
 
 def custom_formatwarning(message, category, filename, lineno, line=None):
-    return "{}:{}: {}: {}\n".format(filename, lineno, category.__name__, message)
+    return f"{filename}:{lineno}: {category.__name__}: {message}\n"
 
 
 warnings.formatwarning = custom_formatwarning
@@ -60,7 +60,7 @@ warnings.simplefilter("always", UserWarning)
 # warnings.simplefilter('always')
 
 
-class Feature(object):
+class Feature:
     def __init__(self, name, doc=""):
         self._name = name
         self.__doc__ = doc
@@ -68,7 +68,7 @@ class Feature(object):
 
 class WriteCommand(Feature):
     def __init__(self, name, doc="", command_str=""):
-        super(WriteCommand, self).__init__(name, doc)
+        super().__init__(name, doc)
         self.command_str = command_str
 
     def _build_driver_class(self, Driver):
@@ -86,7 +86,7 @@ class WriteCommand(Feature):
 
 class QueryCommand(Feature):
     def __init__(self, name, doc="", command_str="", parse_result=None):
-        super(QueryCommand, self).__init__(name, doc)
+        super().__init__(name, doc)
         self.command_str = command_str
         self.parse_result = parse_result
 
@@ -131,7 +131,7 @@ class Value(SuperValue):
         pause_instrument=0.0,
         channel_argument=False,
     ):
-        super(Value, self).__init__(name, doc)
+        super().__init__(name, doc)
         self.command_set = command_set
         self.check_instrument_value_after_set = check_instrument_value
 
@@ -215,7 +215,7 @@ class BoolValue(Value):
         true_string="1",
         false_string="0",
     ):
-        super(BoolValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set,
@@ -268,7 +268,7 @@ class StringValue(Value):
         pause_instrument=0.0,
         channel_argument=False,
     ):
-        super(StringValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set=command_set,
@@ -315,7 +315,7 @@ class NumberValue(Value):
         pause_instrument=0.0,
         channel_argument=False,
     ):
-        super(NumberValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set=command_set,
@@ -339,12 +339,12 @@ class NumberValue(Value):
 
         if lim_min is not None and value < lim_min:
             raise ValueError(
-                "Value ({}) is smaller than lim_min ({})".format(value, lim_min)
+                f"Value ({value}) is smaller than lim_min ({lim_min})"
             )
 
         if lim_max is not None and value > lim_max:
             raise ValueError(
-                "Value ({}) is larger than lim_max ({})".format(value, lim_max)
+                f"Value ({value}) is larger than lim_max ({lim_max})"
             )
 
     def _check_instrument_value(self, value):
@@ -404,7 +404,7 @@ class RegisterValue(NumberValue):
 
         limits = (0, 2 ** self.nb_bits)
 
-        super(RegisterValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set=command_set,
@@ -415,12 +415,12 @@ class RegisterValue(NumberValue):
             channel_argument=channel_argument,
         )
 
-        if isinstance(default_value, six.integer_types):
+        if isinstance(default_value, int):
             self.default_value = self.compute_dict_from_number(default_value)
         elif isinstance(default_value, dict):
             for k in default_value.keys():
                 if k not in keys:
-                    raise ValueError("key {} not in keys".format(k))
+                    raise ValueError(f"key {k} not in keys")
 
             for k in keys:
                 default_value.setdefault(k, False)
@@ -458,12 +458,12 @@ class RegisterValue(NumberValue):
             value = self.compute_number_from_dict(value)
 
         self._check_value(value)
-        self._interface.write(self.command_set + " {}".format(value))
+        self._interface.write(self.command_set + f" {value}")
 
     def compute_number_from_dict(self, d):
         for k in d.keys():
             if k not in self.keys:
-                raise ValueError("key {} not in keys".format(k))
+                raise ValueError(f"key {k} not in keys")
 
         self._complete_dict_with_default(d)
 

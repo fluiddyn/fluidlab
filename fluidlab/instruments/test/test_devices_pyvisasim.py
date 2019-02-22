@@ -13,7 +13,7 @@ class SimpleTestCase(unittest.TestCase):
             dev = Device2("ASRL2::INSTR", backend="@sim")
 
         idn = dev.get_idn()
-        self.assertEqual(idn, u"SCPI,MOCK,VERSION_1.0\n")
+        self.assertEqual(idn, "SCPI,MOCK,VERSION_1.0\n")
 
         dev.voltage.set(2)
         voltage = dev.voltage.get()

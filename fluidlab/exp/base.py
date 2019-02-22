@@ -55,7 +55,7 @@ class NumpyAwareJSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-class Experiment(object):
+class Experiment:
     """Base class for classes representing an experiment.
 
     Parameters
@@ -193,7 +193,7 @@ class Experiment(object):
         """
         for k in keys_needed:
             if k not in params:
-                raise AttributeError('This class needs the key "{}".'.format(k))
+                raise AttributeError(f'This class needs the key "{k}".')
 
     def _init_name_dir(self):
         """Initialise the name of the directory where the data are saved.

@@ -13,7 +13,7 @@ except ImportError:
 import time
 
 
-class MCP3008SPI(object):
+class MCP3008SPI:
     """Analogic / digital conversion with the MCP3008 SPI ADC chip."""
 
     def __init__(self, differential=True):
@@ -50,4 +50,4 @@ if __name__ == "__main__":
     a2d = MCP3008SPI(differential=False)
 
     for i in range(3):
-        print("channel {:2d}:".format(i), a2d.convert(i))
+        print(f"channel {i:2d}:", a2d.convert(i))
