@@ -110,23 +110,24 @@ class I2LTaylorCouetteExp(TaylorCouetteExp):
         Coding the time of creation.
 
     """
+
     _base_dir = os.path.join("TaylorCouette", "I2L")
 
     def __init__(
         self,
         rho_min=None,
         rho_max=None,
-        z_max=300.,
+        z_max=300.0,
         Omega1=None,
         Omega2=0,
         R1=None,
-        R2=261.,
+        R2=261.0,
         params=None,
         description=None,
         str_path=None,
-        position_start=352.,
+        position_start=352.0,
         position_max=None,
-        Deltaz=340.,
+        Deltaz=340.0,
         need_board=True,
     ):
         # start the init. and find out if it is the first creation
@@ -170,15 +171,21 @@ Initially two layers (I2L)...
             self._verify_params_first_creation(
                 params,
                 keys_needed=[
-                    "rho_min", "rho_max", "z_max", "Omega1", "Omega2", "R1", "R2"
+                    "rho_min",
+                    "rho_max",
+                    "z_max",
+                    "Omega1",
+                    "Omega2",
+                    "R1",
+                    "R2",
                 ],
             )
 
             # calculate the parameters needed for the inherited class
             Delta_rho = params["rho_max"] - params["rho_min"]
 
-            zs_norm = np.array([0, 1. / 2, 1. / 2, 1])
-            rhos_norm = np.array([1., 1., 0., 0.])
+            zs_norm = np.array([0, 1.0 / 2, 1.0 / 2, 1])
+            rhos_norm = np.array([1.0, 1.0, 0.0, 0.0])
 
             zs = params["z_max"] * zs_norm
             rhos = params["rho_min"] + Delta_rho * rhos_norm
@@ -251,7 +258,7 @@ Initially two layers (I2L)...
 
 
 period_rr = 60 * 60
-Omega1_max = 2.
+Omega1_max = 2.0
 Tramp = period_rr / 2
 
 
@@ -279,8 +286,8 @@ def give_n_jump_by_modulo(t):
 
 def load_exp_and_measure_profiles(str_path, daemon=None):
 
-    exp = load_exp(str_path=str_path, position_start=314., Deltaz=285.)
-    exp.sprobe.set_sample_rate(2000.)
+    exp = load_exp(str_path=str_path, position_start=314.0, Deltaz=285.0)
+    exp.sprobe.set_sample_rate(2000.0)
 
     T1 = 2 * np.pi / exp.params["Omega1"]
     period = 2 * T1

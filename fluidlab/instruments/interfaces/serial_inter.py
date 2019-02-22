@@ -18,7 +18,6 @@ from fluidlab.instruments.interfaces import QueryInterface
 
 
 class SerialInterface(QueryInterface):
-
     def __init__(
         self,
         port,
@@ -32,7 +31,7 @@ class SerialInterface(QueryInterface):
         dsrdtr=False,
         eol=None,
         multilines=False,
-        autoremove_eol=False
+        autoremove_eol=False,
     ):
         """
         if eol is not None, the serial port is wrapped into TextIOWrapper to
@@ -70,8 +69,8 @@ class SerialInterface(QueryInterface):
 
     def write(self, *args):
         if self.autoremove_eol:
-            args = [a.strip() + '\n' for a in args]
-        #print('->', repr(args[0]))
+            args = [a.strip() + "\n" for a in args]
+        # print('->', repr(args[0]))
         if self.eol is not None:
             return self.ser_io.write(*args)
 
@@ -109,12 +108,12 @@ class SerialInterface(QueryInterface):
         else:
             result = self.readline()
             if isinstance(result, str):
-                #print("<-", repr(result))
+                # print("<-", repr(result))
                 return result
-            #print("<-", repr(b"\n".join(result.splitlines())))
+            # print("<-", repr(b"\n".join(result.splitlines())))
             return b"\n".join(result.splitlines())
 
-    def query(self, command, time_delay=0.):
+    def query(self, command, time_delay=0.0):
         self.write(command)
         sleep(time_delay)
         return self.read()

@@ -11,23 +11,35 @@ This class was tested also on Agilent DSO-X 3014A.
 import numpy as np
 
 from fluidlab.instruments.iec60488 import (
-    IEC60488, Trigger, ObjectIdentification,
-    StoredSetting, Learn)
+    IEC60488,
+    Trigger,
+    ObjectIdentification,
+    StoredSetting,
+    Learn,
+)
 
 from fluidlab.instruments.features import (
-    WriteCommand, BoolValue, IntValue, FloatValue, StringValue)
+    WriteCommand,
+    BoolValue,
+    IntValue,
+    FloatValue,
+    StringValue,
+)
 
 __all__ = ["AgilentDSOX2014a"]
 
-class AgilentDSOX2014a(IEC60488, Trigger, ObjectIdentification,
-                       StoredSetting, Learn):
+
+class AgilentDSOX2014a(
+    IEC60488, Trigger, ObjectIdentification, StoredSetting, Learn
+):
     """Driver for the oscilloscope Agilent DSOX2014a.
 
 
     """
 
-    def get_curve(self, channel=1, nb_points=65535, 
-                  acquire=True, format_output='byte'):
+    def get_curve(
+        self, channel=1, nb_points=65535, acquire=True, format_output="byte"
+    ):
         """Acquire and return two Numpy arrays (time and data).
 
         Parameters
@@ -49,33 +61,33 @@ class AgilentDSOX2014a(IEC60488, Trigger, ObjectIdentification,
 
         """
 
-        if format_output not in ['ascii', 'byte']:
+        if format_output not in ["ascii", "byte"]:
             raise ValueError('format_output must be "ascii" or "byte"')
 
         if not isinstance(channel, int):
             data_list = []
             for ii, chan in enumerate(channel):
-                t, d = self.get_curve(chan, nb_points, 
-                                      acquire if ii == 0 else False, 
-                                      format_output)
+                t, d = self.get_curve(
+                    chan, nb_points, acquire if ii == 0 else False, format_output
+                )
                 data_list.append(d)
             return (t, *data_list)
-                
+
         # prepare the acquisition
         if acquire:
-            self.interface.write(':DIGitize')
-        self.interface.write(':WAVeform:FORMat ' + format_output)
-        self.interface.write(':WAVeform:POINts ' + str(nb_points))
-        self.interface.write(':WAVeform:SOURce CHAN{:}'.format(channel))
-        
+            self.interface.write(":DIGitize")
+        self.interface.write(":WAVeform:FORMat " + format_output)
+        self.interface.write(":WAVeform:POINts " + str(nb_points))
+        self.interface.write(":WAVeform:SOURce CHAN{:}".format(channel))
+
         # read the raw data
-        self.interface.write(':WAVeform:DATA?')
+        self.interface.write(":WAVeform:DATA?")
         raw_data = self.interface.read_raw()
-        if raw_data[0] != ord('#'):
+        if raw_data[0] != ord("#"):
             print(raw_data[0])
-            raise ValueError('Bad response from Oscillo')
+            raise ValueError("Bad response from Oscillo")
         nbytes = int(chr(raw_data[1]))
-        nbytes_total = int(raw_data[2:(nbytes+2)])
+        nbytes_total = int(raw_data[2 : (nbytes + 2)])
 
         # parse the raw data
         # waveform:preamble returns information for the waveform source:
@@ -89,73 +101,92 @@ class AgilentDSOX2014a(IEC60488, Trigger, ObjectIdentification,
         # - yincrement
         # - yorigin
         # - yreference
-        pre = [float(s) for s in self.interface.query(
-            ':WAVeform:PREamble?').split(',')]
+        pre = [
+            float(s)
+            for s in self.interface.query(":WAVeform:PREamble?").split(",")
+        ]
         xincrement = pre[4]
         xorigin = pre[5]
         xreference = pre[6]
 
-        if format_output == 'ascii':
-            data = np.array([float(s) for s in raw_data[(nbytes+2):].split(',')])
-        elif format_output == 'byte':
+        if format_output == "ascii":
+            data = np.array(
+                [float(s) for s in raw_data[(nbytes + 2) :].split(",")]
+            )
+        elif format_output == "byte":
             yincrement = pre[7]
             yorigin = pre[8]
             yreference = pre[9]
-            data = np.array([(s - yreference) * yincrement + yorigin
-                             for s in raw_data[(nbytes+2):-1]])
-    
-        time = np.array([(s - xreference) * xincrement + xorigin
-                         for s in range(nbytes_total)])
-    
+            data = np.array(
+                [
+                    (s - yreference) * yincrement + yorigin
+                    for s in raw_data[(nbytes + 2) : -1]
+                ]
+            )
+
+        time = np.array(
+            [(s - xreference) * xincrement + xorigin for s in range(nbytes_total)]
+        )
+
         return time, data
 
 
 features = [
     WriteCommand(
-        'autoscale', doc='Autoscale the oscilloscope.',
-        command_str=':AUTOscale'),
+        "autoscale", doc="Autoscale the oscilloscope.", command_str=":AUTOscale"
+    ),
     IntValue(
-        'nb_points', doc='The number of points returned.',
-        command_set=':WAVeform:POINts'),
+        "nb_points",
+        doc="The number of points returned.",
+        command_set=":WAVeform:POINts",
+    ),
     FloatValue(
-        'timebase_range',
+        "timebase_range",
         doc="""The time for 10 division in seconds.""",
-        command_set=':TIMebase:RANGe'),
+        command_set=":TIMebase:RANGe",
+    ),
     FloatValue(
-        'trigger_level',
+        "trigger_level",
         doc="""The trigger level voltage for the active trigger source.""",
-        command_set=':TRIGger:LEVel')]
+        command_set=":TRIGger:LEVel",
+    ),
+]
 
 for channel in range(1, 3):
     features += [
         FloatValue(
-            'channel{}_probe_attenuation'.format(channel),
+            "channel{}_probe_attenuation".format(channel),
             doc="""The probe attenuation ratio.""",
-            command_set=':CHANnel{}:PROBe'.format(channel)),
+            command_set=":CHANnel{}:PROBe".format(channel),
+        ),
         FloatValue(
-            'channel{}_range'.format(channel),
+            "channel{}_range".format(channel),
             doc="""The vertical full-scale range value (in volt).""",
-            command_set=':CHANnel{}:range'.format(channel)),
+            command_set=":CHANnel{}:range".format(channel),
+        ),
         FloatValue(
-            'channel{}_scale'.format(channel),
+            "channel{}_scale".format(channel),
             doc="""The number of units per division of the channel.""",
-            command_set=':CHANnel{}:SCALe'.format(channel)),
+            command_set=":CHANnel{}:SCALe".format(channel),
+        ),
         StringValue(
-            'channel{}_coupling'.format(channel),
+            "channel{}_coupling".format(channel),
             doc="""The type of input coupling for the channel.
 
 It can be set to "AC" or "DC".""",
-            command_set=':CHANnel{}:COUPling'.format(channel),
-            valid_values=['ac', 'dc']),
+            command_set=":CHANnel{}:COUPling".format(channel),
+            valid_values=["ac", "dc"],
+        ),
         BoolValue(
-            'channel{}_display'.format(channel),
+            "channel{}_display".format(channel),
             doc="""A boolean setting the display of the channel.""",
-            command_set=':CHANnel{}:DISPlay'.format(channel))]
+            command_set=":CHANnel{}:DISPlay".format(channel),
+        ),
+    ]
 
 
 AgilentDSOX2014a._build_class_with_features(features)
 
 
-if __name__ == '__main__':
-    scope = AgilentDSOX2014a(
-        interface='USB0::0x0957::0x17A8::MY55390593::INSTR')
+if __name__ == "__main__":
+    scope = AgilentDSOX2014a(interface="USB0::0x0957::0x17A8::MY55390593::INSTR")

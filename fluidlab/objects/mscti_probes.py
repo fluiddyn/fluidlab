@@ -42,7 +42,7 @@ def load_calibration(path):
     return rho, voltrho, T, voltT, date
 
 
-class MSCTIProbe():
+class MSCTIProbe:
     """Represent a MSCTI conductivity (+ temperature) probe.
 
     Parameters
@@ -160,7 +160,7 @@ class MSCTIProbe():
                 print("mean of temperature volts:", volts[1].mean())
 
         if return_time:
-            ts = 1. / self.sample_rate * np.arange(1, nb + 1)
+            ts = 1.0 / self.sample_rate * np.arange(1, nb + 1)
             if save:
                 if not path_save.endswith(".h5"):
                     path_save += ".h5"
@@ -355,7 +355,7 @@ class MSCTIProbe():
             (rhos - rho_min) / (rho_max - rho_min),
         )
 
-    def calibrate(self, rho, T, duration=2.):
+    def calibrate(self, rho, T, duration=2.0):
         r"""Calibrates the probe.
 
         Parameters
@@ -389,9 +389,8 @@ class MSCTIProbe():
         happy = False
         while not happy:
             volts = self.measure_volts(duration, return_time=False)
-            header = (
-                "calibration for rho="
-                "{}, T= {}\nVolt rho, Volt T".format(rho, T)
+            header = "calibration for rho=" "{}, T= {}\nVolt rho, Volt T".format(
+                rho, T
             )
             np.savetxt("tmp_calib.txt", volts.transpose(), header=header)
             voltages = volts.mean(axis=1)
@@ -404,7 +403,7 @@ class MSCTIProbe():
         if query.query_yes_no("Should the new point be saved?"):
             self.save_calibration(rho, T, voltages, "rho")
 
-    def calibrate_temperature(self, rho, T, duration=2.):
+    def calibrate_temperature(self, rho, T, duration=2.0):
         r"""Calibrates the temperature probe.
 
         Parameters
@@ -578,11 +577,11 @@ class MSCTIProbe():
 
     def T_from_voltT(self, voltT):
         tmp = (np.log(voltT - self.voltToff) - self.coeffsT[1]) / self.coeffsT[0]
-        Ti = 1. / tmp - 273.15
+        Ti = 1.0 / tmp - 273.15
         return Ti
 
     def fit_T_vs_voltT(self, T, voltT):
         """Creates a function from data."""
         y = np.log(voltT - self.voltToff)
-        x = 1. / (T + 273.15)
+        x = 1.0 / (T + 273.15)
         self.coeffsT = np.polyfit(x, y, deg=1)

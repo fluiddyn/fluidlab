@@ -34,7 +34,6 @@ class Interface(object):
 
 
 class QueryInterface(Interface):
-
     def write(self, s):
         raise NotImplementedError
 
@@ -55,7 +54,6 @@ class QueryInterface(Interface):
 
 
 class FalseInterface(QueryInterface):
-
     def write(self, s):
         print(s)
 

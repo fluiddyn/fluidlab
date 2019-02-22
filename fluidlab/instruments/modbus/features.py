@@ -49,20 +49,17 @@ warnings.simplefilter("always", UserWarning)
 
 
 class Value(SuperValue):
-
     def __init__(self, name, doc="", adress=0):
         self._adress = adress
         super(Value, self).__init__(name, doc)
 
 
 class ReadOnlyBoolValue(Value):
-
     def get(self):
         return self._interface.read_readonlybool(self._adress)
 
 
 class BoolValue(Value):
-
     def get(self):
         return self._interface.read_bool(self._adress)
 
@@ -71,13 +68,11 @@ class BoolValue(Value):
 
 
 class ReadOnlyInt16Value(Value):
-
     def get(self):
         return self._interface.read_readonlyint16(self._adress)
 
 
 class Int16Value(Value):
-
     def get(self):
         return self._interface.read_int16(self._adress)
 
@@ -86,7 +81,6 @@ class Int16Value(Value):
 
 
 class DecimalInt16Value(Int16Value):
-
     def __init__(self, name, doc="", address=0, number_of_decimals=0):
         self._number_of_decimals = number_of_decimals
         super(DecimalInt16Value, self).__init__(name, doc, address)
@@ -122,14 +116,11 @@ class DecimalInt16Value(Int16Value):
         if instr_value != value:
             msg = (
                 "Value {} could not be set to {} and was set " "to {} instead"
-            ).format(
-                self._name, value, instr_value
-            )
+            ).format(self._name, value, instr_value)
             warnings.warn(msg, UserWarning)
 
 
 class Int16StringValue(SuperValue):
-
     def __init__(self, name, doc="", int_dict=None, adress=0):
         self._adress = adress
         self._int_dict = int_dict
@@ -147,13 +138,11 @@ class Int16StringValue(SuperValue):
 
 
 class ReadOnlyFloat32Value(Value):
-
     def get(self):
         return self._interface.read_readonlyfloat32(self._adress)
 
 
 class Float32Value(Value):
-
     def get(self):
         return self._interface.read_float32(self._adress)
 

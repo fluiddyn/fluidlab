@@ -1,4 +1,3 @@
-
 import fluidlab
 from fluidlab.exp.base import Experiment
 
@@ -34,7 +33,6 @@ def del_and_load_exp(exp, **kargs):
 
 
 class TestExperiment(unittest.TestCase):
-
     def test_create_load(self):
         """Should be able to create and load an experiment."""
         exp = Experiment(params={"a": 2}, description="Test.")
@@ -42,7 +40,6 @@ class TestExperiment(unittest.TestCase):
 
 
 class TestExperimentWithTank(unittest.TestCase):
-
     def test_create_fill_load(self):
         """Should be able to create, fill and load an ExperimentWithTank."""
         exp = ExperimentWithTank(
@@ -54,7 +51,6 @@ class TestExperimentWithTank(unittest.TestCase):
 
 
 class TestDoubleDiffusion(unittest.TestCase):
-
     def test_create_load(self):
         """Should be able to create and load an DoubleDiffusion."""
         exp = DoubleDiffusion(
@@ -64,7 +60,6 @@ class TestDoubleDiffusion(unittest.TestCase):
 
 
 class TestExpWithConductivityProbe(unittest.TestCase):
-
     def test_create_load(self):
         """Should be able to create and load an ExpWithConductivityProbe."""
 
@@ -77,7 +72,6 @@ class TestExpWithConductivityProbe(unittest.TestCase):
 
 
 class TestVerticalDuctExp(unittest.TestCase):
-
     def test_create_load(self):
         """Should be able to create and load a VerticalDuctExp."""
         exp = VerticalDuctExp(
@@ -92,7 +86,6 @@ class TestVerticalDuctExp(unittest.TestCase):
 
 
 class TestTaylorCouetteExp(unittest.TestCase):
-
     def test_create_load(self):
         """Should be able to create and load an experiment."""
         exp = TaylorCouetteExp(
@@ -100,8 +93,8 @@ class TestTaylorCouetteExp(unittest.TestCase):
             zs=[0, 200],
             Omega1=1,
             Omega2=0,
-            R1=150.,
-            R2=261.,
+            R1=150.0,
+            R2=261.0,
             params={"a": 2},
             description="Test.",
             need_board=False,
@@ -112,18 +105,17 @@ class TestTaylorCouetteExp(unittest.TestCase):
 
 
 class TestILSTaylorCouetteExp(unittest.TestCase):
-
     def test_create_load(self):
         """Should be able to create and load an experiment."""
         description = "Test."
         exp = ILSTaylorCouetteExp(
             rho_max=1.1,
-            N0=1.,
+            N0=1.0,
             prop_homog=0.1,
             Omega1=1,
             Omega2=0,
-            R1=150.,
-            R2=261.,
+            R1=150.0,
+            R2=261.0,
             params={"a": 2},
             description=description,
             need_board=False,
@@ -138,7 +130,6 @@ class TestILSTaylorCouetteExp(unittest.TestCase):
 
 
 class TestIQSTaylorCouetteExp(unittest.TestCase):
-
     def test_create_load(self):
         """Should be able to create and load an IQSTaylorCouetteExp."""
         exp = IQSTaylorCouetteExp(
@@ -147,8 +138,8 @@ class TestIQSTaylorCouetteExp(unittest.TestCase):
             alpha=0.6,
             Omega1=1,
             Omega2=0,
-            R1=150.,
-            R2=261.,
+            R1=150.0,
+            R2=261.0,
             params={"a": 2},
             description="Test.",
             need_board=False,
@@ -158,7 +149,6 @@ class TestIQSTaylorCouetteExp(unittest.TestCase):
 
 
 class TestI2LTaylorCouetteExp(unittest.TestCase):
-
     def test_create_load(self):
         """Should be able to create and load an I2LTaylorCouetteExp."""
         exp = I2LTaylorCouetteExp(
@@ -167,8 +157,8 @@ class TestI2LTaylorCouetteExp(unittest.TestCase):
             z_max=200,
             Omega1=1,
             Omega2=0,
-            R1=150.,
-            R2=261.,
+            R1=150.0,
+            R2=261.0,
             params={"a": 2},
             description="Test.",
             need_board=False,

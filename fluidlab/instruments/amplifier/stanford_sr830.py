@@ -103,14 +103,12 @@ class StanfordSR830TCValue(FloatValue):
 
 
 class StanfordSR830OffsetValue(FloatValue):
-
     def _convert_from_str(self, value):
         values = value.split(",")
         return float(values[0])
 
 
 class StanfordSR830ExpandValue(FloatValue):
-
     def _convert_from_str(self, value):
         values = value.split(",")
         return float(values[1])

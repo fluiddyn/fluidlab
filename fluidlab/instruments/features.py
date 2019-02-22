@@ -61,14 +61,12 @@ warnings.simplefilter("always", UserWarning)
 
 
 class Feature(object):
-
     def __init__(self, name, doc=""):
         self._name = name
         self.__doc__ = doc
 
 
 class WriteCommand(Feature):
-
     def __init__(self, name, doc="", command_str=""):
         super(WriteCommand, self).__init__(name, doc)
         self.command_str = command_str
@@ -87,7 +85,6 @@ class WriteCommand(Feature):
 
 
 class QueryCommand(Feature):
-
     def __init__(self, name, doc="", command_str="", parse_result=None):
         super(QueryCommand, self).__init__(name, doc)
         self.command_str = command_str
@@ -116,7 +113,6 @@ class QueryCommand(Feature):
 
 
 class SuperValue(Feature):
-
     def _build_driver_class(self, Driver):
         name = self._name
         setattr(Driver, name, self)
@@ -177,8 +173,9 @@ class Value(SuperValue):
         if self.channel_argument:
             command = command.format(channel=channel)
         if self.pause_instrument > 0:
-            result = self._convert_from_str(self._interface.query(command,
-                                                 time_delay=self.pause_instrument))
+            result = self._convert_from_str(
+                self._interface.query(command, time_delay=self.pause_instrument)
+            )
         else:
             result = self._convert_from_str(self._interface.query(command))
         self._check_value(result)
@@ -206,7 +203,6 @@ class Value(SuperValue):
 
 
 class BoolValue(Value):
-
     def __init__(
         self,
         name,
@@ -261,7 +257,6 @@ class BoolValue(Value):
 
 
 class StringValue(Value):
-
     def __init__(
         self,
         name,
@@ -309,7 +304,6 @@ class StringValue(Value):
 
 
 class NumberValue(Value):
-
     def __init__(
         self,
         name,
@@ -373,12 +367,14 @@ class FloatValue(NumberValue):
     def _convert_from_str(self, value):
         return float(value)
 
+
 class FloatScientificValue(NumberValue):
     _fmt = "{:.5e}"
-    
+
     def _convert_from_str(self, value):
         return float(value)
-    
+
+
 class IntValue(NumberValue):
     _fmt = "{:d}"
 
@@ -387,7 +383,6 @@ class IntValue(NumberValue):
 
 
 class RegisterValue(NumberValue):
-
     def __init__(
         self,
         name,

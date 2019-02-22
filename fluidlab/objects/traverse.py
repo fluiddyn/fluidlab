@@ -23,12 +23,12 @@ class Traverse(ObjectUsingBoard):
     """Represent a traverse."""
 
     def __init__(
-        self, board=None, position_start=300., position_max=None, Deltaz=400.
+        self, board=None, position_start=300.0, position_max=None, Deltaz=400.0
     ):
 
         super(Traverse, self).__init__(board=board)
 
-        self.mm_per_step = 454. / 3000  # (mm)
+        self.mm_per_step = 454.0 / 3000  # (mm)
 
         position_start = float(position_start)
         Deltaz = float(Deltaz)

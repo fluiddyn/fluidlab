@@ -1,4 +1,3 @@
-
 """
 This script tests the library powerdaq (minimal API from python).
 

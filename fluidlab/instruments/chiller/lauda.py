@@ -23,7 +23,6 @@ class LaudaException(Exception):
 
 
 class LaudaValue(Value):
-
     def __init__(
         self,
         name,
@@ -89,7 +88,6 @@ class LaudaOnOffValue(LaudaValue):
 
 
 class LaudaStatValue(Value):
-
     def __init__(
         self,
         name,

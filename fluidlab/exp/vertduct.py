@@ -27,6 +27,7 @@ class VerticalDuctExp(ExpWithConductivityProbe):
     See the documentation of the inherited class.
 
     """
+
     _base_dir = "Vertical_duct"
 
     def __init__(
@@ -36,9 +37,9 @@ class VerticalDuctExp(ExpWithConductivityProbe):
         params=None,
         description=None,
         str_path=None,
-        position_start=352.,
+        position_start=352.0,
         position_max=None,
-        Deltaz=340.,
+        Deltaz=340.0,
         need_board=True,
     ):
 
@@ -74,7 +75,7 @@ pumps and the measurements with the conductivity probe.
 
 def create_exp(rho_max=1.098, z_max=400):
 
-    rho_min = 1.
+    rho_min = 1.0
     Delta_rho = rho_max - rho_min
 
     #     zs_norm = np.array([0, 1./6, 5./6, 1])
@@ -87,8 +88,8 @@ def create_exp(rho_max=1.098, z_max=400):
 
     # zs_norm = np.array(  [0., 1/4, 1/2, 1/2, 3/4, 1.])
     # rhos_norm = np.array([1., 1.,  2/3, 1/3, 0.,  0.])
-    zs_norm = np.array([0., 1 / 3, 2 / 3, 1.])
-    rhos_norm = np.array([1., 1 / 2, 1 / 2, 0.])
+    zs_norm = np.array([0.0, 1 / 3, 2 / 3, 1.0])
+    rhos_norm = np.array([1.0, 1 / 2, 1 / 2, 0.0])
 
     description = """
 Profile: stratified at the top and bottom and homogenous in the middle.
@@ -103,15 +104,15 @@ Profile: stratified at the top and bottom and homogenous in the middle.
 
 def load_exp_and_measure_profils(str_path_save):
 
-    exp = load_exp(str_path=str_path_save, position_start=379., Deltaz=370.)
-    exp.sprobe.set_sample_rate(1000.)
+    exp = load_exp(str_path=str_path_save, position_start=379.0, Deltaz=370.0)
+    exp.sprobe.set_sample_rate(1000.0)
     period = 60
     exp.profiles.measure(
         duration=2 * period,
         period=period,
         deltaz=370,
         speed_measurements=100,
-        speed_up=60
+        speed_up=60,
     )
 
     exp.profiles.plot()

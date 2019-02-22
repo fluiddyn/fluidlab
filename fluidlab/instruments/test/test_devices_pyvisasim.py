@@ -1,4 +1,3 @@
-
 import unittest
 
 from fluiddyn.io import stdout_redirected
@@ -7,7 +6,6 @@ from fluidlab.instruments.test.devices_pyvisasim import Device2
 
 
 class SimpleTestCase(unittest.TestCase):
-
     def test_device2(self):
 
         with stdout_redirected():

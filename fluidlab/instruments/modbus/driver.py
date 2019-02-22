@@ -19,10 +19,14 @@ class ModbusDriver(Driver):
     def __init__(self, port, method="rtu", timeout=1, module="minimalmodbus"):
 
         if module == "minimalmodbus":
-            from fluidlab.instruments.modbus.interfaces import MinimalModbusInterface as Interface
+            from fluidlab.instruments.modbus.interfaces import (
+                MinimalModbusInterface as Interface,
+            )
 
         elif module == "pymodbus":
-            from fluidlab.instruments.modbus.interfaces import PyModbusInterface as Interface
+            from fluidlab.instruments.modbus.interfaces import (
+                PyModbusInterface as Interface,
+            )
 
         else:
             raise ValueError

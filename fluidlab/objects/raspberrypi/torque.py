@@ -89,9 +89,8 @@ class Torque(object):
             ax.plot(ts, volts, "x")
 
     def plot(self, indice_files=-1, in_different_figs=False, times_slice=None):
-        if (
-            in_different_figs
-            and isinstance(indice_files, (list, np.ndarray, tuple))
+        if in_different_figs and isinstance(
+            indice_files, (list, np.ndarray, tuple)
         ):
             for ind in indice_files:
                 self.plot(ind)
@@ -173,7 +172,7 @@ class TorqueRaspberryPi(Torque):
             if not os.path.exists(self.path_save):
                 os.makedirs(self.path_save)
 
-            path_file = (self.path_save + "/torque_" + time_as_str() + ".h5")
+            path_file = self.path_save + "/torque_" + time_as_str() + ".h5"
 
             with H5File(path_file, "w") as f:
                 f.attrs["time start"] = str(datetime.datetime.now())

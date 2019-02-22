@@ -1,4 +1,3 @@
-
 import unittest
 
 from fluiddyn.io import stdout_redirected
@@ -11,7 +10,6 @@ class InstruWithTrigger(IEC60488, Trigger):
 
 
 class SimpleTestCase(unittest.TestCase):
-
     def test_instr(self):
 
         with stdout_redirected():

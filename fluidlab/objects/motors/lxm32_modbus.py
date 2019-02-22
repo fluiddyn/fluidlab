@@ -1,4 +1,3 @@
-
 from __future__ import print_function
 
 from threading import Thread
@@ -73,14 +72,13 @@ modes = {
     3: "Profile Velocity",
     4: "Profile Torque",
     6: "Homing",
-    0x1f: "Jog",
-    0x1e: "Electronic Gear",
-    0x1d: "Motion Sequence",
+    0x1F: "Jog",
+    0x1E: "Electronic Gear",
+    0x1D: "Motion Sequence",
 }
 
 
 class Motor(object):
-
     def __init__(
         self,
         ip_modbus="192.168.28.21",

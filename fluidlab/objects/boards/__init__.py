@@ -51,6 +51,7 @@ class FalseBoard(object):
     understandable message.
 
     """
+
     works = False
 
     def __getattr__(self, key):

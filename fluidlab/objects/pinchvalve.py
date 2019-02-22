@@ -44,7 +44,6 @@ class PinchValve(ObjectUsingBoard):
 
 
 class ContextManagerOpenedValve(object):
-
     def __init__(self, valve):
         self.valve = valve
 
@@ -57,7 +56,6 @@ class ContextManagerOpenedValve(object):
 
 
 class FalseContextManager(object):
-
     def __enter__(self):
         return self
 

@@ -11,7 +11,12 @@
 __all__ = ["Agilent33220a"]
 
 from fluidlab.instruments.iec60488 import (
-    IEC60488, PowerOn, Calibration, Trigger, ObjectIdentification, StoredSetting
+    IEC60488,
+    PowerOn,
+    Calibration,
+    Trigger,
+    ObjectIdentification,
+    StoredSetting,
 )
 
 
@@ -21,7 +26,6 @@ import re
 
 
 class Agilent33220a_Vdc(SuperValue):
-
     def __init__(self):
         super(Agilent33220a_Vdc, self).__init__("vdc", doc="DC voltage")
 
@@ -39,7 +43,6 @@ class Agilent33220a_Vdc(SuperValue):
 
 
 class Agilent33220a_Vrms(SuperValue):
-
     def __init__(self):
         super(Agilent33220a_Vrms, self).__init__("vrms", doc="RMS voltage")
 
@@ -66,7 +69,6 @@ class Agilent33220a_Vrms(SuperValue):
 
 
 class Agilent33220a_Frequency(SuperValue):
-
     def __init__(self):
         super(Agilent33220a_Frequency, self).__init__(
             "frequency", doc="Wave frequency"
@@ -99,7 +101,7 @@ def parse_agilent33220a_configuration_str(str):
         function[1::],
         float(frequency),
         float(amplitude),
-        float(offset[0:(Nchars - 2)]),
+        float(offset[0 : (Nchars - 2)]),
     )
 
 

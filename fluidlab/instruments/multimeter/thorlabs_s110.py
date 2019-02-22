@@ -18,7 +18,6 @@ __all__ = ["ThorlabsS110"]
 
 
 class ThorlabsS110(Driver):
-
     def __init__(self, serialPort):
         interface = SerialInterface(
             serialPort,

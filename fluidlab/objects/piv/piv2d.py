@@ -48,10 +48,10 @@ class PIV2D(object):
     def single_frame_2d(
         self,
         time_between_frames,
-        volt=5.,
+        volt=5.0,
         total_time=None,
         wait_file=False,
-        nb_period_to_wait=1.,
+        nb_period_to_wait=1.0,
     ):
         """ Single frame 2D PIV.
 
@@ -88,8 +88,7 @@ class PIV2D(object):
 
         print(
             "\n"
-            + "-"
-            * 79
+            + "-" * 79
             + "\n"
             + "Connect DAC0 to connector 1 of PCO Edge camera"
             "\n" + "-" * 79 + "\n\n" + "Settings in Camware software\n\n"
@@ -128,7 +127,7 @@ class PIV2D(object):
         nb_couples,
         nb_nodes=256,
         wait_file=False,
-        nb_period_to_wait=1.,
+        nb_period_to_wait=1.0,
     ):
         """
         Double frame 2D PIV.
@@ -158,9 +157,7 @@ class PIV2D(object):
                 "time_between_pairs = {} s\n"
                 "time_expo = {} s\n"
                 "time_between_frames = {}"
-            ).format(
-                time_between_pairs, time_expo, time_between_frames
-            )
+            ).format(time_between_pairs, time_expo, time_between_frames)
         )
 
         t7 = self.t7
@@ -190,13 +187,12 @@ class PIV2D(object):
 
         print(
             "\n"
-            + "-"
-            * 79
+            + "-" * 79
             + "\n"
             + "Connect DAC0 to connector 1 of PCO Edge camera"
             "\n" + "-" * 79 + "\n\n" + "Settings in Camware software\n\n"
             '- trigger Mode to "Ext Exp Start"\n'
-            "- frame rate >= {} Hz\n".format(1. / time_between_frames)
+            "- frame rate >= {} Hz\n".format(1.0 / time_between_frames)
             + "- exposure <= {} s \n".format(time_expo)
             + '- acquire Mode to "Auto"\n'
             '- I/O Signal: tick only "Exposure Trigger"\n'
@@ -262,7 +258,7 @@ class PIV2D(object):
 
 if __name__ == "__main__":
 
-    time_between_pairs = 1.
+    time_between_pairs = 1.0
     time_expo = 0.1
     time_between_frames = 0.3
     n = 256

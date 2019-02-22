@@ -29,12 +29,13 @@ from fluiddyn._version import __version__
 # from fluiddyn.util.daemons import DaemonThread as Daemon
 
 from fluidlab.objects.rotatingobjects import (
-    create_rotating_objects_kepler, DaemonRunningRotatingObject, RotatingObject
+    create_rotating_objects_kepler,
+    DaemonRunningRotatingObject,
+    RotatingObject,
 )
 
 
 class ElapsedTimeClock(ttk.Label):
-
     def __init__(self, parent, *args, **kwargs):
         ttk.Label.__init__(self, parent, *args, **kwargs)
         self.lasttime = ""
@@ -156,7 +157,6 @@ class FrameWritingObject(ttk.Frame):
 
 
 class MyDialogCloseWindow(SimpleDialog):
-
     def body(self, master):
         question = (
             "Do you really want to close the window\n" "and stop the experiment?"
@@ -242,7 +242,7 @@ if __name__ == "__main__":
     import numpy as np
 
     def Omega_i(t):
-        Omega = 1.
+        Omega = 1.0
         period = 60
         return Omega / 2 * (1 - np.cos(2 * np.pi * t / period))
 

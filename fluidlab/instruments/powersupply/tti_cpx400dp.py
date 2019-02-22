@@ -15,7 +15,6 @@ from fluidlab.instruments.features import FloatValue, BoolValue
 
 
 class TtiCpx400dpUnitValue(FloatValue):
-
     def _convert_from_str(self, value):
         index_v = value.find("V")
         index_i = value.find("A")

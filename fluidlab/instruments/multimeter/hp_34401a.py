@@ -72,7 +72,7 @@ class HP34401a(IEC60488):
     def print_configuration(self):
         s = self.query_configuration().strip()
         N = len(s)
-        s = s[1:(N - 1)].split(" ")
+        s = s[1 : (N - 1)].split(" ")
         t = s[1].split(",")
         print("function=" + s[0] + ", range=" + t[0] + ", resolution=" + t[1])
 

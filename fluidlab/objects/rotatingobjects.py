@@ -52,7 +52,7 @@ Daemon = DaemonThread
 class RotatingObject(ObjectUsingBoard):
     name = "rotating object"
     rotation_rate_max = 2 * np.pi / 2.43  # (rad/s)
-    voltage_max = 5.
+    voltage_max = 5.0
     channel_class = 0
 
     def __init__(self, rotation_rate, board=None, channel=None):
@@ -68,7 +68,7 @@ class RotatingObject(ObjectUsingBoard):
 
         if hasattr(rotation_rate, "__call__"):
             self.rotation_rate_vs_t = rotation_rate
-            self.rotation_rate = self.rotation_rate_vs_t(0.)
+            self.rotation_rate = self.rotation_rate_vs_t(0.0)
             if not isinstance(self.rotation_rate, numbers.Number):
                 raise ValueError(
                     "If rotation_rate is a function, "
@@ -99,7 +99,7 @@ class RotatingObject(ObjectUsingBoard):
         volts_old, periods_old = self.load_calibrations()
 
         if len(volts_old) > 0:
-            cond = 1. / periods_old > 0
+            cond = 1.0 / periods_old > 0
             volts_old = volts_old[cond]
             periods_old = periods_old[cond]
             self.create_function_from_data(volts_old, periods_old)
@@ -187,14 +187,14 @@ class RotatingObject(ObjectUsingBoard):
         if len(volts_old) > 2:
             ax.plot(volts_old, Omegas_old, "xg")
 
-            cond = 1. / periods_old > 0
+            cond = 1.0 / periods_old > 0
             volts_old = volts_old[cond]
             periods_old = periods_old[cond]
 
             if len(volts_old) > 0:
                 self.create_function_from_data(volts_old, periods_old)
 
-            rr_for_plot = np.linspace(0., self.rotation_rate_max, 200)
+            rr_for_plot = np.linspace(0.0, self.rotation_rate_max, 200)
             volts_for_plot = self._voltage_from_rotation_rate(rr_for_plot)
 
             ax.plot(volts_for_plot, rr_for_plot, "k-")
@@ -217,7 +217,7 @@ class RotatingObject(ObjectUsingBoard):
 
     def stop(self):
         if self.board is not False:
-            self._set_voltage(0.)
+            self._set_voltage(0.0)
 
     def write(self, string):
         print(string)
@@ -225,25 +225,24 @@ class RotatingObject(ObjectUsingBoard):
 
 class InnerCylinderOldTC(RotatingObject):
     rotation_rate_max = 2 * np.pi / 2.43  # (rad/s)
-    voltage_max = 5.
+    voltage_max = 5.0
     name = "Inner cylinder old TC"
 
 
 class InnerCylinder(RotatingObject):
     rotation_rate_max = 1.18  # (rad/s)
-    voltage_max = 5.
+    voltage_max = 5.0
     name = "Inner cylinder new TC"
 
 
 class RotatingTable(RotatingObject):
     rotation_rate_max = 2.5  # (rad/s)
-    voltage_max = 5.
+    voltage_max = 5.0
     name = "Rotating table"
     channel_class = 1
 
 
 class DaemonRunningRotatingObject(Daemon):
-
     def __init__(self, rotating_object):
         super(DaemonRunningRotatingObject, self).__init__()
         self.ro = rotating_object

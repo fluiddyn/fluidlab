@@ -134,11 +134,7 @@ class Session(object):
 
             self._base_name_files = os.path.split(self.path_session_file)[
                 1
-            ].split(
-                "session.h5"
-            )[
-                0
-            ]
+            ].split("session.h5")[0]
 
             self.path = os.path.dirname(self.path_session_file)
 

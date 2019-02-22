@@ -1,4 +1,3 @@
-
 from __future__ import print_function, division
 
 import time
@@ -17,7 +16,6 @@ from .util import wait_for_file, save_exp
 
 
 class PIVScan(object):
-
     def __init__(self):
         self.galva = Galva()
         self.t7 = self.galva.t7
@@ -31,7 +29,7 @@ class PIVScan(object):
         nb_levels,
         total_time=None,
         wait_file=False,
-        nb_period_to_wait=1.,
+        nb_period_to_wait=1.0,
     ):
         """Single frame PIV.
 
@@ -416,7 +414,7 @@ def saw_tooth_period2(vmin, vmax, time_expo, nb_levels, time_between_frames):
     """
 
     nb_levels -= 1
-    freq = (2. / time_expo)
+    freq = 2.0 / time_expo
 
     N = time_between_frames / time_expo
     if (N != int(N)) or (N <= nb_levels):
@@ -436,7 +434,7 @@ def saw_tooth_period2(vmin, vmax, time_expo, nb_levels, time_between_frames):
     )
     volt0 = np.zeros(volttemp.size * 2)
     for ind in range(volttemp.size):
-        volt0[2 * ind:2 * ind + 2] = np.asarray([volttemp[ind], volttemp[ind]])
+        volt0[2 * ind : 2 * ind + 2] = np.asarray([volttemp[ind], volttemp[ind]])
 
     # second channel
     Vmin = 0.0
@@ -447,23 +445,23 @@ def saw_tooth_period2(vmin, vmax, time_expo, nb_levels, time_between_frames):
 
     volt1 = np.zeros(volttemp.size * 2)
     for ind in range(volttemp.size):
-        volt1[2 * ind:2 * ind + 2] = np.asarray([volttemp[ind], 0])
+        volt1[2 * ind : 2 * ind + 2] = np.asarray([volttemp[ind], 0])
     print(volt0.shape, volt1.shape)
     volt = np.vstack([volt0, volt1])
 
     pylab.figure()
-    t = np.arange(0, time_between_frames, 1 / freq)[0:volt0.size]
+    t = np.arange(0, time_between_frames, 1 / freq)[0 : volt0.size]
     pylab.plot(t, volt[0], "+")
     pylab.plot(t, volt[1], "r+")
     for i in range(int(t.size / 2 - 1)):
         pylab.plot(
-            t[i * 2:i * 2 + 3],
-            np.hstack([volt[0][i * 2:i * 2 + 2], volt[0][i * 2 + 1]]),
+            t[i * 2 : i * 2 + 3],
+            np.hstack([volt[0][i * 2 : i * 2 + 2], volt[0][i * 2 + 1]]),
             "b-",
         )
         pylab.plot(
-            t[i * 2:i * 2 + 2],
-            np.hstack([volt[1][i * 2:i * 2 + 1], volt[1][i * 2]]),
+            t[i * 2 : i * 2 + 2],
+            np.hstack([volt[1][i * 2 : i * 2 + 1], volt[1][i * 2]]),
             "r-",
         )
     pylab.plot((t[1] + t[-1]) * np.ones(2), [0, 5], "k")
@@ -578,7 +576,7 @@ def double_saw_tooth2(vmin, vmax, time_expo, nb_levels, time_between_frames):
 
     """
     nb_levels -= 1
-    freq = (2.0 / time_expo)
+    freq = 2.0 / time_expo
 
     N = time_between_frames / time_expo
     # if (N != int(N)) or (N <= nb_levels):
@@ -603,7 +601,7 @@ def double_saw_tooth2(vmin, vmax, time_expo, nb_levels, time_between_frames):
     )
     volt0 = np.zeros(volttemp.size * 2 + 1)
     for ind in range(volttemp.size):
-        volt0[2 * ind:2 * ind + 2] = np.asarray([volttemp[ind], volttemp[ind]])
+        volt0[2 * ind : 2 * ind + 2] = np.asarray([volttemp[ind], volttemp[ind]])
     volt0[-1] = volt0[0]
     # second channel
     Vmin = 0
@@ -618,24 +616,26 @@ def double_saw_tooth2(vmin, vmax, time_expo, nb_levels, time_between_frames):
     )
     volt1 = np.zeros(volttemp.size * 2 + 1)
     for ind in range(volttemp.size):
-        volt1[2 * ind:2 * ind + 2] = np.asarray([volttemp[ind], 0])
+        volt1[2 * ind : 2 * ind + 2] = np.asarray([volttemp[ind], 0])
     volt1[-1] = 0
     volt = np.vstack([volt0, volt1])
 
     pylab.figure()
-    t = np.arange(0, time_between_frames * 2 + time_expo, 1 / freq)[0:volt0.size]
+    t = np.arange(0, time_between_frames * 2 + time_expo, 1 / freq)[
+        0 : volt0.size
+    ]
     # t = np.linspace(0, (N+1)/freq, 2 * N+1)[0:volt0.size]
     pylab.plot(t, volt0, "+")
     pylab.plot(t, volt[1], "r+")
     for i in range(int(t.size / 2 - 1)):
         pylab.plot(
-            t[i * 2:i * 2 + 3],
-            np.hstack([volt[0][i * 2:i * 2 + 2], volt[0][i * 2 + 1]]),
+            t[i * 2 : i * 2 + 3],
+            np.hstack([volt[0][i * 2 : i * 2 + 2], volt[0][i * 2 + 1]]),
             "b-",
         )
         pylab.plot(
-            t[i * 2:i * 2 + 2],
-            np.hstack([volt[1][i * 2:i * 2 + 1], volt[1][i * 2]]),
+            t[i * 2 : i * 2 + 2],
+            np.hstack([volt[1][i * 2 : i * 2 + 1], volt[1][i * 2]]),
             "r-",
         )
     pylab.ylim([-1, 6])

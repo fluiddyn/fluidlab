@@ -1,4 +1,3 @@
-
 import os
 import time
 
@@ -49,7 +48,6 @@ def prepare_calibration(rho_min=1, rho_max=1.18, nb_solutions=6):
 
 
 class Calibration(object):
-
     def __init__(self, path_rho, path_temp=None):
         self.path_rho = path_rho
 
@@ -154,20 +152,18 @@ class Calibration(object):
 
         tmp = (
             np.log(voltT - self.voltToff) - self.coeffs_temp[1]
-        ) / self.coeffs_temp[
-            0
-        ]
-        Ti = 1. / tmp - 273.15
+        ) / self.coeffs_temp[0]
+        Ti = 1.0 / tmp - 273.15
         return Ti
 
     def _fit_T_vs_voltT(self, T, voltT):
         """Creates a function from data."""
         print("_fit_T_vs_voltT")
         y = np.log(voltT - self.voltToff)
-        x = 1. / (T + 273.15)
+        x = 1.0 / (T + 273.15)
         self.coeffs_temp = np.polyfit(x, y, deg=1)
 
-    def add_point_rho(self, rho, T, duration=2.):
+    def add_point_rho(self, rho, T, duration=2.0):
         r"""Calibrates the probe.
 
         Parameters

@@ -46,7 +46,6 @@ from fluidlab.objects.probes import MovingConductivityProbe
 
 
 class DaemonMeasureProfiles(Daemon):
-
     def __init__(self, exp, **kargs):
         super(DaemonMeasureProfiles, self).__init__()
         self._exp = exp
@@ -131,7 +130,7 @@ class Profiles(object):
         if inner_cylinder is None:
             rotation_rate = None
 
-        time_probe_moving = deltaz * (1. / speed_measurements + 1. / speed_up)
+        time_probe_moving = deltaz * (1.0 / speed_measurements + 1.0 / speed_up)
         if time_probe_moving > period:
             raise ValueError(
                 "period is too short. time_probe_moving: "
@@ -143,7 +142,7 @@ class Profiles(object):
         if not os.path.exists(path_dir):
             os.mkdir(path_dir)
 
-        path_file = (path_dir + "/profiles_" + time_as_str() + ".h5")
+        path_file = path_dir + "/profiles_" + time_as_str() + ".h5"
 
         deltaz = abs(deltaz)
         with h5py.File(path_file, "w") as f:
@@ -370,7 +369,7 @@ class Profiles(object):
         ax.set_xlim([times[0] / 60, times[-1] / 60])
 
         ax2 = ax.twiny()
-        tOmega = 1000 * np.arange(10.)
+        tOmega = 1000 * np.arange(10.0)
         t_inmin = tOmega / self._exp.params["Omega1"] / 60
         ax2.set_xlabel("$t\Omega_1/1000$")
         ax2.set_xticks(t_inmin)
@@ -465,9 +464,9 @@ class ExpWithConductivityProbe(ExperimentWithTank):
         params=None,
         description=None,
         str_path=None,
-        position_start=300.,
+        position_start=300.0,
         position_max=None,
-        Deltaz=400.,
+        Deltaz=400.0,
         need_board=True,
     ):
 

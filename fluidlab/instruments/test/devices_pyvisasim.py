@@ -6,7 +6,10 @@
 from fluidlab.instruments.drivers import VISADriver
 
 from fluidlab.instruments.features import (
-    QueryCommand, StringValue, FloatValue, BoolValue
+    QueryCommand,
+    StringValue,
+    FloatValue,
+    BoolValue,
 )
 
 

@@ -132,13 +132,13 @@ class IQSTaylorCouetteExp(TaylorCouetteExp):
         Omega1=None,
         Omega2=None,
         R1=None,
-        R2=261.,
+        R2=261.0,
         description=None,
         params=None,
         str_path=None,
-        position_start=352.,
+        position_start=352.0,
         position_max=None,
-        Deltaz=340.,
+        Deltaz=340.0,
         need_board=True,
     ):
         # start the init. and find out if it is the first creation
@@ -333,11 +333,11 @@ Delta_rho: {1:5.2f}; z_max: {2:5.2f};
 
 def load_exp_and_measure_profils(str_path):
 
-    exp = load_exp(str_path=str_path, position_start=379., Deltaz=364.)
+    exp = load_exp(str_path=str_path, position_start=379.0, Deltaz=364.0)
 
     T1 = 2 * np.pi / exp.params["Omega"]
 
-    exp.sprobe.set_sample_rate(2000.)
+    exp.sprobe.set_sample_rate(2000.0)
     period = 2 * T1
     duration = 60 * 60 * 30
 

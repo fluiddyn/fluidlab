@@ -24,7 +24,6 @@ from fluidlab.postproc.serieofarrays import SerieOfArraysFromFiles
 
 
 class InstructionsUVMAT(ParamContainer):
-
     def __init__(self, **kargs):
 
         if "tag" not in kargs:
@@ -59,7 +58,6 @@ class InstructionsUVMAT(ParamContainer):
 
 
 class ActionBase(object):
-
     def __init__(self, instructions):
         self.instructions = instructions
 

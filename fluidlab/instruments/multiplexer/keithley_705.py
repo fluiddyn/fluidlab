@@ -7,10 +7,11 @@
 
 """
 
-__all__ = ['Keithley705']
+__all__ = ["Keithley705"]
 
 from fluidlab.instruments.iec60488 import IEC60488
 from fluidlab.instruments.features import SuperValue, BoolValue
+
 
 class Keithley705(IEC60488):
     """Driver for the multiplexer Keithley 705*
@@ -25,7 +26,7 @@ class Keithley705(IEC60488):
         self.interface.write("C{chan:03d} X".format(chan=chan))
         if display:
             self.interface.write("B{chan:03d} X".format(chan=chan))
-             
+
     def open_channel(self, chan, display=True):
         self.interface.write("N{chan:03d} X".format(chan=chan))
         if display:
@@ -40,7 +41,8 @@ class Keithley705(IEC60488):
         else:
             self.interface.write("D0 X")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from fluidlab.instruments.interfaces.linuxgpib import GPIBInterface
     import time
 

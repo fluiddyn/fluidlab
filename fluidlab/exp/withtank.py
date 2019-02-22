@@ -97,6 +97,7 @@ class ExperimentWithTank(Experiment):
     time_start : str
         Coding the time of creation.
     """
+
     _base_dir = "With_tank"
 
     def __init__(
@@ -177,7 +178,7 @@ class ExperimentWithTank(Experiment):
             rhos = self.params["rhos"]
         else:
             zs = [0, H]
-            rhos = [1.2, 1.]
+            rhos = [1.2, 1.0]
 
         self.tank = StratifiedTank(H=450, S=S, z=zs, rho=rhos)
 
@@ -209,12 +210,12 @@ if __name__ == "__main__":
     def test_fill_tank():
 
         rho_max = 1.084
-        rho_min = 1.
+        rho_min = 1.0
         Delta_rho = rho_max - rho_min
 
         z_max = 400
-        zs = z_max * np.array([0, 1. / 6, 5. / 6, 1])
-        rhos = rho_min + Delta_rho * np.array([1., 0.5, 0.5, 0.])
+        zs = z_max * np.array([0, 1.0 / 6, 5.0 / 6, 1])
+        rhos = rho_min + Delta_rho * np.array([1.0, 0.5, 0.5, 0.0])
 
         exp = ExperimentWithTank(
             description="Test fill tank.", params={}, str_path="Test"

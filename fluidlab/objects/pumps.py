@@ -91,7 +91,7 @@ class MasterFlexPumps(object):
     cr = chr(13)  # carriage return
 
     def __init__(self, nb_pumps=2, verbose=False):
-        self.rot_per_min_max = 600.
+        self.rot_per_min_max = 600.0
 
         flow_rates_max = txt.quantities_from_txt_file(path_calib)[0]
         if nb_pumps == 1:
@@ -376,7 +376,7 @@ class MasterFlexPumps(object):
 
         self.set_rot_per_min(rots_per_min, pumps=pumps)
 
-    def test_one_pump(self, pump=1, vol_to_pump=2000., flow_rate_test=None):
+    def test_one_pump(self, pump=1, vol_to_pump=2000.0, flow_rate_test=None):
         """Test one pump and print actual maximum flowrate.
 
         Pump with the pump with the index *pump* an approximate volume

@@ -11,7 +11,12 @@
 __all__ = ["HP_6653A"]
 
 from fluidlab.instruments.iec60488 import (
-    IEC60488, PowerOn, Calibration, Trigger, ObjectIdentification, StoredSetting
+    IEC60488,
+    PowerOn,
+    Calibration,
+    Trigger,
+    ObjectIdentification,
+    StoredSetting,
 )
 
 from fluidlab.instruments.features import SuperValue
@@ -27,7 +32,6 @@ class HP_6653A(
 
 
 class HPFloatValue(SuperValue):
-
     def __init__(
         self, name, doc="", unit_str="", command_set=None, command_get=None
     ):
@@ -45,7 +49,6 @@ class HPFloatValue(SuperValue):
 
 
 class HPBoolValue(SuperValue):
-
     def __init__(self, name, doc="", command_set=None):
         super(HPBoolValue, self).__init__(name, doc=doc)
         self.command_set = command_set

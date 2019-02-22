@@ -269,7 +269,7 @@ def read_analog(
         try:
             task.SetChanAttribute(resource, DAQmx_AI_Coupling, coupling_value)
         except AttributeNotSupportedInTaskContextError:
-            print('Coupling attribute not supported on this device')
+            print("Coupling attribute not supported on this device")
 
     # configure clock and DMA input buffer
     if samples_per_chan > 1:
@@ -282,14 +282,14 @@ def read_analog(
             else:
                 verbose_text += str(samples_per_chan / 1000000) + " MSamp/chan @ "
             if sample_rate < 1000:
-                verbose_text += ("%.2f Hz using OnboardClock)" % sample_rate)
+                verbose_text += "%.2f Hz using OnboardClock)" % sample_rate
             elif sample_rate < 1000000:
-                verbose_text += (
-                    "%.2f kHz using OnboardClock)" % (sample_rate / 1000.0)
+                verbose_text += "%.2f kHz using OnboardClock)" % (
+                    sample_rate / 1000.0
                 )
             else:
-                verbose_text += (
-                    "%.2f MHz using OnboardClock)" % (sample_rate / 1e6)
+                verbose_text += "%.2f MHz using OnboardClock)" % (
+                    sample_rate / 1e6
                 )
             print(verbose_text)
         task.CfgSampClkTiming(
@@ -445,17 +445,19 @@ def write_analog(
         verbose_text = "DAQmx: Configure clock timing ("
         if verbose:
             if samples_per_chan < 1000:
-                verbose_text = verbose_text + str(
-                    samples_per_chan
-                ) + " samp/chan @ "
+                verbose_text = (
+                    verbose_text + str(samples_per_chan) + " samp/chan @ "
+                )
             elif samples_per_chan < 1000000:
-                verbose_text = verbose_text + str(
-                    samples_per_chan / 1000
-                ) + " kSamp/chan @ "
+                verbose_text = (
+                    verbose_text + str(samples_per_chan / 1000) + " kSamp/chan @ "
+                )
             else:
-                verbose_text = verbose_text + str(
-                    samples_per_chan / 1000000
-                ) + " MSamp/chan @ "
+                verbose_text = (
+                    verbose_text
+                    + str(samples_per_chan / 1_000_000)
+                    + " MSamp/chan @ "
+                )
             if sample_rate < 1000:
                 verbose_text = verbose_text + (
                     "%.2f Hz using OnboardClock)" % sample_rate
@@ -528,7 +530,7 @@ def write_analog(
             return task
 
 
-def write_analog_end_task(task, timeout=0.):
+def write_analog_end_task(task, timeout=0.0):
     """End task.
 
     Parameters

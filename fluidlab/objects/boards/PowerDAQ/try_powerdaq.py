@@ -1,4 +1,3 @@
-
 """
 This script tests the library powerdaq (minimal API from python).
 
@@ -21,19 +20,19 @@ import matplotlib.pyplot as plt
 board = PowerDAQBoard()
 
 # prepare analogic output
-frequency = 50.
+frequency = 50.0
 tend = 5.2
 nb_values = tend * frequency
 
-dt = 1. / frequency
+dt = 1.0 / frequency
 t = dt * (np.arange(nb_values) + 1)
 
 # t = np.linspace(0, tend, nb_values)
 
-period_signal = 1.
+period_signal = 1.0
 outcos = np.cos(2 * np.pi / period_signal * t)
 outconst = np.ones(t.shape)
-out0 = 6. * outcos
+out0 = 6.0 * outcos
 
 # prepare analogic input
 channels = [1]

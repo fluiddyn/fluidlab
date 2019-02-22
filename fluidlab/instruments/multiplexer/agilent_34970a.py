@@ -17,7 +17,6 @@ from fluidlab.instruments.features import SuperValue
 
 
 class Agilent34970aValue(SuperValue):
-
     def __init__(self, name, doc="", function_name=None):
         super(Agilent34970aValue, self).__init__(name, doc)
         self.function_name = function_name
@@ -32,7 +31,7 @@ class Agilent34970aValue(SuperValue):
             """Get """ + name
             if verbose is None:
                 # default is verbose for acquisitions
-                verbose = (samplesPerChan > 1)
+                verbose = samplesPerChan > 1
             result = self._driver.scan(
                 chanList, function_name, samplesPerChan, sampleRate, verbose
             )
@@ -117,7 +116,7 @@ class Agilent34970a(IEC60488):
             )
 
         if samplesPerChan > 1:
-            timeInterval = 1. / sampleRate
+            timeInterval = 1.0 / sampleRate
             if timeInterval < 1e-3:
                 raise ValueError(
                     "The timer resolution of the Agilent 34970A is 1 ms"

@@ -72,25 +72,25 @@ def make_signal_double_frame(
 
     # Trigger on. Frame 1
     cond = times < time_expo
-    volts[cond] = 5.
+    volts[cond] = 5.0
 
     # Trigger off.
     cond = (times >= time_expo) & (times < delta_t)
-    volts[cond] = 0.
+    volts[cond] = 0.0
 
     # Trigger on. Frame 2
     cond = (times >= delta_t) & (times < delta_t + time_expo)
-    volts[cond] = 5.
+    volts[cond] = 5.0
 
     # Trigger off
-    volts[-1] = 0.
+    volts[-1] = 0.0
 
     return times, volts, time_expo, delta_t, time_between_nodes
 
 
 if __name__ == "__main__":
 
-    time_between_pairs = 5.
+    time_between_pairs = 5.0
     time_expo = 0.1
     delta_t = 0.5
     n = 256

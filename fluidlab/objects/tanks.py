@@ -263,7 +263,7 @@ class StratifiedTank(object):
             rho = group["rho"][...]
             self.profile = DensityProfile(z, rho)
 
-    def fill(self, dt=1, pumps=False, hastoplot=True, vol_tube=142.):
+    def fill(self, dt=1, pumps=False, hastoplot=True, vol_tube=142.0):
         """Fill the tank.
 
         Parameters
@@ -303,12 +303,10 @@ the filling. To really fill the tank, set argument pumps to True or to
 an instance of class MasterFlexPumps.\n"""
             )
         else:
-            to_print = (
-                """
+            to_print = """
 Warning: Before really fill the tank, the tube have to be filled with
 the correct density profile. During the filling of the tube, put the
 end of the tube out of the tank. Are you ready?"""
-            )
             if not query.query_yes_no(to_print):
                 return
 
@@ -366,9 +364,8 @@ end of the tube out of the tank. Are you ready?"""
                 pumps.set_flow_rate([flowrate_rhomin, flowrate_rhomax])
 
             rho_test = (
-                (rhomax * flowrate_rhomax + rhomin * flowrate_rhomin)
-                / flowrate_tot
-            )
+                rhomax * flowrate_rhomax + rhomin * flowrate_rhomin
+            ) / flowrate_tot
 
             t += dt
             vol_pumped += dvolume
@@ -391,11 +388,9 @@ end of the tube out of the tank. Are you ready?"""
             if vol_pumped >= vol_tube and not tube_filled and PUMP:
                 tube_filled = True
                 pumps.stop()
-                to_print = (
-                    """
+                to_print = """
 Now the tube should be filled with the correct density profile. You can
 put the end of the tube in the tank! Are you ready?"""
-                )
                 if not query.query_yes_no(to_print):
                     return
 
@@ -409,7 +404,7 @@ put the end of the tube in the tank! Are you ready?"""
         if hastoplot:
 
             h = np.array(lh_pumped)
-            t = dt * np.arange(0., len(lh_pumped))
+            t = dt * np.arange(0.0, len(lh_pumped))
             t /= 60  # (min)
 
             rho = np.array(lrho)
@@ -471,18 +466,18 @@ class TaylorCouette(StratifiedTank):
             z=z,
             rho=rho,
             dico_profile=dico_profile,
-            str_path=str_path
+            str_path=str_path,
         )
 
 
 def test_profiles():
 
     rho_max = 1.084
-    rho_min = 1.
+    rho_min = 1.0
     Delta_rho = rho_max - rho_min
 
-    z_max = 500.
-    S = 300.
+    z_max = 500.0
+    S = 300.0
 
     tankL = StratifiedTank(
         H=z_max + 10,
@@ -519,8 +514,8 @@ def test_profiles():
         },
     )
 
-    zs = z_max * np.array([0, 1. / 3, 2. / 3, 1])
-    rhos = rho_min + Delta_rho * np.array([1., 0.5, 0.5, 0.])
+    zs = z_max * np.array([0, 1.0 / 3, 2.0 / 3, 1])
+    rhos = rho_min + Delta_rho * np.array([1.0, 0.5, 0.5, 0.0])
 
     tank_test = StratifiedTank(H=z_max + 10, S=80 ** 2, z=zs, rho=rhos)
 
@@ -558,12 +553,12 @@ def test_profiles():
 def test_save():
 
     rho_max = 1.084
-    rho_min = 1.
+    rho_min = 1.0
     Delta_rho = rho_max - rho_min
 
     z_max = 400
-    zs = z_max * np.array([0, 1. / 6, 5. / 6, 1])
-    rhos = rho_min + Delta_rho * np.array([1., 0.5, 0.5, 0.])
+    zs = z_max * np.array([0, 1.0 / 6, 5.0 / 6, 1])
+    rhos = rho_min + Delta_rho * np.array([1.0, 0.5, 0.5, 0.0])
 
     tank = TaylorCouette(Rin=300, Rout=520, z=zs, rho=rhos)
 

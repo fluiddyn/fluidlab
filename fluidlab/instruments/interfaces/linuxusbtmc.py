@@ -24,7 +24,6 @@ from fluidlab.instruments.interfaces import QueryInterface
 
 
 class LinuxUSBTMCInterface(QueryInterface):
-
     def __init__(self, device=0):
         """
         Create a new LinuxUSBTMCInterface.

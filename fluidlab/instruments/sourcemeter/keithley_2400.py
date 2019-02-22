@@ -11,13 +11,18 @@
 __all__ = ["Keithley2400"]
 
 from fluidlab.instruments.iec60488 import IEC60488
-from fluidlab.instruments.features import FloatValue, BoolValue, FloatScientificValue
+from fluidlab.instruments.features import (
+    FloatValue,
+    BoolValue,
+    FloatScientificValue,
+)
 
 
 class Keithley2400(IEC60488):
     """Driver for the sourcemeter Keithley 2400.
 
     """
+
 
 features = [
     BoolValue(
@@ -26,7 +31,8 @@ features = [
         true_string="FRONT",
         false_string="REAR",
         command_get=":ROUT:TERM?",
-        command_set=":ROUT:TERM"),
+        command_set=":ROUT:TERM",
+    ),
     FloatScientificValue(
         "idc",
         doc="""Get output current/Set current setpoint""",
@@ -79,8 +85,8 @@ features = [
         command_set=":SOUR:VOLT:RANG",
         command_get=":SOUR:VOLT:RANG?",
         check_instrument_value=False,
-    ),    
-        FloatScientificValue(
+    ),
+    FloatScientificValue(
         "range_idc",
         doc="""Set adequate current voltage for the given expected current""",
         command_set=":SOUR:CURR:RANG",

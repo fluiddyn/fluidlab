@@ -11,7 +11,12 @@
 __all__ = ["TtiTsx3510p"]
 
 from fluidlab.instruments.iec60488 import (
-    IEC60488, PowerOn, Calibration, Trigger, ObjectIdentification, StoredSetting
+    IEC60488,
+    PowerOn,
+    Calibration,
+    Trigger,
+    ObjectIdentification,
+    StoredSetting,
 )
 
 from fluidlab.instruments.features import SuperValue
@@ -27,7 +32,6 @@ class TtiTsx3510p(
 
 
 class TTIFloatValue(SuperValue):
-
     def __init__(
         self, name, doc="", unit_str="", command_set=None, command_get=None
     ):
@@ -51,7 +55,6 @@ class TTIFloatValue(SuperValue):
 
 
 class TTIBoolValue(SuperValue):
-
     def __init__(self, name, doc="", command_set=None):
         super(TTIBoolValue, self).__init__(name, doc=doc)
         self.command_set = command_set

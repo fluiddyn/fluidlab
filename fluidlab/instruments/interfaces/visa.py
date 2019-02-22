@@ -15,7 +15,6 @@ from fluidlab.instruments.interfaces import QueryInterface
 
 
 class PyvisaInterface(QueryInterface):
-
     def __init__(self, resource_name, backend="@py"):
         self.rm = visa.ResourceManager(backend)
         instr = self.rm.get_instrument(resource_name)
@@ -44,7 +43,7 @@ class PyvisaInterface(QueryInterface):
         verbose=False,
         tracing=False,
     ):
-        #input('Sending '+message+'?')
+        # input('Sending '+message+'?')
         return self.pyvisa_instr.write(message, termination, encoding)
 
     def read(self, termination=None, encoding=None, verbose=False, tracing=False):

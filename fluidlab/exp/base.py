@@ -48,7 +48,6 @@ if sys.platform.startswith("win"):
 
 
 class NumpyAwareJSONEncoder(json.JSONEncoder):
-
     def default(self, obj):
         if isinstance(obj, np.ndarray) and obj.ndim == 1:
             return [x for x in obj]
@@ -106,6 +105,7 @@ class Experiment(object):
         Coding the time of creation.
 
     """
+
     _base_dir = "Base_exp"
 
     def __init__(self, params=None, description=None, str_path=None):

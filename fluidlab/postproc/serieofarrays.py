@@ -122,11 +122,11 @@ class SerieOfArraysFromFiles(SerieOfArrays):
         )
 
         # remove base_name
-        remains = self.filename_given[len(self.base_name):]
+        remains = self.filename_given[len(self.base_name) :]
 
         # remove extension
         if self.extension_file != "":
-            remains = remains[:-(1 + len(self.extension_file))]
+            remains = remains[: -(1 + len(self.extension_file))]
 
         # separator between base and index
         if not str.isdigit(remains[0]):
@@ -147,7 +147,7 @@ class SerieOfArraysFromFiles(SerieOfArrays):
                 self._index_types.append("alpha")
             index = "".join(itertools.takewhile(test_type, remains))
             self._index_lens.append(len(index))
-            remains = remains[len(index):]
+            remains = remains[len(index) :]
             if len(remains) > 0:
                 if not str.isalnum(remains[0]):
                     self._index_separators.append(remains[0])
@@ -162,9 +162,7 @@ class SerieOfArraysFromFiles(SerieOfArrays):
         for separator in self._index_separators:
             str_glob_indices = str_glob_indices + "*" + separator
 
-        str_glob = (
-            self.base_name + self._separator_base_index + str_glob_indices
-        )
+        str_glob = self.base_name + self._separator_base_index + str_glob_indices
         if self.extension_file != "":
             str_glob = str_glob + "." + self.extension_file
         str_glob = os.path.join(self.path_dir, str_glob)
@@ -284,13 +282,13 @@ class SerieOfArraysFromFiles(SerieOfArrays):
 
         file_name: str
         """
-        str_indices = file_name[len(self.base_name):]
+        str_indices = file_name[len(self.base_name) :]
 
         if self._separator_base_index != "":
             str_indices = str_indices[1:]
 
         if self.extension_file != "":
-            str_indices = str_indices[:-(len(self.extension_file) + 1)]
+            str_indices = str_indices[: -(len(self.extension_file) + 1)]
 
         remains = str_indices
         indices = []
@@ -303,7 +301,7 @@ class SerieOfArraysFromFiles(SerieOfArrays):
                 raise Exception('The type should be "digit" or "alpha".')
 
             index = "".join(itertools.takewhile(test_type, remains))
-            remains = remains[len(index):]
+            remains = remains[len(index) :]
             if self._index_separators[i_ind] != "":
                 remains = remains[1:]
 

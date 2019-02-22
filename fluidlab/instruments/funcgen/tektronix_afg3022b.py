@@ -11,7 +11,12 @@
 __all__ = ["TektronixAFG3022b"]
 
 from fluidlab.instruments.iec60488 import (
-    IEC60488, PowerOn, Calibration, Trigger, ObjectIdentification, StoredSetting
+    IEC60488,
+    PowerOn,
+    Calibration,
+    Trigger,
+    ObjectIdentification,
+    StoredSetting,
 )
 
 from fluidlab.instruments.features import BoolValue, FloatValue, StringValue

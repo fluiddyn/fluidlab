@@ -22,7 +22,6 @@ except NameError:
 
 
 class Galva(object):
-
     def __init__(self):
         self.t7 = T7(identifier=serial_numbers["horiz"])
 

@@ -65,8 +65,8 @@ class PositionSensor(object):
         try:
             self._shift_absolute_pos, self._shift_relative_pos = self.load()
         except IOError:
-            self._shift_relative_pos = 0.
-            self._shift_absolute_pos = 0.
+            self._shift_relative_pos = 0.0
+            self._shift_absolute_pos = 0.0
 
         atexit.register(self.save)
         signal.signal(signal.SIGTERM, sig_handler)
@@ -92,11 +92,11 @@ class PositionSensor(object):
             u3.Timer0(UpdateReset=True), u3.Timer1(UpdateReset=True)
         )
 
-    def set_relative_origin(self, value=0.):
+    def set_relative_origin(self, value=0.0):
         rel_pos = self.get_relative_position()
         self._shift_relative_pos += value - rel_pos
 
-    def set_absolute_origin(self, value=0.):
+    def set_absolute_origin(self, value=0.0):
         abs_pos = self.get_absolute_position()
         self._shift_absolute_pos += value - abs_pos
 

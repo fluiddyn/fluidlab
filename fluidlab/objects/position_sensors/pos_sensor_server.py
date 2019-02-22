@@ -21,10 +21,10 @@ class PositionSensorService(rpyc.Service):
     def exposed_reset_counter_to_zero(self):
         return self.sensor.reset_counter_to_zero()
 
-    def exposed_set_relative_origin(self, value=0.):
+    def exposed_set_relative_origin(self, value=0.0):
         return self.sensor.set_relative_origin(value=value)
 
-    def exposed_set_absolute_origin(self, value=0.):
+    def exposed_set_absolute_origin(self, value=0.0):
         return self.sensor.set_absolute_origin(value=value)
 
 

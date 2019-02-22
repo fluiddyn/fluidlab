@@ -13,7 +13,6 @@ class PositionSensorServerError(Exception):
 
 
 class PositionSensorClient(object):
-
     def __init__(self):
         try:
             self._conn = rpyc.connect("localhost", 18861)
@@ -33,10 +32,10 @@ class PositionSensorClient(object):
     def reset_counter_to_zero(self):
         return self._root.exposed_reset_counter_to_zero()
 
-    def set_absolute_origin(self, value=0.):
+    def set_absolute_origin(self, value=0.0):
         return self._root.exposed_set_absolute_origin(value=value)
 
-    def set_relative_origin(self, value=0.):
+    def set_relative_origin(self, value=0.0):
         return self._root.exposed_set_relative_origin(value=value)
 
 

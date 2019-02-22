@@ -74,14 +74,10 @@ def thermocube_message(
 
     command_byte = bytes(
         [
-            remote_control
-            << 7
-            | on_off
-            << 6
-            | dir_remote_to_chiller
-            << 5
-            | cp.value
-            & 0x0F
+            remote_control << 7
+            | on_off << 6
+            | dir_remote_to_chiller << 5
+            | cp.value & 0x0F
         ]
     )
     if data:
@@ -94,7 +90,6 @@ def thermocube_message(
 
 
 class ThermocubeValue(Value):
-
     def __init__(self, name, control_parameter=ControlParameter_NO):
         super(ThermocubeValue, self).__init__(
             name,
@@ -135,7 +130,6 @@ class ThermocubeValue(Value):
 
 
 class Thermocube(Driver):
-
     def __init__(self, serialPort):
         interface = SerialInterface(
             serialPort,

@@ -26,7 +26,6 @@ from fluidlab.instruments.interfaces import Interface
 
 
 class ModbusInterface(Interface):
-
     def read_readonlybool(self, addresses):
         raise NotImplementedError
 
@@ -56,7 +55,6 @@ class ModbusInterface(Interface):
 
 
 class MinimalModbusInterface(ModbusInterface):
-
     def __init__(self, port, method="rtu", slave_address=1, timeout=1):
         import minimalmodbus
 
@@ -109,7 +107,6 @@ class MinimalModbusInterface(ModbusInterface):
 
 
 class PyModbusInterface(ModbusInterface):
-
     def __init__(self, port, method="rtu", timeout=1):
         try:
             if sys.version_info.major == 2:

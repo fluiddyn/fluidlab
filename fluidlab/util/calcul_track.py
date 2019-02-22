@@ -172,7 +172,7 @@ def make_track_sleep_1period(z_max, z_min, v_up, v_down, acc, dacc, dt, t_sleep)
     # Sleep time
     cond = times > t_6
     t = times[cond] - t_6
-    speeds[cond] = 0.
+    speeds[cond] = 0.0
     positions[cond] = z_0
 
     return times, positions, speeds, t_total
@@ -252,7 +252,7 @@ def make_track_sleep_1period_tbottom(
     # Sleep t_bottom
     cond = (times > t_3) & (times <= t_4)
     t = times[cond] - t_3
-    speeds[cond] = 0.
+    speeds[cond] = 0.0
     positions[cond] = z_3
 
     # Move up (acceleration)
@@ -276,7 +276,7 @@ def make_track_sleep_1period_tbottom(
     # # Sleep time
     cond = times > t_7
     t = times[cond] - t_6
-    speeds[cond] = 0.
+    speeds[cond] = 0.0
     positions[cond] = z_0
 
     return times, positions, speeds, t_total
@@ -313,9 +313,9 @@ if __name__ == "__main__":
     dacc = 0.05 / coef  # Fix acceleration
 
     dt = 0.25 * coef
-    t_exp = 100.
-    t_bottom = 10. * coef
-    t_period = 60. * coef
+    t_exp = 100.0
+    t_bottom = 10.0 * coef
+    t_period = 60.0 * coef
 
     times1, positions1, speeds1, t_total = make_track_sleep_1period_tbottom(
         z_max, z_min, v_up, v_down, acc, dacc, dt, t_bottom, t_period

@@ -22,7 +22,6 @@ class FurnessException(Exception):
 
 
 class FurnessValue(Value):
-
     def __init__(self, name, doc="", command_character="L"):
         super(FurnessValue, self).__init__(
             name,
@@ -68,7 +67,6 @@ class FurnessValue(Value):
 
 
 class FurnessFCO318(Driver):
-
     def __init__(self, serialPort):
         interface = SerialInterface(
             serialPort,

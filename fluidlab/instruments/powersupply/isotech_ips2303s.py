@@ -19,6 +19,7 @@ from fluidlab.instruments.features import QueryCommand, FloatValue
 
 class FloatValueIPS(FloatValue):
     """Particular value for the driver IsoTechIPS2303S."""
+
     _fmt = "{:5.3f}"
 
     def __init__(self, name, doc="", command_set=None):

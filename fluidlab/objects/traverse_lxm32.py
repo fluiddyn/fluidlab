@@ -1,4 +1,3 @@
-
 """
 192.168.28.11 - Variateur1
 192.168.28.12 - Variateur2
@@ -11,7 +10,8 @@
 from __future__ import division, print_function
 
 from fluidlab.util.calcul_track import (
-    make_track_sleep_1period_tbottom, concatenate
+    make_track_sleep_1period_tbottom,
+    concatenate,
 )
 from fluiddyn.io import query
 
@@ -60,7 +60,6 @@ def define_track_profilometer(
 
 
 class Traverse(object):
-
     def __init__(self, ip_modbus=None, const_position=1.062, offset_abs=None):
         self.motor = Motor(ip_modbus=ip_modbus, disable_limit_switches=False)
         self.movement_allowed = True
@@ -356,7 +355,7 @@ class Traverse(object):
                 )
                 + "# time, position\n"
             )
-            t_loop = 0.
+            t_loop = 0.0
             while t_loop < duration:
                 pos = self.get_relative_position()
                 t = time()
@@ -412,7 +411,7 @@ class Traverse(object):
         speeds,
         positions,
         fact_multiplicatif_accel=1,
-        coeff_smooth=2.,
+        coeff_smooth=2.0,
         periodic=True,
         use_u3=False,
     ):
@@ -426,7 +425,9 @@ class Traverse(object):
         self.speeds = speeds
         self.positions = positions
 
-        rotation_rates = self.rotation_rates = self.speeds / self._coef_meter_per_rot
+        rotation_rates = self.rotation_rates = (
+            self.speeds / self._coef_meter_per_rot
+        )
 
         # to decrease discretization error
         speeds[:-1] = (speeds[:-1] + speeds[1:]) / 2
@@ -493,9 +494,9 @@ class Traverse(object):
                 if abs(v_theo) <= error_v:
                     value = volt_no_movement
                 elif v_theo < -error_v:
-                    value = 5.
+                    value = 5.0
                 else:
-                    value = 0.
+                    value = 0.0
                 self.u3.writeRegister(5000, value)
 
             if error >= eps:
@@ -509,9 +510,7 @@ class Traverse(object):
                 print(
                     (
                         "Warning ({}): error = {:4.3f} m, " "v_target:{:4.3f} m/s"
-                    ).format(
-                        self.ip_modbus, error, v_target
-                    )
+                    ).format(self.ip_modbus, error, v_target)
                 )
                 sys.stdout.flush()
 
@@ -580,7 +579,6 @@ class Traverse(object):
 
 
 class Traverses(object):
-
     def __init__(self, ip_addresses=None, const_positions=None, offset_abs=None):
         if ip_addresses is None:
             ip_addresses = ["192.168.28.11", "192.168.28.12", "192.168.28.13"]
@@ -589,7 +587,7 @@ class Traverses(object):
             const_positions = [1.046875] * 3
 
         if offset_abs is None:
-            offset_abs = [0.] * 3
+            offset_abs = [0.0] * 3
 
         self.ip_addresses = ip_addresses
         self.movement_allowed = True
@@ -657,9 +655,9 @@ class Traverses(object):
                 raise NotImplementedError
 
             if sign > 0:
-                value = 5.
+                value = 5.0
             else:
-                value = 0.
+                value = 0.0
 
             self.u3.writeRegister(5000, value)
 
@@ -799,7 +797,7 @@ class Traverses(object):
                 + "# {} traverse(s)\n".format(nb_traverses)
                 + "# time, position\n"
             )
-            t_loop = 0.
+            t_loop = 0.0
             while t_loop < duration:
                 for it, traverse in enumerate(self.traverses):
                     positions[it] = traverse.get_relative_position()
@@ -885,9 +883,9 @@ if __name__ == "__main__":
     dacc = 0.05 / coef
 
     dt = 0.25 * coef
-    t_exp = 200.
-    t_bottom = 5. * coef
-    t_period = 60. * coef
+    t_exp = 200.0
+    t_bottom = 5.0 * coef
+    t_period = 60.0 * coef
 
     profile = True
     if profile:

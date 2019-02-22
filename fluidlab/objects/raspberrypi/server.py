@@ -41,7 +41,7 @@ class RaspberryPiService(SlaveService):
             path_exp_client = os.path.normpath(path_exp_client)
 
             if path_exp_client.startswith(FLUIDLAB_PATH_client):
-                path_relative = path_exp_client[len(FLUIDLAB_PATH_client) + 1:]
+                path_relative = path_exp_client[len(FLUIDLAB_PATH_client) + 1 :]
                 path_relative = path_relative.replace("\\", "/")
                 path_exp = os.path.join(FLUIDLAB_PATH, path_relative)
             else:  # a little bit strange, but why not...

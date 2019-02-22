@@ -124,6 +124,7 @@ class ILSTaylorCouetteExp(TaylorCouetteExp):
         exp.tank.fill(pumps=True)
 
     """
+
     _base_dir = os.path.join("TaylorCouette", "ILS")
 
     def __init__(
@@ -139,9 +140,9 @@ class ILSTaylorCouetteExp(TaylorCouetteExp):
         description=None,
         params=None,
         str_path=None,
-        position_start=352.,
+        position_start=352.0,
         position_max=None,
-        Deltaz=340.,
+        Deltaz=340.0,
         need_board=True,
     ):
         # start the init. and find out if it is the first creation
@@ -202,12 +203,12 @@ Initially linear stratification (ILS)...
                 prop_homog = params["prop_homog"]
 
             zs_norm = np.array([0, prop_homog / 2, 1 - prop_homog / 2, 1])
-            rhos_norm = np.array([1., 1., 0., 0.])
+            rhos_norm = np.array([1.0, 1.0, 0.0, 0.0])
             if N0 is None:
                 N0 = params["N0"]
-            z_max = g * Delta_rho / (
-                rho0 * N0 ** 2 * (1 - prop_homog)
-            ) * 1000  # (mm)
+            z_max = (
+                g * Delta_rho / (rho0 * N0 ** 2 * (1 - prop_homog)) * 1000
+            )  # (mm)
 
             zs = z_max * zs_norm
             rhos = rho_min + Delta_rho * rhos_norm
@@ -272,7 +273,7 @@ Initially linear stratification (ILS)...
         zs = params["zs"]
 
         if Delta_rho == 0:
-            N0 = 0.
+            N0 = 0.0
         else:
             N0 = np.sqrt(g * Delta_rho / (rho0 * (zs[2] - zs[1]) / 1e3))
 

@@ -73,7 +73,11 @@ following mixin classes.
 
 import six
 from fluidlab.instruments.features import (
-    WriteCommand, QueryCommand, BoolValue, StringValue, RegisterValue
+    WriteCommand,
+    QueryCommand,
+    BoolValue,
+    StringValue,
+    RegisterValue,
 )
 
 from fluidlab.instruments.drivers import VISADriver

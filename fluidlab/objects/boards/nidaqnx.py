@@ -77,7 +77,7 @@ class AnalogicOutput(object):
         else:
             data = np.array(val, dtype=np.float64)
             self.tasks[channels].WriteAnalogF64(
-                1, 1, 0., daq.DAQmx_Val_GroupByChannel, data, None, None
+                1, 1, 0.0, daq.DAQmx_Val_GroupByChannel, data, None, None
             )
 
 

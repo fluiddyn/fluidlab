@@ -215,6 +215,7 @@ class TaylorCouetteExp(ExpWithConductivityProbe):
         Coding the time of creation.
 
     """
+
     _base_dir = os.path.join("TaylorCouette", "Base")
 
     def __init__(
@@ -228,9 +229,9 @@ class TaylorCouetteExp(ExpWithConductivityProbe):
         params=None,
         description=None,
         str_path=None,
-        position_start=352.,
+        position_start=352.0,
         position_max=None,
-        Deltaz=340.,
+        Deltaz=340.0,
         need_board=True,
     ):
 
@@ -338,7 +339,7 @@ approximately {:5.0f} mm.
             Omega2 = params["Omega2"]
         except KeyError:
             Omega1 = params["Omega"]
-            Omega2 = 0.
+            Omega2 = 0.0
             self.params["Omega1"] = Omega1
             self.params["Omega2"] = Omega2
 
@@ -398,31 +399,31 @@ approximately {:5.0f} mm.
         if "R1" in self.params:
             R1 = self.params["R1"]
         else:
-            R1 = 100.
+            R1 = 100.0
 
         if "R2" in self.params:
             R2 = self.params["R2"]
         else:
-            R2 = 261.
+            R2 = 261.0
 
         if "H" in self.params:
             H = self.params["H"]
         else:
-            H = 520.
+            H = 520.0
 
         if "zs" in self.params:
             zs = self.params["zs"]
             rhos = self.params["rhos"]
         else:
             zs = [0, H]
-            rhos = [1.2, 1.]
+            rhos = [1.2, 1.0]
 
         self.tank = TaylorCouette(Rin=R1, Rout=R2, H=H, z=zs, rho=rhos)
 
 
 def create_exp(rho_max=1.146, z_max=400):
 
-    rho_min = 1.
+    rho_min = 1.0
     Delta_rho = rho_max - rho_min
 
     #     zs_norm = np.array([0, 1./6, 5./6, 1])
@@ -433,8 +434,8 @@ def create_exp(rho_max=1.146, z_max=400):
 
     # """
 
-    zs_norm = np.array([0, 1. / 4, 1. / 2, 1. / 2, 3. / 4, 1])
-    rhos_norm = np.array([1., 1., 2. / 3, 1. / 3, 0., 0.])
+    zs_norm = np.array([0, 1.0 / 4, 1.0 / 2, 1.0 / 2, 3.0 / 4, 1])
+    rhos_norm = np.array([1.0, 1.0, 2.0 / 3, 1.0 / 3, 0.0, 0.0])
     description = """
 Profil: two homogeneous layers at the bottom and top; two layers with
 a linear stratification and a step in the middle.
@@ -457,8 +458,8 @@ taken into account.
 
 def load_exp_and_measure_profiles(str_path):
 
-    exp = load_exp(str_path=str_path, position_start=374., Deltaz=362.)
-    exp.sprobe.set_sample_rate(2000.)
+    exp = load_exp(str_path=str_path, position_start=374.0, Deltaz=362.0)
+    exp.sprobe.set_sample_rate(2000.0)
 
     period = 2 * T1
     duration = 60 * 60 * 30
@@ -482,7 +483,7 @@ def load_exp_and_measure_profiles(str_path):
 
 if __name__ == "__main__":
 
-    Omega1 = 1.
+    Omega1 = 1.0
 
     exp = TaylorCouetteExp(rhos=[1.1, 1], zs=[0, 200], Omega1=Omega1, R1=150)
 

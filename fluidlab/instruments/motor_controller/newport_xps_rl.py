@@ -4,7 +4,7 @@ Driver for the Newport Model XPS-RL Motion controller
 
 """
 
-__all__ = ['NewportXpsRL']
+__all__ = ["NewportXpsRL"]
 
 import socket
 
@@ -148,19 +148,21 @@ NewportXpsRLErrorDescription = {
     -1004: "Zygo signal is not present",
     -1005: "Zygo PEG configuration failed",
     -1006: "Zygo error detected",
-    }
+}
 
-    
+
 class NewportXpsRLError(Exception):
     """
     Exceptions raised when status is not zero
     """
-    
+
     def __init__(self, status, response):
         self.status = status
         self.response = response
         status_desc = NewportXpsRLErrorDescription.get(status, "Unknown error")
-        self.message = response + ": " + status_desc + " (status: " + str(status) + ")"
+        self.message = (
+            response + ": " + status_desc + " (status: " + str(status) + ")"
+        )
         print(self.message)
 
 
@@ -169,10 +171,10 @@ class NewportXpsRLControllerStatus:
     Controller status flags obtained from ControllerStatusGet()
     See XPS-Unified-ProgrammersManual page 677
     """
-    
+
     def __init__(self, controller_status):
         self.status = controller_status
-        
+
     def __str__(self):
         if self.status == 0x00000000:
             return "Controller status OK"
@@ -193,37 +195,39 @@ class NewportXpsRLControllerStatus:
             if self.status & 0x00000040:
                 status_desc += "Zygo interferometer signal is not present; "
             if self.status & 0x00000080:
-                status_desc += "Zygo interferometer Ethernet initialisation failed; "
+                status_desc += (
+                    "Zygo interferometer Ethernet initialisation failed; "
+                )
             if self.status & 0x00000100:
                 status_desc += "Zygo interferometer error detected. Please check ZYGO Error Status; "
             if self.status & 0x00000200:
                 status_desc += "Motion velocity is limited; "
             if self.status & 0x00000400:
                 status_desc += "Lift pin is UP"
-                
-class NewportXpsRL:
 
+
+class NewportXpsRL:
     def __init__(self, ip_address, port=5001):
         self.ip_address = ip_address
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
+
     def open(self):
-        self.socket.connect( (self.ip_address, self.port) )
-    
+        self.socket.connect((self.ip_address, self.port))
+
     def close(self):
         self.socket.close()
-    
+
     def __enter__(self):
         self.open()
         return self
-    
+
     def __exit__(self, type_, value, cb):
         self.close()
-    
+
     def query(self, command_str):
         if isinstance(command_str, str):
-            command_str = command_str.encode('ascii')
+            command_str = command_str.encode("ascii")
         self.socket.sendall(command_str)
         chunks = []
         while True:
@@ -232,93 +236,100 @@ class NewportXpsRL:
                 chunks.append(chunk)
             if len(chunks) < 1024:
                 break
-        data_raw = b''.join(chunks).decode('ascii')
-        parsed = data_raw.split(',')
+        data_raw = b"".join(chunks).decode("ascii")
+        parsed = data_raw.split(",")
         status = parsed[0]
         eol = parsed[-1]
         if len(parsed) == 3:
             response = parsed[1]
         else:
-            response = ','.join(parsed[1:-1])
-        if eol != 'EndOfAPI':
+            response = ",".join(parsed[1:-1])
+        if eol != "EndOfAPI":
             print(eol)
-            raise RuntimeError('Wrong answer from XPS-RL Controller')
+            raise RuntimeError("Wrong answer from XPS-RL Controller")
         return int(status), response
-        
+
     def FirmwareVersionGet(self):
-        status, response = self.query('FirmwareVersionGet(char *)')
+        status, response = self.query("FirmwareVersionGet(char *)")
         if status != 0:
             raise NewportXpsRLError(status, response)
         return response
-    
+
     def ControllerStatusGet(self):
-        status, response = self.query('ControllerStatusGet(int *)')
+        status, response = self.query("ControllerStatusGet(int *)")
         if status != 0:
             raise NewportXpsRLError(status, response)
         return NewportXpsRLControllerStatus(int(response))
-        
+
     def Login(self, username, password):
         status, response = self.query("Login({:}, {:}".format(username, password))
         if status != 0:
             raise NewportXpsRLError(status, response)
-    
+
     def GroupPositionSetpointGet(self, groupname="Group1.Pos"):
         """
         The SetpointPosition is the profiler position. This is the position where the
         positioner should be according to the ideal theoretical motion profile.
         """
-        
-        status, response = self.query("GroupPositionSetpointGet({:}, double *)".format(groupname))
+
+        status, response = self.query(
+            "GroupPositionSetpointGet({:}, double *)".format(groupname)
+        )
         if status != 0:
             raise NewportXpsRLError(status, response)
         return float(response)
-    
+
     def GroupPositionCurrentGet(self, groupname="Group1.Pos"):
         """
         The CurrentPosition is the encoder position of the stage after mapping corrections are
         applied. This is the actual position of the positioner at this moment of the query.
         """
-        
-        status, response = self.query("GroupPositionCurrentGet({:}, double *)".format(groupname))
+
+        status, response = self.query(
+            "GroupPositionCurrentGet({:}, double *)".format(groupname)
+        )
         if status != 0:
             raise NewportXpsRLError(status, response)
         return float(response)
-    
+
     def GroupPositionTargetGet(self, groupname="Group1.Pos"):
         """
         The TargetPosition is the final target position commanded by the user.
         """
-        
-        status, response = self.query("GroupPositionTargetGet({:}, double *)".format(groupname))
+
+        status, response = self.query(
+            "GroupPositionTargetGet({:}, double *)".format(groupname)
+        )
         if status != 0:
             raise NewportXpsRLError(status, response)
         return float(response)
-    
+
     def GroupMoveAbsolute(self, groupname="Group1.Pos", target=250.0):
         """
         Initiates an absolute move for a positioner or a group.
         """
-        
-        status, response = self.query("GroupMoveAbsolute({:}, {:.2f})".format(groupname, float(target)))
+
+        status, response = self.query(
+            "GroupMoveAbsolute({:}, {:.2f})".format(groupname, float(target))
+        )
         if status != 0:
             raise NewportXpsRLError(status, response)
-        
-if __name__ == '__main__':
-    
-    with NewportXpsRL('192.168.254.254') as xps:
+
+
+if __name__ == "__main__":
+
+    with NewportXpsRL("192.168.254.254") as xps:
         firmware_version = xps.FirmwareVersionGet()
         controller_status = xps.ControllerStatusGet()
-        
+
         print("Firmware:", firmware_version)
         print("Status:", controller_status)
-        
+
         xps.GroupMoveAbsolute(target=0.0)
         pos = xps.GroupPositionTargetGet()
-        print('Target position:', pos)
-        
+        print("Target position:", pos)
+
         pos = xps.GroupPositionSetpointGet()
-        print('Setpoint position:', pos)
+        print("Setpoint position:", pos)
         pos = xps.GroupPositionCurrentGet()
-        print('Current position:', pos)
-        
-        
+        print("Current position:", pos)

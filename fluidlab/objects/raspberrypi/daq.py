@@ -42,7 +42,7 @@ class MCP3008SPI(object):
         self.spi.xfer2(data)
 
         # the return value is coded on 10 bits contained in data[1:]
-        return (data[1] << 8) & 0b1100000000 | (data[2] & 0xff)
+        return (data[1] << 8) & 0b1100000000 | (data[2] & 0xFF)
 
 
 if __name__ == "__main__":

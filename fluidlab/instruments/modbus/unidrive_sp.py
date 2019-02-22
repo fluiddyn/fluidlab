@@ -119,7 +119,8 @@ import numpy as np
 
 from fluidlab.instruments.modbus.driver import ModbusDriver
 from fluidlab.instruments.modbus.features import (
-    DecimalInt16Value, Int16StringValue
+    DecimalInt16Value,
+    Int16StringValue,
 )
 from fluiddyn.util.terminal_colors import print_fail, print_warning
 
@@ -153,6 +154,7 @@ class BaseUnidriveSP(ModbusDriver):
     Unidrive SP.
 
     """
+
     _constant_nb_pairs_poles = 4
 
     def __init__(
@@ -238,7 +240,6 @@ def _compute_from_param_str(parameter_str):
 
 
 class Value(DecimalInt16Value):
-
     def __init__(self, name, doc="", parameter_str="", number_of_decimals=0):
         self._menu, self._parameter, address = _compute_from_param_str(
             parameter_str
@@ -249,7 +250,6 @@ class Value(DecimalInt16Value):
 
 
 class StringValue(Int16StringValue):
-
     def __init__(self, name, doc="", int_dict=None, parameter_str=""):
         self._menu, self._parameter, address = _compute_from_param_str(
             parameter_str
@@ -272,16 +272,19 @@ class StringValue(Int16StringValue):
         if instr_value != value:
             msg = (
                 "Value {} could not be set to {} and was set to {} instead"
-            ).format(
-                self._name, value, instr_value
-            )
+            ).format(self._name, value, instr_value)
             warnings.warn(msg, UserWarning)
 
 
 int_dict_mode = {1: "open_loop", 2: "closed_loop", 3: "servo", 4: "regen"}
 
 int_dict_ref = {
-    0: "A1.A2", 1: "A1.pr", 2: "A2.pr", 3: "preset", 4: "pad", 5: "Prc"
+    0: "A1.A2",
+    1: "A1.pr",
+    2: "A2.pr",
+    3: "preset",
+    4: "pad",
+    5: "Prc",
 }
 
 
@@ -432,6 +435,7 @@ class OpenLoopUnidriveSP(BaseUnidriveSP):
     - 6.34 -> 1 (order of rotation) or 0 (no rotation).
 
     """
+
     _constant_nb_pairs_poles = 4
 
     _mode_cls = "open_loop"
@@ -583,6 +587,7 @@ class ServoUnidriveSP(BaseUnidriveSP):
     - 6.34 -> 1 (order of rotation) or 0 (no rotation).
 
     """
+
     _constant_nb_pairs_poles = 4
 
     _mode_cls = "servo"
@@ -614,11 +619,11 @@ ServoUnidriveSP._build_class_with_features(
 )
 
 
-def example_linear_ramps(motor, max_speed=3., duration=5., steps=30):
+def example_linear_ramps(motor, max_speed=3.0, duration=5.0, steps=30):
     max_speed = float(max_speed)
     duration = float(duration)
     steps = int(steps)
-    t = 0.
+    t = 0.0
     speed = 0
     start_speed = motor.get_target_rotation_rate()
     motor.start_rotation(speed)
@@ -632,7 +637,7 @@ def example_linear_ramps(motor, max_speed=3., duration=5., steps=30):
         speed -= 2 * max_speed / steps
         t += duration / steps
         if speed < 0:
-            speed = 0.
+            speed = 0.0
         motor.set_target_rotation_rate(speed, check=False)
     motor.stop_rotation()
     motor.set_target_rotation_rate(start_speed, check=False)
@@ -664,6 +669,7 @@ def attempt(func, *args, **kwargs):
 
 class ServoUnidriveSPCaptureError(ServoUnidriveSP):
     """Robust ServoUnidriveSP class."""
+
     isprintall = 0
     isprint_error = 1
 

@@ -17,7 +17,8 @@ ext_modules = [
         [path_cy_code + "/" + name + ".pyx"],
         libraries=libraries,
         include_dirs=[
-            r"C:\Program Files (x86)\UEI\PowerDAQ\SDK\Include", np.get_include()
+            r"C:\Program Files (x86)\UEI\PowerDAQ\SDK\Include",
+            np.get_include(),
         ],
         library_dirs=[r"C:\Program Files (x86)\UEI\PowerDAQ\SDK\x64\lib"],
     )

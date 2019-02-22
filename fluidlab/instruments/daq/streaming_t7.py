@@ -88,7 +88,7 @@ class T7(object):
                     streamout,
                     maxpoints,
                     np.ndarray.tolist(
-                        volt[i * maxpoints:i * maxpoints + maxpoints]
+                        volt[i * maxpoints : i * maxpoints + maxpoints]
                     ),
                 )
             if N % maxpoints != 0:
@@ -96,8 +96,8 @@ class T7(object):
                 ljm.eWriteNameArray(
                     handle,
                     streamout,
-                    volt[i * maxpoints:].size,
-                    np.ndarray.tolist(volt[i * maxpoints:]),
+                    volt[i * maxpoints :].size,
+                    np.ndarray.tolist(volt[i * maxpoints :]),
                 )
 
     def prepare_stream_loop(self, IN_NAMES=None, OUT_NAMES=[], volt=[]):
@@ -220,7 +220,7 @@ class T7(object):
                     i = 1
                 sys.stdout.flush()
                 t0 = time.time()
-                t = 0.
+                t = 0.0
                 while t <= total_time:
                     if dt is not None:
                         print(

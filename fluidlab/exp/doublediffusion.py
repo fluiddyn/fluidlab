@@ -24,6 +24,7 @@ class DoubleDiffusion(ExperimentWithTank):
     See the documentation of the inherited class.
 
     """
+
     _base_dir = "Double_diffusion"
 
     def __init__(

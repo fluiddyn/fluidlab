@@ -343,7 +343,11 @@ def read_var(f, verbose):
         var = read_matrix_var(f, verbose)
     elif data_type == "scalar struct":
         var = read_scalar_struct_var(f, verbose)
-    elif data_type == "string" or data_type == "sq_string" or data_type == "dq_string":
+    elif (
+        data_type == "string"
+        or data_type == "sq_string"
+        or data_type == "dq_string"
+    ):
         # sq_string is single-quoted string
         # dq_string is double-quoted string
         # both are charMatrix

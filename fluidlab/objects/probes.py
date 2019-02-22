@@ -118,7 +118,7 @@ with extreme densities with the following volume ratio: """
 
         print("V_rho_max/V_tot :", (rhos - rho_min) / (rho_max - rho_min))
 
-    def calibrate(self, rhos, duration_1measure=4.):
+    def calibrate(self, rhos, duration_1measure=4.0):
         r"""Calibrates the probe.
 
         Parameters
@@ -138,7 +138,7 @@ with extreme densities with the following volume ratio: """
         """
         sample_rate_old = self.sample_rate
 
-        self.set_sample_rate(1000.)
+        self.set_sample_rate(1000.0)
 
         voltages = np.empty(rhos.shape)
 
@@ -189,7 +189,7 @@ with extreme densities with the following volume ratio: """
             ax.plot(rhos_old, volts_old, "xg")
 
             self.create_function_from_data(rhos_old, volts_old)
-            volts_for_plot = np.linspace(0., 10., 200)
+            volts_for_plot = np.linspace(0.0, 10.0, 200)
             ax.plot(self.rho_from_volt(volts_for_plot), volts_for_plot, "k-")
 
         print("rhos:\n", rhos)
@@ -243,7 +243,7 @@ with extreme densities with the following volume ratio: """
 
         if len(volts_old) > 2:
             ax.plot(rhos_old, volts_old, "xg")
-            volts_for_plot = np.linspace(0., volts_old.max(), 200)
+            volts_for_plot = np.linspace(0.0, volts_old.max(), 200)
             ax.plot(self.rho_from_volt(volts_for_plot), volts_for_plot, "k-")
 
         if rhos is not None and volts is not None:
@@ -317,7 +317,7 @@ with extreme densities with the following volume ratio: """
             print("volts.mean():", volts.mean())
 
         if return_time:
-            ts = 1. / self.sample_rate * np.arange(1, nb + 1)
+            ts = 1.0 / self.sample_rate * np.arange(1, nb + 1)
             return ts, volts
 
         else:
@@ -421,9 +421,9 @@ class MovingConductivityProbe(ConductivityProbe, Traverse):
         channel=1,
         sample_rate=100,
         has_to_config_board=True,
-        position_start=300.,
+        position_start=300.0,
         position_max=None,
-        Deltaz=400.,
+        Deltaz=400.0,
     ):
 
         ConductivityProbe.__init__(
