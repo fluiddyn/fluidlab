@@ -67,7 +67,7 @@ class MinimalModbusInterface(ModbusInterface):
         if isinstance(addresses, collections.Iterable):
             return self._modbus.read_coils(addresses)
 
-        elif isinstance(addresses, six.integer_types):
+        elif isinstance(addresses, int):
             return self._modbus.read_coil(addresses)
 
     def write_bool(self, addresses, values):
@@ -80,7 +80,7 @@ class MinimalModbusInterface(ModbusInterface):
         if isinstance(addresses, collections.Iterable) and len(addresses) == 2:
             return self._modbus.read_registers(addresses[0], addresses[1])
 
-        elif isinstance(addresses, six.integer_types):
+        elif isinstance(addresses, int):
             return self._modbus.read_register(addresses)
 
         else:
@@ -91,7 +91,7 @@ class MinimalModbusInterface(ModbusInterface):
     def write_int16(self, address, values, signed=False):
         if isinstance(values, collections.Iterable):
             self._modbus.write_registers(address, values, signed=signed)
-        elif isinstance(values, six.integer_types):
+        elif isinstance(values, int):
             self._modbus.write_register(address, values, signed=signed)
         else:
             raise ValueError("`values` must be an int or an iterable of ints")

@@ -13,7 +13,7 @@ except ImportError:
 import time
 
 
-class MCP3008SPI(object):
+class MCP3008SPI:
     """Analogic / digital conversion with the MCP3008 SPI ADC chip."""
 
     def __init__(self, differential=True):

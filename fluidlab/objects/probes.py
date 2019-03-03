@@ -65,7 +65,7 @@ class ConductivityProbe(ObjectUsingBoard):
         VALVE=True,
     ):
 
-        super(ConductivityProbe, self).__init__(board=board)
+        super().__init__(board=board)
 
         self.channel = channel
 
@@ -461,9 +461,9 @@ class MovingConductivityProbe(ConductivityProbe, Traverse):
 
         duration = abs(deltaz / speed)
 
-        super(MovingConductivityProbe, self).move(deltaz=deltaz, speed=speed)
+        super().move(deltaz=deltaz, speed=speed)
 
-        return super(MovingConductivityProbe, self).measure(
+        return super().measure(
             duration, sample_rate=sample_rate, return_time=return_time
         )
 

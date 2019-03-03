@@ -26,7 +26,7 @@ class Traverse(ObjectUsingBoard):
         self, board=None, position_start=300.0, position_max=None, Deltaz=400.0
     ):
 
-        super(Traverse, self).__init__(board=board)
+        super().__init__(board=board)
 
         self.mm_per_step = 454.0 / 3000  # (mm)
 

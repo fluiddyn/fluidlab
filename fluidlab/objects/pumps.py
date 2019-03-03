@@ -52,7 +52,7 @@ def modif_calib_file(pump, flow_rate):
     print("New calibration flowrate in the file...")
 
 
-class MasterFlexPumps(object):
+class MasterFlexPumps:
     """Represent some Masterflex pumps.
 
     We use Masterflex L/S (model number 7551.00).

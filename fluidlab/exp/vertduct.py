@@ -60,7 +60,7 @@ pumps and the measurements with the conductivity probe.
             self._complete_description(description_base, description=description)
 
         # call the __init__ function of the inherited class
-        super(VerticalDuctExp, self).__init__(
+        super().__init__(
             rhos=rhos,
             zs=zs,
             params=params,

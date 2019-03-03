@@ -44,7 +44,7 @@ Experiment in a small beaker on the double diffusion instability.
             )
 
         # call the __init__ function of the inherited class
-        super(DoubleDiffusion, self).__init__(
+        super().__init__(
             rhos=rhos,
             zs=zs,
             params=params,

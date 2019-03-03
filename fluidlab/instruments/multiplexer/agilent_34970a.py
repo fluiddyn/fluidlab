@@ -18,7 +18,7 @@ from fluidlab.instruments.features import SuperValue
 
 class Agilent34970aValue(SuperValue):
     def __init__(self, name, doc="", function_name=None):
-        super(Agilent34970aValue, self).__init__(name, doc)
+        super().__init__(name, doc)
         self.function_name = function_name
 
     def _build_driver_class(self, Driver):
@@ -58,7 +58,7 @@ class Agilent34970a(IEC60488):
     """
 
     def __init__(self, interface=None, backend=""):
-        super(Agilent34970a, self).__init__(interface, backend)
+        super().__init__(interface, backend)
         # Define instance variables for optional NPLC and Range settings
         # to be used when scanning
         #

@@ -59,7 +59,7 @@ _coupling_values = {"DC": DAQmx_Val_DC, "AC": DAQmx_Val_AC, "GND": DAQmx_Val_GND
 
 def _parse_resource_names(resource_names):
 
-    if isinstance(resource_names, six.string_types):
+    if isinstance(resource_names, str):
         if six.PY3 and isinstance(resource_names, str):
             resource_names = resource_names.encode("ascii")
         resource_names = [resource_names]
@@ -177,15 +177,12 @@ def read_analog(
         volt_max = [volt_max] * nb_resources
 
     # check samples_per_chan
-    if (
-        not isinstance(samples_per_chan, six.integer_types)
-        or samples_per_chan <= 0
-    ):
+    if not isinstance(samples_per_chan, int) or samples_per_chan <= 0:
         raise ValueError("samples_per_chan has to be a positive integer.")
 
     # prepare coupling_types
     if (
-        not isinstance(coupling_types, six.string_types)
+        not isinstance(coupling_types, str)
         and len(coupling_types) != nb_resources
     ):
         raise ValueError(
@@ -193,7 +190,7 @@ def read_analog(
             "of the same length as resource_names"
         )
 
-    if isinstance(coupling_types, six.string_types):
+    if isinstance(coupling_types, str):
         coupling_types = [coupling_types] * nb_resources
 
     possible_keys_coupling = _coupling_values.keys()

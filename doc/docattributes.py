@@ -21,7 +21,7 @@ class DocAttributesDomain(PythonDomain):
     name = 'docattributes'
 
     def __init__(self, *a, **kw):
-        super(DocAttributesDomain, self).__init__(*a, **kw)
+        super().__init__(*a, **kw)
 
         objtype = 'attribute'
         base_directive = self.directives[objtype]

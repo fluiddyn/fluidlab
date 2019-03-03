@@ -35,7 +35,7 @@ def is_new_file(str_name):
         time.sleep(0.1)
 
 
-class PIV2D(object):
+class PIV2D:
     """Trigger cameras for PIV 2D (single and double frame)
 
     Use a T7 board (Labjack).

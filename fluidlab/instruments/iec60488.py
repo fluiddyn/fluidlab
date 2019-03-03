@@ -135,10 +135,10 @@ class IEC60488(VISADriver):
     """
 
     def __init__(self, interface=None, backend=""):
-        super(IEC60488, self).__init__(interface, backend=backend)
+        super().__init__(interface, backend=backend)
         identification = self.query_identification()
 
-        if isinstance(identification, six.string_types):
+        if isinstance(identification, str):
             identification = identification.strip()
 
         print("Initialization driver for device: {}".format(identification))

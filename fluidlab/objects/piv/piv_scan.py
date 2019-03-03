@@ -15,7 +15,7 @@ from fluidlab.objects.galvanometer import Galva
 from .util import wait_for_file, save_exp
 
 
-class PIVScan(object):
+class PIVScan:
     def __init__(self):
         self.galva = Galva()
         self.t7 = self.galva.t7

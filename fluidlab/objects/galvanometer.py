@@ -21,7 +21,7 @@ except NameError:
     pass
 
 
-class Galva(object):
+class Galva:
     def __init__(self):
         self.t7 = T7(identifier=serial_numbers["horiz"])
 

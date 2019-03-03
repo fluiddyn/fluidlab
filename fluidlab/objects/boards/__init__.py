@@ -43,7 +43,7 @@ For example, with a computer without PowerDAQ board::
 from fluiddyn.io import _write_warning
 
 
-class FalseBoard(object):
+class FalseBoard:
     """Represent a false acquisition board.
 
     This object tested as a boolean is False. It has an attribute
@@ -87,7 +87,7 @@ else:
     NIDAQBoard = FalseBoard
 
 
-class ObjectUsingBoard(object):
+class ObjectUsingBoard:
     """Useful to write classes for objects using a board."""
 
     def __init__(self, board=None, VERBOSE=False):

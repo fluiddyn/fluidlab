@@ -25,7 +25,7 @@ from fluidlab.instruments.interfaces import Interface, FalseInterface
 from fluidlab.instruments.features import SuperValue
 
 
-class Driver(object):
+class Driver:
     """Instrument driver (base class).
 
     Parameters
@@ -68,7 +68,7 @@ class Driver(object):
                 "Do not set this value by assignment. Use a set function."
             )
 
-        super(Driver, self).__setattr__(k, v)
+        super().__setattr__(k, v)
 
     def set(self, name, *args, **kargs):
         """Set a value."""
@@ -119,12 +119,12 @@ class VISADriver(Driver):
 
     def __init__(self, interface=None, backend="@py"):
 
-        if isinstance(interface, six.string_types):
+        if isinstance(interface, str):
             from fluidlab.instruments.interfaces.visa import PyvisaInterface
 
             interface = PyvisaInterface(interface, backend=backend)
 
-        super(VISADriver, self).__init__(interface)
+        super().__init__(interface)
 
 
 if __name__ == "__main__":

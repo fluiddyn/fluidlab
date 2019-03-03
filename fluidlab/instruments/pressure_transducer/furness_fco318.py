@@ -23,7 +23,7 @@ class FurnessException(Exception):
 
 class FurnessValue(Value):
     def __init__(self, name, doc="", command_character="L"):
-        super(FurnessValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set=None,
@@ -34,7 +34,7 @@ class FurnessValue(Value):
         )
 
     def get(self):
-        result = super(FurnessValue, self).get()
+        result = super().get()
         if result[:2] != self.command_get[:2]:
             raise FurnessException('Echo missing (got "' + result[:2] + '"')
 
@@ -79,7 +79,7 @@ class FurnessFCO318(Driver):
             rtscts=False,
             dsrdtr=False,
         )
-        super(FurnessFCO318, self).__init__(interface)
+        super().__init__(interface)
 
 
 features = [

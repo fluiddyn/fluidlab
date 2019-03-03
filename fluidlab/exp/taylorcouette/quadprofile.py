@@ -218,7 +218,7 @@ Initially quadratic stratification (IQS)...
             params.update({"zs": zs, "rhos": rhos, "Nmid0": Nmid0, "N0": N0})
 
         # call the __init__ function of the inherited class
-        super(IQSTaylorCouetteExp, self).__init__(
+        super().__init__(
             params=params,
             description=description,
             str_path=str_path,
@@ -257,7 +257,7 @@ Initially quadratic stratification (IQS)...
            hls = A \frac{U_c}{N_0} + c
 
         """
-        super(IQSTaylorCouetteExp, self)._create_self_params(params)
+        super()._create_self_params(params)
 
         if len(params) == 0:
             return
@@ -295,7 +295,7 @@ Initially quadratic stratification (IQS)...
             coding the time of creation.
 
         """
-        begin, end = super(IQSTaylorCouetteExp, self)._init_name_dir()
+        begin, end = super()._init_name_dir()
 
         self.name_dir = (
             begin

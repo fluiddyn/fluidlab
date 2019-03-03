@@ -47,7 +47,7 @@ from fluidlab.objects.probes import MovingConductivityProbe
 
 class DaemonMeasureProfiles(Daemon):
     def __init__(self, exp, **kargs):
-        super(DaemonMeasureProfiles, self).__init__()
+        super().__init__()
         self._exp = exp
         self.kargs = kargs
 
@@ -55,7 +55,7 @@ class DaemonMeasureProfiles(Daemon):
         self._exp.profiles.measure(**self.kargs)
 
 
-class Profiles(object):
+class Profiles:
     """Represent a set of profiles.
 
     Parameters
@@ -471,7 +471,7 @@ class ExpWithConductivityProbe(ExperimentWithTank):
     ):
 
         # call the __init__ function of the inherited class
-        super(ExpWithConductivityProbe, self).__init__(
+        super().__init__(
             rhos=rhos,
             zs=zs,
             params=params,

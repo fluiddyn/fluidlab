@@ -275,7 +275,7 @@ approximately {:5.0f} mm.
             )
 
         # call the __init__ function of the inherited class
-        super(TaylorCouetteExp, self).__init__(
+        super().__init__(
             params=params,
             description=description,
             str_path=str_path,
@@ -326,7 +326,7 @@ approximately {:5.0f} mm.
            Ri = \frac{g\Delta\rho R_2}{\rho_0{U_1}^2}.
 
         """
-        super(TaylorCouetteExp, self)._create_self_params(params)
+        super()._create_self_params(params)
 
         if len(params) == 0:
             return

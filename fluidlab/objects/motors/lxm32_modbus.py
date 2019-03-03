@@ -78,7 +78,7 @@ modes = {
 }
 
 
-class Motor(object):
+class Motor:
     def __init__(
         self,
         ip_modbus="192.168.28.21",

@@ -60,7 +60,7 @@ warnings.simplefilter("always", UserWarning)
 # warnings.simplefilter('always')
 
 
-class Feature(object):
+class Feature:
     def __init__(self, name, doc=""):
         self._name = name
         self.__doc__ = doc
@@ -68,7 +68,7 @@ class Feature(object):
 
 class WriteCommand(Feature):
     def __init__(self, name, doc="", command_str=""):
-        super(WriteCommand, self).__init__(name, doc)
+        super().__init__(name, doc)
         self.command_str = command_str
 
     def _build_driver_class(self, Driver):
@@ -86,7 +86,7 @@ class WriteCommand(Feature):
 
 class QueryCommand(Feature):
     def __init__(self, name, doc="", command_str="", parse_result=None):
-        super(QueryCommand, self).__init__(name, doc)
+        super().__init__(name, doc)
         self.command_str = command_str
         self.parse_result = parse_result
 
@@ -131,7 +131,7 @@ class Value(SuperValue):
         pause_instrument=0.0,
         channel_argument=False,
     ):
-        super(Value, self).__init__(name, doc)
+        super().__init__(name, doc)
         self.command_set = command_set
         self.check_instrument_value_after_set = check_instrument_value
 
@@ -215,7 +215,7 @@ class BoolValue(Value):
         true_string="1",
         false_string="0",
     ):
-        super(BoolValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set,
@@ -268,7 +268,7 @@ class StringValue(Value):
         pause_instrument=0.0,
         channel_argument=False,
     ):
-        super(StringValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set=command_set,
@@ -315,7 +315,7 @@ class NumberValue(Value):
         pause_instrument=0.0,
         channel_argument=False,
     ):
-        super(NumberValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set=command_set,
@@ -404,7 +404,7 @@ class RegisterValue(NumberValue):
 
         limits = (0, 2 ** self.nb_bits)
 
-        super(RegisterValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set=command_set,
@@ -415,7 +415,7 @@ class RegisterValue(NumberValue):
             channel_argument=channel_argument,
         )
 
-        if isinstance(default_value, six.integer_types):
+        if isinstance(default_value, int):
             self.default_value = self.compute_dict_from_number(default_value)
         elif isinstance(default_value, dict):
             for k in default_value.keys():

@@ -12,7 +12,7 @@ class PositionSensorServerError(Exception):
     pass
 
 
-class PositionSensorClient(object):
+class PositionSensorClient:
     def __init__(self):
         try:
             self._conn = rpyc.connect("localhost", 18861)

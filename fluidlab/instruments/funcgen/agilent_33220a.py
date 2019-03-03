@@ -27,7 +27,7 @@ import re
 
 class Agilent33220a_Vdc(SuperValue):
     def __init__(self):
-        super(Agilent33220a_Vdc, self).__init__("vdc", doc="DC voltage")
+        super().__init__("vdc", doc="DC voltage")
 
     def set(self, value):
         self._interface.write("OUTP:LOAD INF")
@@ -44,7 +44,7 @@ class Agilent33220a_Vdc(SuperValue):
 
 class Agilent33220a_Vrms(SuperValue):
     def __init__(self):
-        super(Agilent33220a_Vrms, self).__init__("vrms", doc="RMS voltage")
+        super().__init__("vrms", doc="RMS voltage")
 
     def set(self, value):
         self._interface.write("OUTP:LOAD INF")
@@ -70,9 +70,7 @@ class Agilent33220a_Vrms(SuperValue):
 
 class Agilent33220a_Frequency(SuperValue):
     def __init__(self):
-        super(Agilent33220a_Frequency, self).__init__(
-            "frequency", doc="Wave frequency"
-        )
+        super().__init__("frequency", doc="Wave frequency")
 
     def set(self, value):
         (iFunc, iFreq, iAmpl, iOffset) = self._driver.get_generator_state()

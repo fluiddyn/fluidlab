@@ -216,7 +216,7 @@ Initially linear stratification (ILS)...
             params.update({"zs": zs, "rhos": rhos})
 
         # call the __init__ function of the inherited class
-        super(ILSTaylorCouetteExp, self).__init__(
+        super().__init__(
             params=params,
             description=description,
             str_path=str_path,
@@ -259,7 +259,7 @@ Initially linear stratification (ILS)...
 
 
         """
-        super(ILSTaylorCouetteExp, self)._create_self_params(params)
+        super()._create_self_params(params)
 
         if len(params) == 0:
             return
@@ -299,7 +299,7 @@ Initially linear stratification (ILS)...
             coding the time of creation.
 
         """
-        begin, end = super(ILSTaylorCouetteExp, self)._init_name_dir()
+        begin, end = super()._init_name_dir()
 
         self.name_dir = (
             begin

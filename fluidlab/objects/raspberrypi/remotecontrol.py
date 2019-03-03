@@ -16,7 +16,7 @@ except ImportError:
 import shutil
 
 
-class RaspBerryPi(object):
+class RaspBerryPi:
     """Remote control of the Raspberry pi.
 
     A `rpyc` server has to be run on the Raspberry Pi before creating

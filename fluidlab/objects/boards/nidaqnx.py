@@ -31,7 +31,7 @@ except (IOError, ImportError, NotImplementedError):
 import numpy as np
 
 
-class NIDAQBoard(object):
+class NIDAQBoard:
     """Handle for a National Instrument board (NIDAQNX)."""
 
     def __init__(self):
@@ -39,7 +39,7 @@ class NIDAQBoard(object):
         self.works = True
 
 
-class AnalogicOutput(object):
+class AnalogicOutput:
     """Analogic output."""
 
     def __init__(self):
@@ -81,7 +81,7 @@ class AnalogicOutput(object):
             )
 
 
-class AnalogicInput(object):
+class AnalogicInput:
     """Analogic input."""
 
     def __init__(self):

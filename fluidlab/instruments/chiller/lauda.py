@@ -33,7 +33,7 @@ class LaudaValue(Value):
         pause_instrument=0.5,
         channel_argument=False,
     ):
-        super(LaudaValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set,
@@ -44,7 +44,7 @@ class LaudaValue(Value):
         )
 
     def get(self):
-        result = super(LaudaValue, self).get()
+        result = super().get()
         if len(result) < 3:
             print(result.decode("ascii"))
             raise LaudaException("Erreur de communication")
@@ -69,13 +69,11 @@ class LaudaOnOffValue(LaudaValue):
     Supported_ROM = [1200]
 
     def __init__(self):
-        super(LaudaOnOffValue, self).__init__(
-            name="onoff", command_get="IN_MODE_02\r"
-        )
+        super().__init__(name="onoff", command_get="IN_MODE_02\r")
 
     def get(self):
         if self._driver.rom in LaudaOnOffValue.Supported_ROM:
-            resultat = super(LaudaOnOffValue, self).get()
+            resultat = super().get()
             return True if (resultat == "1") else False
 
         else:
@@ -98,7 +96,7 @@ class LaudaStatValue(Value):
         pause_instrument=0.5,
         channel_argument=False,
     ):
-        super(LaudaStatValue, self).__init__(
+        super().__init__(
             name,
             doc,
             command_set,
@@ -109,7 +107,7 @@ class LaudaStatValue(Value):
         )
 
     def get(self):
-        result = super(LaudaStatValue, self).get().decode("ascii")
+        result = super().get().decode("ascii")
         if len(result) < 3:
             raise LaudaException("Erreur de communication")
 
@@ -146,7 +144,7 @@ class Lauda(Driver):
             rtscts=False,
             dsrdtr=False,
         )
-        super(Lauda, self).__init__(interface)
+        super().__init__(interface)
 
         identification = self.interface.query(b"TYPE\r").decode("ascii")
         if identification not in Lauda.Models:

@@ -29,7 +29,7 @@ Provides some modules:
 """
 
 
-class Interface(object):
+class Interface:
     pass
 
 

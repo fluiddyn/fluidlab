@@ -29,7 +29,7 @@ class FloatValueIPS(FloatValue):
 
         command_get = command_set + "?\r\n"
 
-        super(FloatValueIPS, self).__init__(
+        super().__init__(
             name=name, doc=doc, command_set=command_set, command_get=command_get
         )
 
@@ -85,7 +85,7 @@ class IsoTechIPS2303S(Driver):
             port, baudrate=baudrate, bytesize=8, parity="N", stopbits=1, timeout=1
         )
 
-        super(IsoTechIPS2303S, self).__init__(interface)
+        super().__init__(interface)
 
     def set_beep(self, ok_for_beep=True):
         """Set beep on or off."""

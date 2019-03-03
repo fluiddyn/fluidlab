@@ -59,7 +59,7 @@ def define_track_profilometer(
     return times, speeds, positions
 
 
-class Traverse(object):
+class Traverse:
     def __init__(self, ip_modbus=None, const_position=1.062, offset_abs=None):
         self.motor = Motor(ip_modbus=ip_modbus, disable_limit_switches=False)
         self.movement_allowed = True
@@ -578,7 +578,7 @@ class Traverse(object):
         return self.x_measured
 
 
-class Traverses(object):
+class Traverses:
     def __init__(self, ip_addresses=None, const_positions=None, offset_abs=None):
         if ip_addresses is None:
             ip_addresses = ["192.168.28.11", "192.168.28.12", "192.168.28.13"]

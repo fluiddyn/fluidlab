@@ -64,7 +64,7 @@ class RotatingObject(ObjectUsingBoard):
 
         if board is None:
             board = NIDAQBoard()
-        super(RotatingObject, self).__init__(board=board)
+        super().__init__(board=board)
 
         if hasattr(rotation_rate, "__call__"):
             self.rotation_rate_vs_t = rotation_rate
@@ -242,7 +242,7 @@ class RotatingTable(RotatingObject):
 
 class DaemonRunningRotatingObject(Daemon):
     def __init__(self, rotating_object):
-        super(DaemonRunningRotatingObject, self).__init__()
+        super().__init__()
         self.ro = rotating_object
 
     def run(self):
@@ -266,7 +266,7 @@ class DaemonRunningRotatingObject(Daemon):
         ro.write("exit loop")
 
     def stop(self):
-        super(DaemonRunningRotatingObject, self).stop()
+        super().stop()
 
 
 def create_rotating_objects_pseudokepler(Omega_i, R_i, R_o, gamma):

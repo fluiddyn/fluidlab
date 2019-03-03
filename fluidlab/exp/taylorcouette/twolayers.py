@@ -193,7 +193,7 @@ Initially two layers (I2L)...
             params.update({"zs": zs, "rhos": rhos})
 
         # call the __init__ function of the inherited class
-        super(I2LTaylorCouetteExp, self).__init__(
+        super().__init__(
             params=params,
             description=description,
             str_path=str_path,
@@ -221,7 +221,7 @@ Initially two layers (I2L)...
 
 
         """
-        super(I2LTaylorCouetteExp, self)._create_self_params(params)
+        super()._create_self_params(params)
 
         if len(params) == 0:
             return
@@ -249,7 +249,7 @@ Initially two layers (I2L)...
             coding the time of creation.
 
         """
-        begin, end = super(I2LTaylorCouetteExp, self)._init_name_dir()
+        begin, end = super()._init_name_dir()
 
         self.name_dir = (
             begin + "Omega1={:4.2f}_".format(self.params["Omega1"]) + end

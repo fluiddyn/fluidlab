@@ -29,7 +29,7 @@ class InstructionsUVMAT(ParamContainer):
         if "tag" not in kargs:
             kargs["tag"] = "instructions_uvmat"
 
-        super(InstructionsUVMAT, self).__init__(**kargs)
+        super().__init__(**kargs)
 
         if kargs["tag"] == "instructions_uvmat" and "path_file" in kargs:
             self._init_root()
@@ -57,7 +57,7 @@ class InstructionsUVMAT(ParamContainer):
             self._set_attrib("index_slices", [slice0])
 
 
-class ActionBase(object):
+class ActionBase:
     def __init__(self, instructions):
         self.instructions = instructions
 

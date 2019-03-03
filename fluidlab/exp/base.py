@@ -55,7 +55,7 @@ class NumpyAwareJSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-class Experiment(object):
+class Experiment:
     """Base class for classes representing an experiment.
 
     Parameters

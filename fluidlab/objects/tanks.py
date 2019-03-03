@@ -59,7 +59,7 @@ class DensityProfile(FunctionLinInterp):
     """
 
     def __init__(self, z, rho):
-        super(DensityProfile, self).__init__(z, rho)
+        super().__init__(z, rho)
         if any([r1 < r2 for r1, r2 in zip(rho, rho[1:])]):
             raise ValueError("rho must decrease!", rho)
 
@@ -106,12 +106,12 @@ class Surface(FunctionLinInterp):
     """
 
     def __init__(self, z, S):
-        super(Surface, self).__init__(z, S)
+        super().__init__(z, S)
         self.z = np.array(z, dtype=float)
         self.S = np.array(S, dtype=float)
 
 
-class StratifiedTank(object):
+class StratifiedTank:
     """Represent a tank with a density profile.
 
     Parameters
@@ -460,7 +460,7 @@ class TaylorCouette(StratifiedTank):
 
         self.Rin = Rin
         self.Rout = Rout
-        super(TaylorCouette, self).__init__(
+        super().__init__(
             H=H,
             S=np.pi * (self.Rout ** 2 - self.Rin ** 2),
             z=z,
