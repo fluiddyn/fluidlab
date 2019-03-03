@@ -252,7 +252,7 @@ Initially two layers (I2L)...
         begin, end = super(I2LTaylorCouetteExp, self)._init_name_dir()
 
         self.name_dir = (
-            begin + "Omega1={0:4.2f}_".format(self.params["Omega1"]) + end
+            begin + "Omega1={:4.2f}_".format(self.params["Omega1"]) + end
         )
         return begin, end
 

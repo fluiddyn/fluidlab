@@ -299,8 +299,8 @@ Initially quadratic stratification (IQS)...
 
         self.name_dir = (
             begin
-            + "Omega1={0:4.2f}_".format(self.params["Omega1"])
-            + "Nmid0={0:4.2f}_".format(self.params["Nmid0"])
+            + "Omega1={:4.2f}_".format(self.params["Omega1"])
+            + "Nmid0={:4.2f}_".format(self.params["Nmid0"])
             + end
         )
         return begin, end
@@ -321,8 +321,8 @@ def prepareIQS(N0):
 
     print(
         """
-For Nmid0 = {0:5.2f}, 
-Delta_rho: {1:5.2f}; z_max: {2:5.2f};
+For Nmid0 = {:5.2f}, 
+Delta_rho: {:5.2f}; z_max: {:5.2f};
 """.format(
             N0, Delta_rho, z_max
         )

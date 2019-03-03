@@ -176,7 +176,7 @@ class MasterFlexPumps(object):
         pumps = self._give_list_pumps(pumps)
         results = []
         for pump in pumps:
-            key = "P{0:02d}".format(pump)
+            key = "P{:02d}".format(pump)
             line_to_write = self.stx + key + command + self.cr
             if verbose:
                 print("serial.write:", line_to_write)
@@ -239,7 +239,7 @@ class MasterFlexPumps(object):
                 if rot > self.rot_per_min_max + 0.01:
                     rots[ir] = self.rot_per_min_max
                     print(
-                        "rot_per_min for pump {0:d} too large,".format(pumps[ir]),
+                        "rot_per_min for pump {:d} too large,".format(pumps[ir]),
                         "new rots_per_min:",
                         rots,
                     )
@@ -247,7 +247,7 @@ class MasterFlexPumps(object):
                     rots[ir] = 0.1
 
             for ip, pump in enumerate(pumps):
-                ret = self._command("S{0:+07.1f}".format(rots[ip]), pumps=pump)
+                ret = self._command("S{:+07.1f}".format(rots[ip]), pumps=pump)
             return ret
 
         else:
@@ -259,7 +259,7 @@ class MasterFlexPumps(object):
                 )
             elif rots < 0.1:
                 rots = 0.1
-            return self._command("S{0:+07.1f}".format(rots), pumps=pumps)
+            return self._command("S{:+07.1f}".format(rots), pumps=pumps)
 
     def stop(self, pumps=None):
         """Stop some pumps.
@@ -327,11 +327,11 @@ class MasterFlexPumps(object):
         )
 
         print(
-            "Calibrate pump {0:d}:\n".format(pump)
-            + "{0} min ".format(nb_mins)
+            "Calibrate pump {:d}:\n".format(pump)
+            + "{} min ".format(nb_mins)
             + "with an approximate flow rate of "
-            + "{0} ml/min;\n".format(flow_rate_approx)
-            + "approximate volume equal to {0} ml.".format(
+            + "{} ml/min;\n".format(flow_rate_approx)
+            + "approximate volume equal to {} ml.".format(
                 nb_mins * flow_rate_approx
             )
         )
@@ -347,8 +347,8 @@ class MasterFlexPumps(object):
             flow_rate = volume / nb_mins
 
             print(
-                "Then, flow_rates_max for pump {0:d} ".format(pump)
-                + "should be equal to {0:6.1f}.".format(
+                "Then, flow_rates_max for pump {:d} ".format(pump)
+                + "should be equal to {:6.1f}.".format(
                     flow_rate * self.rot_per_min_max / rot_per_min
                 )
             )
@@ -410,10 +410,10 @@ class MasterFlexPumps(object):
         print(
             "\nTest pump {:d}:\n".format(pump)
             + "flow_rates_max = {}\n".format(self.flow_rates_max[pump - 1])
-            + "approximate volume equal to {0} ml,\n".format(vol_to_pump)
+            + "approximate volume equal to {} ml,\n".format(vol_to_pump)
             + "with an approximate flow rate of "
-            + "{0} ml/min,\n".format(flow_rate_test)
-            + "Duration of the test: {0:6.2f} min ".format(nb_mins_to_pump)
+            + "{} ml/min,\n".format(flow_rate_test)
+            + "Duration of the test: {:6.2f} min ".format(nb_mins_to_pump)
         )
 
         pumps.set_flow_rate(flow_rate_test, pumps=pump)
@@ -429,8 +429,8 @@ class MasterFlexPumps(object):
         )
 
         print(
-            "Then flow_rates_max for pump {0:d} ".format(pump)
-            + "should be equal to {0:5.0f}.".format(flow_rate_new)
+            "Then flow_rates_max for pump {:d} ".format(pump)
+            + "should be equal to {:5.0f}.".format(flow_rate_new)
         )
 
         ok = query.query_yes_no(

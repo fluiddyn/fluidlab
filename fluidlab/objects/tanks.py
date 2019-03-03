@@ -314,9 +314,9 @@ end of the tube out of the tank. Are you ready?"""
         flowrate_tot = 0.8 * pumps.flow_rates_max.min()  # (ml/min)
         time_fill = vol_to_pump / flowrate_tot
 
-        print("flowrate_tot: {0:6.2f} ml/min".format(flowrate_tot))
-        print("vol_to_pump: {0:6.2f} ml".format(vol_to_pump))
-        print("time for the filling: {0:5.2f} min".format(time_fill))
+        print("flowrate_tot: {:6.2f} ml/min".format(flowrate_tot))
+        print("vol_to_pump: {:6.2f} ml".format(vol_to_pump))
+        print("time for the filling: {:5.2f} min".format(time_fill))
 
         rhomin = np.min(self.profile.rho)
         rhomax = np.max(self.profile.rho)
@@ -379,7 +379,7 @@ end of the tube out of the tank. Are you ready?"""
                 timer.wait_tick()
 
             print(
-                "volume pumped / volume to pump = {0:5.4f}".format(
+                "volume pumped / volume to pump = {:5.4f}".format(
                     vol_pumped / vol_to_pump
                 ),
                 end="\r",

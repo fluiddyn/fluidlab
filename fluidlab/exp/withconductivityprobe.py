@@ -134,7 +134,7 @@ class Profiles(object):
         if time_probe_moving > period:
             raise ValueError(
                 "period is too short. time_probe_moving: "
-                + "{0:5.2f} s".format(time_probe_moving)
+                + "{:5.2f} s".format(time_probe_moving)
             )
 
         path_dir = self.path_save
@@ -156,7 +156,7 @@ class Profiles(object):
             except AttributeError as e:
                 if not try_without_probe:
                     fld.io._write_warning(
-                        "Warning:\    "
+                        r"Warning:\    "
                         "Using the flag try_without_probe "
                         "in withconductivityprobe.py."
                     )
@@ -168,7 +168,7 @@ class Profiles(object):
             raise ValueError("duration < period !")
 
         self.write(
-            "total duration for the measurements: {0:8.1f} min".format(
+            "total duration for the measurements: {:8.1f} min".format(
                 float(nb_loops) * period / 60
             )
         )
@@ -186,7 +186,7 @@ class Profiles(object):
                     rotation_rate = inner_cylinder.rotation_rate
 
                 self.write(
-                    "index profile loop: {0:5d} ;  ".format(il)
+                    "index profile loop: {:5d} ;  ".format(il)
                     + "time - t0: "
                     + str(datetime.timedelta(seconds=time_since_start))
                 )
@@ -371,9 +371,9 @@ class Profiles(object):
         ax2 = ax.twiny()
         tOmega = 1000 * np.arange(10.0)
         t_inmin = tOmega / self._exp.params["Omega1"] / 60
-        ax2.set_xlabel("$t\Omega_1/1000$")
+        ax2.set_xlabel(r"$t\Omega_1/1000$")
         ax2.set_xticks(t_inmin)
-        labs = ["{0:3.0f}".format(number / 1000) for number in tOmega]
+        labs = ["{:3.0f}".format(number / 1000) for number in tOmega]
         ax2.set_xticklabels(labs)
         ax2.set_xlim(ax.get_xlim())
 

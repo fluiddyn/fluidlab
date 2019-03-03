@@ -35,7 +35,7 @@ from fluidlab.util.util import make_ip_as_str
 
 volt_no_movement = 2.5
 
-path_dir = os.path.expanduser("~\.fluidlab")
+path_dir = os.path.expanduser(r"~\.fluidlab")
 if not os.path.exists(path_dir):
     os.makedirs(path_dir)
 

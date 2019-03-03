@@ -303,8 +303,8 @@ Initially linear stratification (ILS)...
 
         self.name_dir = (
             begin
-            + "Omega1={0:4.2f}_".format(self.params["Omega1"])
-            + "N0={0:4.2f}_".format(self.params["N0"])
+            + "Omega1={:4.2f}_".format(self.params["Omega1"])
+            + "N0={:4.2f}_".format(self.params["N0"])
             + end
         )
         return begin, end

@@ -146,7 +146,7 @@ with extreme densities with the following volume ratio: """
             # measure voltages
 
             answer = query.query(
-                "\nPut the probe in solution with rho = {0}\n".format(rho)
+                "\nPut the probe in solution with rho = {}\n".format(rho)
                 + "Ready? [Y / no, cancel the calibration] "
             )
 
@@ -162,7 +162,7 @@ with extreme densities with the following volume ratio: """
                     f.write(repr(volts))
                 volt = np.median(volts)
                 voltages[ir] = volt
-                print("solution rho: {0} ; voltage: {1}".format(rho, volt))
+                print("solution rho: {} ; voltage: {}".format(rho, volt))
                 happy = query.query_yes_no("Are you happy with this measurement?")
 
         # load all saved calibrations

@@ -224,7 +224,7 @@ class MSCTIProbe:
         # measure voltages
 
         answer = query.query(
-            "\nPut the probe at z= {0}\n".format(z)
+            "\nPut the probe at z= {}\n".format(z)
             + "Ready? [Y / no, cancel the calibration] "
         )
 
@@ -234,10 +234,10 @@ class MSCTIProbe:
 
         volts = self.measure_volts(duration, return_time=False)
         print(volts)
-        header = "profile for z={0}".format(z)
+        header = "profile for z={}".format(z)
         np.savetxt("temp_calib.txt", volts.transpose(), header=header)
         voltages = np.mean(volts, axis=1)
-        print("voltrho= {0} ; at z=: {1} kg/m3".format(volts[0], z))
+        print("voltrho= {} ; at z=: {} kg/m3".format(volts[0], z))
 
         self.plot_profile(file_profile, z=z, voltrho=voltages[0])
 
