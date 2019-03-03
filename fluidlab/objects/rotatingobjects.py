@@ -139,9 +139,7 @@ class RotatingObject(ObjectUsingBoard):
 
         self.write("Calibrate with period: {:6.2f}".format(period))
         voltage = self._voltage_from_rotation_rate(2 * np.pi / period)
-        self.write(
-            "it should correspond to a voltage of {:6.2f}".format(voltage)
-        )
+        self.write("it should correspond to a voltage of {:6.2f}".format(voltage))
 
         period = self.calibrate(voltage)
 

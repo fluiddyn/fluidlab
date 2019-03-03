@@ -277,13 +277,15 @@ def read_analog(
         if verbose:
             if samples_per_chan < 1000:
                 verbose_text += str(samples_per_chan) + " samp/chan @ "
-            elif samples_per_chan < 1000000:
+            elif samples_per_chan < 1_000_000:
                 verbose_text += str(samples_per_chan / 1000) + " kSamp/chan @ "
             else:
-                verbose_text += str(samples_per_chan / 1000000) + " MSamp/chan @ "
+                verbose_text += (
+                    str(samples_per_chan / 1_000_000) + " MSamp/chan @ "
+                )
             if sample_rate < 1000:
                 verbose_text += "%.2f Hz using OnboardClock)" % sample_rate
-            elif sample_rate < 1000000:
+            elif sample_rate < 1_000_000:
                 verbose_text += "%.2f kHz using OnboardClock)" % (
                     sample_rate / 1000.0
                 )
@@ -448,7 +450,7 @@ def write_analog(
                 verbose_text = (
                     verbose_text + str(samples_per_chan) + " samp/chan @ "
                 )
-            elif samples_per_chan < 1000000:
+            elif samples_per_chan < 1_000_000:
                 verbose_text = (
                     verbose_text + str(samples_per_chan / 1000) + " kSamp/chan @ "
                 )
@@ -462,7 +464,7 @@ def write_analog(
                 verbose_text = verbose_text + (
                     "%.2f Hz using OnboardClock)" % sample_rate
                 )
-            elif sample_rate < 1000000:
+            elif sample_rate < 1_000_000:
                 verbose_text = verbose_text + (
                     "%.2f kHz using OnboardClock)" % (sample_rate / 1000.0)
                 )
