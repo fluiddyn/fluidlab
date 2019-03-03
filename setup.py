@@ -16,8 +16,8 @@ except ImportError:
     from distutils.command.build_ext import build_ext
     has_cython = False
 
-if sys.version_info[:2] < (2, 7) or (3, 0) <= sys.version_info[0:2] < (3, 2):
-    raise RuntimeError("Python version 2.7 or >= 3.2 required.")
+if sys.version_info[0:2] < (3, 5):
+    raise RuntimeError("Python version >= 3.5 required.")
 
 try:
     hg_rev = subprocess.check_output(['hg', 'id', '--id']).strip()
@@ -104,11 +104,9 @@ setup(name='fluidlab',
           # ensure that you indicate whether you support Python 2,
           # Python 3 or both.
           'Programming Language :: Python',
-          'Programming Language :: Python :: 2',
-          'Programming Language :: Python :: 2.7',
-          # 'Programming Language :: Python :: 3',
-          # 'Programming Language :: Python :: 3.3',
-          # 'Programming Language :: Python :: 3.4',
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
           'Programming Language :: Cython'],
       packages=find_packages(exclude=['doc', 'digiflow', 'examples']),
       install_requires=install_requires,

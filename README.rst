@@ -28,9 +28,9 @@ researcher at `LEGI <http://www.legi.grenoble-inp.fr>`_, Grenoble) in
 the G. K. Batchelor Fluid Dynamics Laboratory at DAMTP, University of
 Cambridge.
 
-*Key words and ambitions*: fluid dynamics research with Python (2.7 or
->= 3.3); modular, object-oriented, collaborative, tested and
-documented, free and open-source software.
+*Key words and ambitions*: fluid dynamics research with Python (>= 3.5);
+modular, object-oriented, collaborative, tested and documented, free and
+open-source software.
 
 License
 -------
