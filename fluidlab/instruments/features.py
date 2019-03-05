@@ -193,7 +193,7 @@ class Value(SuperValue):
             # here we don't call _convert_as_str to allow the user to choose
             # the desired format in the command_set string
             command = self.command_set.format(
-                channel=channel, value=self._convert_as_str(value)
+                channel=channel, value=value
             )
         else:
             command = self.command_set + " " + self._convert_as_str(value)

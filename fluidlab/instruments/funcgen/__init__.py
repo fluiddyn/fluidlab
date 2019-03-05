@@ -21,4 +21,5 @@ __all__ = [
     "hp_33120a",
     "tektronix_afg3022b",
     "tti_tsx3510p",
+    "srs_ds360"
 ]
