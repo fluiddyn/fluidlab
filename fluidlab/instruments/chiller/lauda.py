@@ -8,8 +8,6 @@
 
 """
 
-from __future__ import print_function
-
 __all__ = ["Lauda"]
 
 from fluidlab.instruments.drivers import Driver
@@ -146,6 +144,8 @@ class Lauda(Driver):
         )
         super().__init__(interface)
 
+    def __enter__(self):
+        super(Lauda, self).__enter__()
         identification = self.interface.query(b"TYPE\r").decode("ascii")
         if identification not in Lauda.Models:
             if len(identification) > 0:
@@ -159,6 +159,7 @@ class Lauda(Driver):
         else:
             self.rom = Lauda.Models[identification]
             print("Identification: " + identification)
+        return self
 
 
 features = [
