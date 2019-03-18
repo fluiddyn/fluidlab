@@ -8,7 +8,7 @@
 
 """
 
-__all__ = ["SrsDs360"]
+__all__ = ["StanfordDS360"]
 
 from fluidlab.instruments.iec60488 import (
     IEC60488,
@@ -22,7 +22,7 @@ from fluidlab.instruments.iec60488 import (
 
 from fluidlab.instruments.features import FloatScientificValue, FloatValue, BoolValue
     
-class SrsDs360(
+class StanfordDS360(
     IEC60488, PowerOn, Calibration, Trigger, ObjectIdentification, StoredSetting
 ):
     """
@@ -59,4 +59,4 @@ features = [
     
 ]
 
-SrsDs360._build_class_with_features(features)
+StanfordDS360._build_class_with_features(features)

@@ -57,7 +57,7 @@ class GPIBInterface(QueryInterface):
         gpib.timeout(self.handle, self.default_tmo)
         
     def _close(self):
-        self.handle.close()
+        gpib.close(self.handle)
         
     def _read(self, numbytes=None, verbose=False, tracing=False):
         if tracing:
