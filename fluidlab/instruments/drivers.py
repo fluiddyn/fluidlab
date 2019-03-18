@@ -115,14 +115,22 @@ class VISADriver(Driver):
     backend : str
       Defines the backend used by pyvisa ("@py", "@ni", "@sim"...)
 
+      
+    Note: this class is actually more general than just VISA, because
+    IEC60488 inherits from it, and there are SCPI conforming devices which
+    uses serial or socket communications, and can be used with other interfaces.
+    
     """
 
     def __init__(self, interface=None, backend="@py"):
 
         if isinstance(interface, str):
-            from fluidlab.instruments.interfaces.visa import PyvisaInterface
-
-            interface = PyvisaInterface(interface, backend=backend)
+            if hasattr(self, 'default_port'):
+                from fluidlab.instruments.interfaces.socket_inter import SocketInterface
+                interface = SocketInterface(interface, self.default_port)
+            else:
+                from fluidlab.instruments.interfaces.visa import PyvisaInterface
+                interface = PyvisaInterface(interface, backend=backend)
 
         super().__init__(interface)
 

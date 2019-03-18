@@ -35,6 +35,7 @@ class LinuxUSBTMCInterface(QueryInterface):
                 device number (e.g. 0)
 
         """
+        super(LinuxUSBTMCInterface, self).__init__()
         if isinstance(device, bytes):
             device = device.decode("ascii")
         if isinstance(device, Path):
@@ -43,15 +44,18 @@ class LinuxUSBTMCInterface(QueryInterface):
             device = f"/dev/usbtmc{device:d}"
 
         self.devname = device
-        self.dev = os.open(device, os.O_RDWR)
         self.write_termination = b"\n"
         self.read_termination = b"\n"
 
-    def __del__(self):
-        if self.dev:
-            self.close()
+    def _open(self):
+        self.dev = os.open(device, os.O_RDWR)
 
-    def write(self, message, tracing=False, verbose=False):
+    def _close(self):
+        os.close(self.dev)
+        self.dev = None
+        self.devname = None
+            
+    def _write(self, message, tracing=False, verbose=False):
         # On prend a priori des bytes, mais si on nous donne un str
         # on convertit à condition que ce soit du pur ascii
         if isinstance(message, str):
@@ -67,20 +71,9 @@ class LinuxUSBTMCInterface(QueryInterface):
             msg = msg[:N]
         return msg
 
-    def close(self):
-        if self.dev:
-            os.close(self.dev)
-            self.dev = 0
-            self.devname = None
-
-    def read(self, maxbytes=1024, tracing=False, verbose=False):
+    def _read(self, maxbytes=1024, tracing=False, verbose=False):
         # Par compatibilité avec les autres interfaces, on renvoie
         # un str (à condition ascii).
         # Si c'est un appareil qui renvoie autre chose que de l'ascii
         # utiliser readline.
         return self.readline(maxbytes).decode("ascii")
-
-    def query(self, command, time_delay=0.05, tracing=False, verbose=False):
-        self.write(command)
-        sleep(time_delay)
-        return self.read()

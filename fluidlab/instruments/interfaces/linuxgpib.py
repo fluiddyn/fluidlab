@@ -47,13 +47,19 @@ def closest_timeout(t):
 
 class GPIBInterface(QueryInterface):
     def __init__(self, board_adress, instrument_adress, timeout=1.0):
+        super(GPIBInterface, self).__init__()
         self.board_adress = board_adress
         self.instrument_adress = instrument_adress
-        self.handle = gpib.dev(board_adress, instrument_adress)
         self.default_tmo = closest_timeout(timeout)
+        
+    def _open(self):
+        self.handle = gpib.dev(self.board_adress, self.instrument_adress)
         gpib.timeout(self.handle, self.default_tmo)
-
-    def read(self, numbytes=None, verbose=False, tracing=False):
+        
+    def _close(self):
+        self.handle.close()
+        
+    def _read(self, numbytes=None, verbose=False, tracing=False):
         if tracing:
             sys.stdout.write("* <- " + str(self.instrument_adress) + " ")
             sys.stdout.flush()
@@ -90,21 +96,12 @@ class GPIBInterface(QueryInterface):
 
         return data
 
-    def write(self, command, tracing=False):
+    def _write(self, command, tracing=False):
         if tracing:
             print("* ->", self.instrument_adress, command)
         if six.PY3 and isinstance(command, str):
             command = command.encode("ascii")
         gpib.write(self.handle, command)
-
-    def query(
-        self, command, numbytes=None, time_delay=0.1, verbose=False, tracing=False
-    ):
-        if six.PY3 and isinstance(command, str):
-            command = command.encode("ascii")
-        self.write(command)
-        time.sleep(time_delay)
-        return self.read(numbytes, verbose, tracing)
 
     def wait_for_srq(self, timeout=None):
         """

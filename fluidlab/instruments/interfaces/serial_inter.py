@@ -44,30 +44,42 @@ class SerialInterface(QueryInterface):
         To automatically add '\n' on writes, and remove '\r\n' on reads, set
         autoremove_eol to True
         """
-
-        # open serial port
-        sp = serial.Serial(
-            port=port,
-            baudrate=baudrate,
-            bytesize=bytesize,
-            parity=parity,
-            stopbits=stopbits,
-            timeout=timeout,
-            xonxoff=xonxoff,
-            rtscts=rtscts,
-            dsrdtr=dsrdtr,
-        )
-        self._lowlevel = self.serial_port = sp
-        self.close = sp.close
+        
+        self.port = port
+        self.baudrate = baudrate
+        self.bytesize = bytesize
+        self.parity = parity
+        self.stopbits = stopbits
+        self.timeout = timeout
+        self.xonxoff = xonxoff
+        self.rtscts = rtscts
+        self.dsrdtr = dsrdtr
         self.eol = eol
         self.multilines = multilines
         self.autoremove_eol = autoremove_eol
-        if eol is not None:
+        
+    def _open(self):
+
+        # open serial port
+        sp = serial.Serial(
+            port=self.port,
+            baudrate=self.baudrate,
+            bytesize=self.bytesize,
+            parity=self.parity,
+            stopbits=self.stopbits,
+            timeout=self.timeout,
+            xonxoff=self.xonxoff,
+            rtscts=self.rtscts,
+            dsrdtr=self.dsrdtr,
+        )
+        self._lowlevel = self.serial_port = sp
+        self._close = sp.close
+        if self.eol is not None:
             self.ser_io = io.TextIOWrapper(
-                io.BufferedRWPair(sp, sp, 1), newline=eol, line_buffering=True
+                io.BufferedRWPair(sp, sp, 1), newline=self.eol, line_buffering=True
             )
 
-    def write(self, *args):
+    def _write(self, *args):
         if self.autoremove_eol:
             args = [a.strip() + "\n" for a in args]
         # print('->', repr(args[0]))
@@ -100,7 +112,7 @@ class SerialInterface(QueryInterface):
 
         return self.serial_port.readlines(*args)
 
-    def read(self):
+    def _read(self):
         if self.multilines:
             result = self.readlines()
             return "\n".join(result)
@@ -113,16 +125,10 @@ class SerialInterface(QueryInterface):
             # print("<-", repr(b"\n".join(result.splitlines())))
             return b"\n".join(result.splitlines())
 
-    def query(self, command, time_delay=0.0):
-        self.write(command)
-        sleep(time_delay)
-        return self.read()
-
 
 if __name__ == "__main__":
-    interface = SerialInterface("/dev/ttyUSB0")
-
-    print(interface.query(b"*IDN?\r\n", time_delay=1))
-    print(interface.query(b"*IDN?\r\n"))
-    print(interface.query(b"ISET1?\r\n"))
-    print(interface.query(b"HELP?\r\n", time_delay=0))
+    with SerialInterface("/dev/ttyUSB0") as interface:
+        print(interface.query(b"*IDN?\r\n", time_delay=1))
+        print(interface.query(b"*IDN?\r\n"))
+        print(interface.query(b"ISET1?\r\n"))
+        print(interface.query(b"HELP?\r\n", time_delay=0))
