@@ -17,7 +17,7 @@ opened_devices_for_rm = dict() # key: rm, object: device
 resource_managers = dict()     # key: backend(str), object: rm 
 
 class PyvisaInterface(QueryInterface):
-    def __init__(self, resource_name, backend="@py"):
+    def __init__(self, resource_name, backend="@ni"):
         super(PyvisaInterface, self).__init__()
         self.resource_name = resource_name
         self.backend = backend
@@ -27,7 +27,7 @@ class PyvisaInterface(QueryInterface):
             rm = resource_managers[self.backend]
             opened_devices_for_rm[rm].add(self)
         else:
-            rm = visa.ResourceManager(backend)
+            rm = visa.ResourceManager(self.backend)
             resource_managers[self.backend] = rm
             opened_devices_for_rm[rm] = {self}
         self.rm = rm

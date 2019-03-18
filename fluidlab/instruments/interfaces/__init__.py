@@ -48,7 +48,7 @@ class Interface:
         
     def open(self):
         if not self.opened:
-            self._open(self)
+            self._open()
             self.opened = True
         else:
             warnings.warn('open() called on already opened interface.', InterfaceWarning)
@@ -89,9 +89,9 @@ class QueryInterface(Interface):
             self.open()
         return self._read(*args, **kwargs)
 
-    def query(self, command, **kwargs):
+    def query(self, command, time_delay=0.1, **kwargs):
         if hasattr(self, '_query'):
-            if not.self.opened:
+            if not self.opened:
                 warnings.warn('query() called on non-opened interface.', InterfaceWarning)
                 self.open()
             return self._query(command, **kwargs)

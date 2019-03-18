@@ -122,7 +122,7 @@ class VISADriver(Driver):
     
     """
 
-    def __init__(self, interface=None, backend="@py"):
+    def __init__(self, interface=None, backend="@ni"):
 
         if isinstance(interface, str):
             if hasattr(self, 'default_port'):

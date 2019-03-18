@@ -104,6 +104,7 @@ class PfeifferMaxiGaugeOnOffValue(PfeifferMaxiGaugeValue):
 
 
 class PfeifferMaxiGauge(Driver):
+
     def __init__(self, serialPort, debug=False):
         interface = SerialInterface(
             serialPort,
@@ -118,6 +119,10 @@ class PfeifferMaxiGauge(Driver):
         )
         super().__init__(interface)
         self.debug = debug
+        
+    def __enter__(self):
+        super(PfeifferMaxiGauge, self).__enter__()
+        
         self.clear_interface()
         print("Pfeiffer MaxiGauge:", self.program_version().decode("ascii"))
         long_description = {
@@ -137,6 +142,7 @@ class PfeifferMaxiGauge(Driver):
             except KeyError:
                 desc = ""
             print(i + 1, sensor.decode("ascii"), desc)
+        return self
 
     def clear_interface(self):
         if self.debug:
