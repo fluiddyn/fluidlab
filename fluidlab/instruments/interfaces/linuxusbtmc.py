@@ -9,6 +9,9 @@ which disable the kernel usbtmc support and address the device directly.
 
 This module is much simpler and merely rely on os.open and ioctl.
 
+Note: on some instruments, the USB port is actually a USB-serial converter.
+In that case, use SerialInterface, not LinuxUSBTMCInterface.
+
 Provides:
 
 .. autoclass:: LinuxUSBTMCInterface
@@ -48,7 +51,7 @@ class LinuxUSBTMCInterface(QueryInterface):
         self.read_termination = b"\n"
 
     def _open(self):
-        self.dev = os.open(device, os.O_RDWR)
+        self.dev = os.open(self.devname, os.O_RDWR)
 
     def _close(self):
         os.close(self.dev)
