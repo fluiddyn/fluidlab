@@ -1,5 +1,5 @@
-"""Interface with Linux USBTMC (:mod:`fluidlab.instruments.interface.linuxusbtmc.py`)
-======================================================================================
+"""Interface with Linux USBTMC (:mod:`fluidlab.interface.usbtmc_inter`)
+=======================================================================
 
 This interface provides basic interface with USBTMC device. It uses the
 linux devices at /dev/usbtmc[0-9], and thus makes use of the usbtmc
@@ -23,7 +23,7 @@ Provides:
 import os
 from pathlib import Path
 from time import sleep
-from fluidlab.instruments.interfaces import QueryInterface
+from fluidlab.interfaces import QueryInterface
 
 
 class LinuxUSBTMCInterface(QueryInterface):

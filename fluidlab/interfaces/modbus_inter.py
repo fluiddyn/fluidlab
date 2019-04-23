@@ -1,6 +1,6 @@
 """
-Modbus interfaces (:mod:`fluidlab.instruments.modbus.interfaces`)
-=================================================================
+Modbus interfaces (:mod:`fluidlab.interfaces.modbus_inter`)
+===========================================================
 
 Provides:
 
@@ -20,9 +20,8 @@ Provides:
 
 import sys
 import collections
-import six
 
-from fluidlab.instruments.interfaces import Interface
+from fluidlab.interfaces import Interface
 
 
 class ModbusInterface(Interface):

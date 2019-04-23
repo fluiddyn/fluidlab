@@ -1,5 +1,5 @@
-"""Interfaces with linux-gpib (:mod:`fluidlab.instruments.interfaces.linuxgpib`)
-================================================================================
+"""Interfaces with GPIB (:mod:`fluidlab.interfaces.gpib_inter`)
+===============================================================
 
 Provides:
 
@@ -9,12 +9,10 @@ Provides:
 
 """
 
-from __future__ import print_function
 import gpib
 import time, sys
-import six
 
-from fluidlab.instruments.interfaces import QueryInterface
+from fluidlab.interfaces import QueryInterface
 
 timeout_values = {
     gpib.T1000s: 1000.0,
@@ -75,10 +73,8 @@ class GPIBInterface(QueryInterface):
                 while True:
                     chunk_size = 150
                     chunk = gpib.read(self.handle, chunk_size)
-                    if six.PY3:
-                        data = data + chunk.decode("ascii")
-                    else:
-                        data = data + chunk
+                    data = data + chunk.decode("ascii")
+                    
                     if verbose:
                         sys.stdout.write(
                             "{:d} bytes read       \r".format(len(data))
@@ -99,7 +95,7 @@ class GPIBInterface(QueryInterface):
     def _write(self, command, tracing=False):
         if tracing:
             print("* ->", self.instrument_adress, command)
-        if six.PY3 and isinstance(command, str):
+        if isinstance(command, str):
             command = command.encode("ascii")
         gpib.write(self.handle, command)
 

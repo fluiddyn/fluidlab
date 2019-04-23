@@ -1,5 +1,5 @@
-"""Interfaces with socket (:mod:`fluidlab.instruments.interfaces.socket_inter`)
-===============================================================================
+"""Interfaces with socket (:mod:`fluidlab.interfaces.socket_inter`)
+===================================================================
 
 Provides:
 
@@ -12,7 +12,7 @@ Provides:
 import socket
 
 
-from fluidlab.instruments.interfaces import QueryInterface
+from fluidlab.interfaces import QueryInterface
 
 class SocketInterface(QueryInterface):
 

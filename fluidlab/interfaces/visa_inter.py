@@ -1,5 +1,5 @@
-"""Interfaces with pyvisa (:mod:`fluidlab.instruments.interfaces.visa`)
-=======================================================================
+"""Interfaces with VISA (:mod:`fluidlab.interfaces.visa_inter`)
+===============================================================
 
 Provides:
 
@@ -11,12 +11,12 @@ Provides:
 
 import pyvisa as visa
 
-from fluidlab.instruments.interfaces import QueryInterface
+from fluidlab.interfaces import QueryInterface
 
 opened_devices_for_rm = dict() # key: rm, object: device
 resource_managers = dict()     # key: backend(str), object: rm 
 
-class PyvisaInterface(QueryInterface):
+class VISAInterface(QueryInterface):
     def __init__(self, resource_name, backend="@ni"):
         super(PyvisaInterface, self).__init__()
         self.resource_name = resource_name
@@ -71,5 +71,5 @@ class PyvisaInterface(QueryInterface):
 
 
 if __name__ == "__main__":
-    with PyvisaInterface("ASRL2::INSTR", backend="@sim") as interface:
+    with VISAInterface("ASRL2::INSTR", backend="@sim") as interface:
         pass

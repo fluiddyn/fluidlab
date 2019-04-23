@@ -1,5 +1,5 @@
-"""Interfaces with serial (:mod:`fluidlab.instruments.interfaces.serial_inter`)
-===============================================================================
+"""Interfaces with serial (:mod:`fluidlab.interfaces.serial_inter`)
+===================================================================
 
 Provides:
 
@@ -14,7 +14,7 @@ import io
 
 from time import sleep
 
-from fluidlab.instruments.interfaces import QueryInterface
+from fluidlab.interfaces import QueryInterface
 
 
 class SerialInterface(QueryInterface):
