@@ -20,7 +20,7 @@ import re
 import platform
 import six
 
-from fluidlab.instruments.interfaces import Interface, FalseInterface
+from fluidlab.interfaces import Interface, FalseInterface
 
 from fluidlab.instruments.features import SuperValue
 
@@ -31,7 +31,7 @@ class Driver:
     Parameters
     ----------
 
-    interface : :class:`fluidlab.instruments.interface.Interface`
+    interface : :class:`fluidlab.interfaces.Interface`
       The interface used to communicate with the instrument.
 
     """
@@ -126,14 +126,35 @@ class VISADriver(Driver):
 
         if isinstance(interface, str):
             if hasattr(self, 'default_port'):
-                from fluidlab.instruments.interfaces.socket_inter import SocketInterface
+                from fluidlab.interfaces.socket_inter import SocketInterface
                 interface = SocketInterface(interface, self.default_port)
             else:
-                from fluidlab.instruments.interfaces.visa import PyvisaInterface
+                from fluidlab.interfaces.visa_inter import PyvisaInterface
                 interface = PyvisaInterface(interface, backend=backend)
 
         super().__init__(interface)
 
+class ModbusDriver(Driver):
+    """Driver for instruments communicating with Modbus."""
+
+    def __init__(self, port, method="rtu", timeout=1, module="minimalmodbus"):
+
+        if module == "minimalmodbus":
+            from fluidlab.interfaces.modbus_inter import (
+                MinimalModbusInterface as Interface,
+            )
+
+        elif module == "pymodbus":
+            from fluidlab.interfaces.modbus_inter import (
+                PyModbusInterface as Interface,
+            )
+
+        else:
+            raise ValueError
+
+        interface = Interface(port, method, timeout)
+
+        super().__init__(interface)
 
 if __name__ == "__main__":
     driver = Driver("ASRL4::INSTR", backend="@sim")

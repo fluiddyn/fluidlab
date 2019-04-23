@@ -12,7 +12,7 @@ __all__ = ["Julabo"]
 
 from serial import PARITY_EVEN
 from fluidlab.instruments.drivers import Driver
-from fluidlab.instruments.interfaces.serial_inter import SerialInterface
+from fluidlab.interfaces.serial_inter import SerialInterface
 from fluidlab.instruments.features import Value, FloatValue, BoolValue, IntValue
 from time import sleep
 

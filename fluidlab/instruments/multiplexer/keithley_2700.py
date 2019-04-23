@@ -355,7 +355,7 @@ features = [
 Keithley2700._build_class_with_features(features)
 
 if __name__ == "__main__":
-    from fluidlab.instruments.interfaces.linuxgpib import GPIBInterface
+    from fluidlab.interfaces.gpib_inter import GPIBInterface
 
     with Keithley2700(GPIBInterface(0, 16)) as km:
         front = km.front.get()

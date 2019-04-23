@@ -43,7 +43,7 @@ class Keithley705(IEC60488):
 
 
 if __name__ == "__main__":
-    from fluidlab.instruments.interfaces.linuxgpib import GPIBInterface
+    from fluidlab.interfaces.gpib_inter import GPIBInterface
     import time
 
     with Keithley705(GPIBInterface(0, 17)) as k:

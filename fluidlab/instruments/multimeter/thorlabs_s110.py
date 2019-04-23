@@ -11,7 +11,7 @@
 """
 
 from fluidlab.instruments.drivers import Driver
-from fluidlab.instruments.interfaces.serial_inter import SerialInterface
+from fluidlab.interfaces.serial_inter import SerialInterface
 from fluidlab.instruments.features import StringValue, FloatValue
 
 __all__ = ["ThorlabsS110"]

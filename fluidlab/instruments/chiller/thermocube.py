@@ -11,7 +11,7 @@ from typing import NamedTuple
 from time import sleep
 
 from fluidlab.instruments.drivers import Driver
-from fluidlab.instruments.interfaces.serial_inter import SerialInterface
+from fluidlab.interfaces.serial_inter import SerialInterface
 from fluidlab.instruments.features import Value
 
 __all__ = ["Thermocube"]

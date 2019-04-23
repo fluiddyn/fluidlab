@@ -11,7 +11,7 @@
 __all__ = ["FurnessFCO318"]
 
 from fluidlab.instruments.drivers import Driver
-from fluidlab.instruments.interfaces.serial_inter import SerialInterface
+from fluidlab.interfaces.serial_inter import SerialInterface
 from fluidlab.instruments.features import Value
 from time import sleep
 import numpy as np

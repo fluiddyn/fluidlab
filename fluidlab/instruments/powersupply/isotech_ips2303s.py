@@ -12,7 +12,7 @@ __all__ = ["IsoTechIPS2303S"]
 from serial.tools.list_ports import comports
 
 from fluidlab.instruments.drivers import Driver
-from fluidlab.instruments.interfaces.serial_inter import SerialInterface
+from fluidlab.interfaces.serial_inter import SerialInterface
 
 from fluidlab.instruments.features import QueryCommand, FloatValue
 
