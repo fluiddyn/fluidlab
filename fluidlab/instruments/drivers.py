@@ -1,8 +1,9 @@
 """Instrument drivers (:mod:`fluidlab.instruments.drivers`)
 ==========================================================
 
-.. todo:: Verify potential bug due to the fact that values are class
-   attributes.
+Abstract base class for instrument drivers.
+Concrete classes must define features, and overload default_physical_interface,
+and default_inter_params attributes.
 
 Provides:
 
@@ -18,10 +19,8 @@ Provides:
 
 import re
 import platform
-import six
 
-from fluidlab.interfaces import Interface, FalseInterface
-
+from fluidlab.interfaces import interface_from_string, FalseInterface, Interface
 from fluidlab.instruments.features import SuperValue
 
 
@@ -35,6 +34,8 @@ class Driver:
       The interface used to communicate with the instrument.
 
     """
+    default_physical_interface = None
+    default_inter_params = {'port': 0}
 
     @classmethod
     def _build_class_with_features(cls, features):
@@ -42,14 +43,18 @@ class Driver:
             feature._build_driver_class(cls)
 
     def __init__(self, interface=None):
-        if not interface:
+        if isinstance(interface, str):
+            interface = interface_from_string(interface, 
+                                              self.default_physical_interface,
+                                              **self.default_inter_params)
+        elif not interface:
             interface = FalseInterface()
         elif not isinstance(interface, Interface):
             raise ValueError("interface should be an Interface.")
 
         self._interface = self.interface = interface
-
         self.values = {}
+        
         for name in dir(self):
             v = getattr(self, name)
             if isinstance(v, SuperValue):
@@ -101,60 +106,6 @@ class Driver:
 
     def __exit__(self, type_, value, cb):
         self.interface.__exit__(type_, value, cb)
-
-
-class VISADriver(Driver):
-    """A VISA driver.
-
-    Parameters
-    ----------
-
-    interface : {str or interface}
-      A VISA interface or a string defining a VISA interface.
-
-    backend : str
-      Defines the backend used by pyvisa ("@py", "@ni", "@sim"...)
-
-      
-    Note: this class is actually more general than just VISA, because
-    IEC60488 inherits from it, and there are SCPI conforming devices which
-    uses serial or socket communications, and can be used with other interfaces.
-    
-    """
-
-    def __init__(self, interface=None, backend="@ni"):
-
-        if isinstance(interface, str):
-            if hasattr(self, 'default_port'):
-                from fluidlab.interfaces.socket_inter import SocketInterface
-                interface = SocketInterface(interface, self.default_port)
-            else:
-                from fluidlab.interfaces.visa_inter import PyvisaInterface
-                interface = PyvisaInterface(interface, backend=backend)
-
-        super().__init__(interface)
-
-class ModbusDriver(Driver):
-    """Driver for instruments communicating with Modbus."""
-
-    def __init__(self, port, method="rtu", timeout=1, module="minimalmodbus"):
-
-        if module == "minimalmodbus":
-            from fluidlab.interfaces.modbus_inter import (
-                MinimalModbusInterface as Interface,
-            )
-
-        elif module == "pymodbus":
-            from fluidlab.interfaces.modbus_inter import (
-                PyModbusInterface as Interface,
-            )
-
-        else:
-            raise ValueError
-
-        interface = Interface(port, method, timeout)
-
-        super().__init__(interface)
 
 if __name__ == "__main__":
     driver = Driver("ASRL4::INSTR", backend="@sim")

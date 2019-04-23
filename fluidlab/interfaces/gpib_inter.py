@@ -50,6 +50,12 @@ class GPIBInterface(QueryInterface):
         self.instrument_adress = instrument_adress
         self.default_tmo = closest_timeout(timeout)
         
+    def __str__(self):
+        return f'GPIBInterface({self.board_adress:d}, {self.instrument_adress:d})'
+        
+    def __repr__(self):
+        return str(self)
+        
     def _open(self):
         self.handle = gpib.dev(self.board_adress, self.instrument_adress)
         gpib.timeout(self.handle, self.default_tmo)

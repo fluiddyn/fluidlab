@@ -22,6 +22,12 @@ class SocketInterface(QueryInterface):
         self.port = port
         self.autoremove_eol = autoremove_eol
         
+    def __str__(self):
+        return f'SocketInterface("{self.ip_address:}", {self.port:})'
+        
+    def __repr__(self):
+        return str(self)
+        
     def _open(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.ip_address, self.port))

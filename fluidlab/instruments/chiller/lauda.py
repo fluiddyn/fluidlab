@@ -11,7 +11,7 @@
 __all__ = ["Lauda"]
 
 from fluidlab.instruments.drivers import Driver
-from fluidlab.interfaces.serial_inter import SerialInterface
+from fluidlab.interfaces import PhysicalInterfaceType
 from fluidlab.instruments.features import Value
 from time import sleep
 
@@ -129,20 +129,15 @@ class Lauda(Driver):
     # will be raised. This is to avoid to inadvertantly use
     # untested model without knowning.
     Models = {"RP  845": 845, "RP  855": 855, "E200": 200, "VC": 1200}
-
-    def __init__(self, serialPort):
-        interface = SerialInterface(
-            serialPort,
-            baudrate=9600,
-            bytesize=8,
-            parity="N",
-            stopbits=1,
-            timeout=1,
-            xonxoff=False,
-            rtscts=False,
-            dsrdtr=False,
-        )
-        super().__init__(interface)
+    default_physical_interface = PhysicalInterfaceType.Serial
+    default_inter_params = {'baudrate': 9600,
+                            'bytesize': 8,
+                            'parity': "N",
+                            'stopbits': 1,
+                            'timeout': 1,
+                            'xonxoff': False,
+                            'rtscts': False,
+                            'dsrdtr': False}
 
     def __enter__(self):
         super(Lauda, self).__enter__()

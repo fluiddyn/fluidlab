@@ -117,11 +117,12 @@ import warnings
 import numpy as np
 
 
-from fluidlab.instruments.modbus.driver import ModbusDriver
-from fluidlab.instruments.modbus.features import (
+from fluidlab.instruments.features import (
     DecimalInt16Value,
     Int16StringValue,
 )
+from fluidlab.interfaces import PhysicalInterfaceType
+
 from fluiddyn.util.terminal_colors import print_fail, print_warning
 
 
@@ -132,7 +133,7 @@ class ModeError(Exception):
     """
 
 
-class BaseUnidriveSP(ModbusDriver):
+class BaseUnidriveSP(Driver):
     """Base class for the driver for the motor driver Unidrive SP
 
     Parameters
@@ -154,7 +155,8 @@ class BaseUnidriveSP(ModbusDriver):
     Unidrive SP.
 
     """
-
+    default_physical_interface = PhysicalInterfaceType.Modbus
+    
     _constant_nb_pairs_poles = 4
 
     def __init__(

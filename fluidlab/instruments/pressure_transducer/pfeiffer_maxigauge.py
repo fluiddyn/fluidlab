@@ -11,7 +11,7 @@
 from __future__ import print_function, unicode_literals, division
 
 from fluidlab.instruments.drivers import Driver
-from fluidlab.interfaces.serial_inter import SerialInterface
+from fluidlab.interfaces import PhysicalInterfaceType
 from fluidlab.instruments.features import Value
 
 # from time import sleep
@@ -105,19 +105,18 @@ class PfeifferMaxiGaugeOnOffValue(PfeifferMaxiGaugeValue):
 
 class PfeifferMaxiGauge(Driver):
 
+    default_physical_interface = PhysicalInterfaceType.Serial
+    default_inter_params = {'baudrate': 9600,
+                            'bytesize': 8,
+                            'parity': "N",
+                            'stopbits': 1,
+                            'timeout': 1.0,
+                            'xonxoff': False,
+                            'rtscts': False,
+                            'dsrdtr': False}
+                            
     def __init__(self, serialPort, debug=False):
-        interface = SerialInterface(
-            serialPort,
-            baudrate=9600,
-            bytesize=8,
-            parity="N",
-            stopbits=1,
-            timeout=1,
-            xonxoff=False,
-            rtscts=False,
-            dsrdtr=False,
-        )
-        super().__init__(interface)
+        super().__init__(serialPort)
         self.debug = debug
         
     def __enter__(self):

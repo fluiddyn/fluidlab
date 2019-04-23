@@ -25,6 +25,13 @@ from fluidlab.interfaces import Interface
 
 
 class ModbusInterface(Interface):
+
+     def __init__(self, port, method="rtu", slave_address=1, timeout=1):
+        self.port = port
+        self.method = method
+        self.slave_address = slave_address
+        self.timeout = timeout
+        
     def read_readonlybool(self, addresses):
         raise NotImplementedError
 
@@ -51,14 +58,22 @@ class ModbusInterface(Interface):
 
     def write_float32(self, addresses, values):
         raise NotImplementedError
+        
+    def __str__(self):
+        return f'ModbusInterface({self.port:}, {self.method:}, {self.slave_address:}, {self.timeout})'
+        
+    def __repr__(self):
+        return str(self)
 
 
 class MinimalModbusInterface(ModbusInterface):
-    def __init__(self, port, method="rtu", slave_address=1, timeout=1):
+    def __str__(self):
+        return f'MinimalModbusInterface({self.port:}, {self.method:}, {self.slave_address:}, {self.timeout})'
+        
+    def _open(self):
         import minimalmodbus
-
-        self._modbus = minimalmodbus.Instrument(port, slave_address, method)
-
+        self._modbus = minimalmodbus.Instrument(self.port, self.slave_address, self.method)
+        
     def read_readonlybool(self, addresses):
         raise NotImplementedError
 
@@ -106,7 +121,10 @@ class MinimalModbusInterface(ModbusInterface):
 
 
 class PyModbusInterface(ModbusInterface):
-    def __init__(self, port, method="rtu", timeout=1):
+    def __str__(self):
+        return f'PyModbusInterface({self.port:}, {self.method:}, {self.slave_address:}, {self.timeout})'
+        
+    def _open(self):
         try:
             if sys.version_info.major == 2:
                 from pymodbus.client.sync import ModbusSerialClient
@@ -122,7 +140,7 @@ class PyModbusInterface(ModbusInterface):
                 + "Is it installed? If not, try to install it."
             )
 
-        self._modbus = ModbusSerialClient(method=method, port=port)
+        self._modbus = ModbusSerialClient(method=self.method, port=self.port)
 
     def read_readonlybool(self, addresses):
         raise NotImplementedError

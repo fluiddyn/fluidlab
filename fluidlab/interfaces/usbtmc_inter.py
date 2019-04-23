@@ -26,10 +26,10 @@ from time import sleep
 from fluidlab.interfaces import QueryInterface
 
 
-class LinuxUSBTMCInterface(QueryInterface):
+class USBTMCInterface(QueryInterface):
     def __init__(self, device=0):
         """
-        Create a new LinuxUSBTMCInterface.
+        Create a new USBTMCInterface.
 
         Input argument
         ==============
@@ -38,7 +38,7 @@ class LinuxUSBTMCInterface(QueryInterface):
                 device number (e.g. 0)
 
         """
-        super(LinuxUSBTMCInterface, self).__init__()
+        super(USBTMCInterface, self).__init__()
         if isinstance(device, bytes):
             device = device.decode("ascii")
         if isinstance(device, Path):
@@ -49,6 +49,12 @@ class LinuxUSBTMCInterface(QueryInterface):
         self.devname = device
         self.write_termination = b"\n"
         self.read_termination = b"\n"
+        
+    def __str__(self):
+        return f'USBTMCInterface("{self.devame:}")'
+        
+    def __repr__(self):
+        return str(self)
 
     def _open(self):
         self.dev = os.open(self.devname, os.O_RDWR)

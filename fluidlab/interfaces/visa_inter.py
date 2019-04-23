@@ -13,14 +13,24 @@ import pyvisa as visa
 
 from fluidlab.interfaces import QueryInterface
 
+default_visa_backend = '@ni'
+
 opened_devices_for_rm = dict() # key: rm, object: device
 resource_managers = dict()     # key: backend(str), object: rm 
 
 class VISAInterface(QueryInterface):
-    def __init__(self, resource_name, backend="@ni"):
-        super(PyvisaInterface, self).__init__()
+    def __init__(self, resource_name, backend=None):
+        super(VISAInterface, self).__init__()
         self.resource_name = resource_name
+        if backend is None:
+            backend = default_visa_backend
         self.backend = backend
+        
+    def __str__(self):
+        return f'VISAInterface("{self.resource_name:}", "{self.backend:}")'
+        
+    def __repr__(self):
+        return str(self)
         
     def _open(self):
         if self.backend in resource_managers:

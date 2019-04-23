@@ -58,6 +58,12 @@ class SerialInterface(QueryInterface):
         self.multilines = multilines
         self.autoremove_eol = autoremove_eol
         
+    def __str__(self):
+        return f'SerialInterface("{self.port:}")'
+        
+    def __repr__(self):
+        return str(self)
+        
     def _open(self):
 
         # open serial port

@@ -71,7 +71,6 @@ following mixin classes.
 
 """
 
-import six
 from fluidlab.instruments.features import (
     WriteCommand,
     QueryCommand,
@@ -80,8 +79,8 @@ from fluidlab.instruments.features import (
     RegisterValue,
 )
 
-from fluidlab.instruments.drivers import VISADriver
-
+from fluidlab.instruments.drivers import Driver
+from fluidlab.interfaces import PhysicalInterfaceType
 
 EVENT_STATUS_BYTES = [
     "operation complete",
@@ -95,7 +94,7 @@ EVENT_STATUS_BYTES = [
 ]
 
 
-class IEC60488(VISADriver):
+class IEC60488(Driver):
     """Instrument driver with IEC 60488-2 interface
 
     The `IEC 60488-2`_ requires the existence of several commands which are
@@ -133,7 +132,8 @@ class IEC60488(VISADriver):
       Defines the backend used by pyvisa ("@py", "@ni", "@sim"...)
 
     """
-
+    default_physical_interface = PhysicalInterfaceType.GPIB
+    
     def __enter__(self):
         super(IEC60488, self).__enter__()
         identification = self.query_identification()
@@ -200,7 +200,7 @@ Used in the status reporting system.
 IEC60488._build_class_with_features(features)
 
 
-class PowerOn(VISADriver):
+class PowerOn(Driver):
     """A mixin class, implementing the optional power on commands.
 
     Power on common commands
@@ -215,7 +215,7 @@ PowerOn._build_class_with_features(
 )
 
 
-class ParallelPoll(VISADriver):
+class ParallelPoll(Driver):
     """A mixin class, implementing the optional parallel poll commands.
 
     Parallel poll common commands
@@ -243,7 +243,7 @@ ParallelPoll._build_class_with_features(
 )
 
 
-class ResourceDescription(VISADriver):
+class ResourceDescription(Driver):
     """A mixin class, implementing the optional resource description common
     commands.
 
@@ -265,7 +265,7 @@ ResourceDescription._build_class_with_features(
 )
 
 
-class ProtectedUserData(VISADriver):
+class ProtectedUserData(Driver):
     """A mixin class, implementing the protected user data commands.
 
     Protected user data commands
@@ -280,7 +280,7 @@ ProtectedUserData._build_class_with_features(
 )
 
 
-class Calibration(VISADriver):
+class Calibration(Driver):
     """A mixin class, implementing the optional calibration command.
 
     Calibration command
@@ -298,7 +298,7 @@ Calibration._build_class_with_features(
 )
 
 
-class Trigger(VISADriver):
+class Trigger(Driver):
     """A mixin class, implementing the optional trigger command.
 
     Trigger command
@@ -312,7 +312,7 @@ Trigger._build_class_with_features(
 )
 
 
-class TriggerMacro(VISADriver):
+class TriggerMacro(Driver):
     """A mixin class, implementing the optional trigger macro commands.
 
     Trigger macro commands
@@ -333,7 +333,7 @@ TriggerMacro._build_class_with_features(
 )
 
 
-class Macro(VISADriver):
+class Macro(Driver):
     """A mixin class, implementing the optional macro commands.
 
     Macro Commands
@@ -360,7 +360,7 @@ Macro._build_class_with_features(
 )
 
 
-class ObjectIdentification(VISADriver):
+class ObjectIdentification(Driver):
     """A mixin class, implementing the optional object identification command.
 
     Option Identification command
@@ -374,7 +374,7 @@ ObjectIdentification._build_class_with_features(
 )
 
 
-class StoredSetting(VISADriver):
+class StoredSetting(Driver):
     """A mixin class, implementing the optional stored setting commands.
 
     Stored settings commands
@@ -400,7 +400,7 @@ StoredSetting._build_class_with_features(
 )
 
 
-class Learn(VISADriver):
+class Learn(Driver):
     """A mixin class, implementing the optional learn command.
 
     Learn command
@@ -414,7 +414,7 @@ Learn._build_class_with_features(
 )
 
 
-class SystemConfiguration(VISADriver):
+class SystemConfiguration(Driver):
     """A mixin class, implementing the optional system configuration commands.
 
     System configuration commands
@@ -434,7 +434,7 @@ SystemConfiguration._build_class_with_features(
 )
 
 
-class PassingControl(VISADriver):
+class PassingControl(Driver):
     """A mixin class, implementing the optional passing control command.
 
     Passing control command

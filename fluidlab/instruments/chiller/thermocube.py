@@ -130,19 +130,15 @@ class ThermocubeValue(Value):
 
 
 class Thermocube(Driver):
-    def __init__(self, serialPort):
-        interface = SerialInterface(
-            serialPort,
-            baudrate=9600,
-            bytesize=8,
-            parity="N",
-            stopbits=1,
-            timeout=2,
-            xonxoff=False,
-            rtscts=False,
-            dsrdtr=False,
-        )
-        super().__init__(interface)
+    default_physical_interface = PhysicalInterfaceType.Serial
+    default_inter_params = {'baudrate': 9600,
+                            'bytesize': 8,
+                            'parity': "N",
+                            'stopbits': 1,
+                            'timeout': 2,
+                            'xonxoff': False,
+                            'rtscts': False,
+                            'dsrdtr': False}
 
 
 features = [

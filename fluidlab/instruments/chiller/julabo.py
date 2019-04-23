@@ -12,30 +12,29 @@ __all__ = ["Julabo"]
 
 from serial import PARITY_EVEN
 from fluidlab.instruments.drivers import Driver
-from fluidlab.interfaces.serial_inter import SerialInterface
+from fluidlab.interfaces import PhysicalInterfaceType
 from fluidlab.instruments.features import Value, FloatValue, BoolValue, IntValue
 from time import sleep
 
 
 class Julabo(Driver):
-    def __init__(self, serialPort):
-        interface = SerialInterface(
-            serialPort,
-            baudrate=9600,
-            bytesize=8,
-            parity="N",  # PARITY_EVEN,
-            stopbits=1,
-            timeout=5.0,
-            xonxoff=True,
-            rtscts=False,
-            dsrdtr=False,
-            eol="\r\n",
-            autoremove_eol=True,
-        )
-        super().__init__(interface)
-
+    default_physical_interface = PhysicalInterfaceType.Serial
+    default_inter_params = {'baudrate': 9600,
+                            'bytesize': 8,
+                            'parity': "N",
+                            'stopbits': 1,
+                            'timeout': 5.0,
+                            'xonxoff': True,
+                            'rtscts': False,
+                            'dsrdtr': False,
+                            'eol': '\r\n',
+                            'autoremove_eol': True}
+                            
+    def __enter__(self):
+        super(Julabo, self).__enter__()
         identification = self.interface.query("version")
         print("identification =", repr(identification))
+        return self
 
 
 features = [

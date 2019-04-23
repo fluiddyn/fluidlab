@@ -11,7 +11,7 @@
 __all__ = ["FurnessFCO318"]
 
 from fluidlab.instruments.drivers import Driver
-from fluidlab.interfaces.serial_inter import SerialInterface
+from fluidlab.interfaces import PhysicalInterfaceType
 from fluidlab.instruments.features import Value
 from time import sleep
 import numpy as np
@@ -67,20 +67,15 @@ class FurnessValue(Value):
 
 
 class FurnessFCO318(Driver):
-    def __init__(self, serialPort):
-        interface = SerialInterface(
-            serialPort,
-            baudrate=2400,
-            bytesize=8,
-            parity="N",
-            stopbits=1,
-            timeout=1,
-            xonxoff=False,
-            rtscts=False,
-            dsrdtr=False,
-        )
-        super().__init__(interface)
-
+    default_physical_interface = PhysicalInterfaceType.Serial
+    default_inter_params = {'baudrate': 2400,
+                            'bytesize': 8,
+                            'parity': "N",
+                            'stopbits': 1,
+                            'timeout': 1.0,
+                            'xonxoff': False,
+                            'rtscts': False,
+                            'dsrdtr': False}
 
 features = [
     FurnessValue(
