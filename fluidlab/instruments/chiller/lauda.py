@@ -148,7 +148,7 @@ class Lauda(Driver):
 
             else:
                 raise LaudaException(
-                    "Cannot communicate with Lauda on " + str(serialPort)
+                    "Cannot communicate with Lauda on " + str(self.port)
                 )
 
         else:

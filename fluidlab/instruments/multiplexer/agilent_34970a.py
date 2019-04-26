@@ -57,8 +57,8 @@ class Agilent34970a(IEC60488):
 
     """
 
-    def __init__(self, interface=None, backend=""):
-        super().__init__(interface, backend)
+    def __init__(self, interface=None):
+        super().__init__(interface)
         # Define instance variables for optional NPLC and Range settings
         # to be used when scanning
         #

@@ -117,22 +117,17 @@ class GPIBInterface(QueryInterface):
                 tmo = closest_timeout(timeout)
                 # print('setting timeout to', timeout_values[tmo])
                 gpib.timeout(self.handle, tmo)
-            # for some reason, WaitSRQ exists with timeout even
-            # for time delays less than set timeout
-            # so we loop here
             tstart = time.monotonic()
             while True:
-                result = gpib.WaitSRQ(self.board_adress)
-                if result == 1:
+                sta = gpib.wait(self.board_adress, gpib.TIMO | gpib.SRQI)
+                if (sta & gpib.TIMO) != 0:
+                    # Timed out
+                    if time.monotonic() - start > timeout:
+                        print('Timeout occured')
+                        break
+                else:
+                    # SRQ asserted
                     print("SRQ was asserted")
                     break
-
-                elif time.monotonic() - tstart > timeout:
-                    break
-
-            if result == 0:
-                print("Timeout occured")
-            elif result != 1:
-                print("Unknown WaitSRQ result")
         finally:
             gpib.timeout(self.handle, self.default_tmo)
