@@ -19,6 +19,11 @@ opened_devices_for_rm = dict()  # key: rm, object: device
 resource_managers = dict()  # key: backend(str), object: rm
 
 
+def set_default_pyvisa_backend(backend):
+    global default_visa_backend
+    default_visa_backend = backend
+
+
 class VISAInterface(QueryInterface):
     def __init__(self, resource_name, backend=None):
         super().__init__()

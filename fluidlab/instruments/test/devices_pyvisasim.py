@@ -3,7 +3,10 @@
 
 """
 
-from fluidlab.instruments.drivers import VISADriver
+from fluidlab.interfaces import PhysicalInterfaceType, set_default_interface
+from fluidlab.interfaces.visa_inter import set_default_pyvisa_backend
+
+from fluidlab.instruments.drivers import Driver
 
 from fluidlab.instruments.features import (
     QueryCommand,
@@ -12,8 +15,11 @@ from fluidlab.instruments.features import (
     BoolValue,
 )
 
+set_default_interface(PhysicalInterfaceType.Serial, "VISAInterface")
+set_default_pyvisa_backend("@sim")
 
-class Device2(VISADriver):
+
+class Device2(Driver):
     """Simple instrument driver
 
     The instrument is defined in pyvisa-sim (as "device 2").
@@ -48,4 +54,4 @@ Device2._build_class_with_features(
 
 
 if __name__ == "__main__":
-    dev = Device2("ASRL2::INSTR", backend="@sim")
+    dev = Device2("ASRL2::INSTR")
