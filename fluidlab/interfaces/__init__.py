@@ -3,6 +3,10 @@
 
 Provides some classes:
 
+.. autoclass:: PhysicalInterfaceType
+   :members:
+   :private-members:
+
 .. autoclass:: Interface
    :members:
    :private-members:
@@ -14,6 +18,11 @@ Provides some classes:
 .. autoclass:: FalseInterface
    :members:
    :private-members:
+
+Provides some functions:
+
+set_default_interface
+interface_from_string
 
 
 Provides some modules:
@@ -42,7 +51,7 @@ class PhysicalInterfaceType(IntEnum):
     Modbus = 3
 
 
-DefaultInterface = {
+default_interface = {
     PhysicalInterfaceType.GPIB: "VISAInterface",
     PhysicalInterfaceType.Ethernet: "SocketInterface",
     PhysicalInterfaceType.Serial: "SerialInterface",
@@ -50,47 +59,72 @@ DefaultInterface = {
 }
 
 if sys.platform.startswith("linux"):
-    DefaultInterface[PhysicalInterfaceType.GPIB] = "GPIBInterface"
+    default_interface[PhysicalInterfaceType.GPIB] = "GPIBInterface"
 
 
 def set_default_interface(interface_type, interface_classname):
-    DefaultInterface[interface_type] = interface_classname
-
-
-def interface_from_string(name, defaultPhysicalInterface=None, **kwargs):
     """
-    Infer physicalInterface from name if possible, or use the default provided
-    physicalInterface otherwise.
-    i.e. if the names contains the physical interface explicitely, then we use it,
+
+    Select the default class interface for the given interface type.
+    By default, GPIB uses VISAInterface class on Windows (based on NI-VISA)
+    and GPIBInterface class on Linux (based on Linux-GPIB), Ethernet uses
+    SocketInterface class, Seriel uses SerialInterface class.
+
+    This means that GPIB instrument can be instantiated as
+    Instrument('GPIB0::1::INSTR')
+    instead of Instrument(VISAInterface('GPIB0::1::INSTR'))
+    or Instrument(GPIBInterface(0,1)),
+    provided the Instrument class defines Instrument.default_physical_interface
+    to PhysicalInterfaceType.GPIB.
+
+    The behavior can be changed by this function, i.e.
+    import fluidlab.interfaces as fi
+    fi.set_default_interface(fi.PhysicalInterface.GPIB, 'VISAInterface')
+    to force VISAInterface on Linux,
+    or
+    fi.set_default_interface(fi.PhysicalInterface.Ethernet, 'VISAInterface')
+    to use VISAInterface class instead of SocketInterface class for network
+    connected devices.
+
+    """
+    default_interface[interface_type] = interface_classname
+
+
+def interface_from_string(name, default_physical_interface=None, **kwargs):
+    """
+    Infer physical_interface from name if possible, or use the default provided
+    physical_interface otherwise.
+    i.e. if the names contains the physical interface explicitely,
+    then we use it,
     eg.
     GPIB0::1::INSTR is GPIB physical interface
     ASRL0::INSTR is a VISA Serial address
     192.168.0.1 is a IP address, so Ethernet interface
     """
     classname = None
-    physicalInterface = None
+    physical_interface = None
     if "GPIB" in name:
-        physicalInterface = PhysicalInterfaceType.GPIB
+        physical_interface = PhysicalInterfaceType.GPIB
     elif "ASRL" in name:
-        physicalInterface = PhysicalInterfaceType.Serial
+        physical_interface = PhysicalInterfaceType.Serial
         classname = "VISAInterface"
     elif isinstance(name, (ipaddress.IPv4Address, ipaddress.IPv6Address)):
         name = str(name)
-        physicalInterface = PhysicalInterfaceType.Ethernet
+        physical_interface = PhysicalInterfaceType.Ethernet
     else:
         try:
-            ip = ipaddress.ip_address(name)
-            physicalInterface = (
+            _ = ipaddress.ip_address(name)
+            physical_interface = (
                 PhysicalInterfaceType.Ethernet
-                if defaultPhysicalInterface is not PhysicalInterfaceType.Modbus
+                if default_physical_interface is not PhysicalInterfaceType.Modbus
                 else PhysicalInterfaceType.Modbus
             )
         except ValueError:
             pass
-    if physicalInterface is None:
-        physicalInterface = defaultPhysicalInterface
+    if physical_interface is None:
+        physical_interface = default_physical_interface
     if classname is None:
-        classname = DefaultInterface[physicalInterface]
+        classname = default_interface[physical_interface]
     if classname == "VISAInterface":
         from fluidlab.interfaces.visa_inter import VISAInterface
 
