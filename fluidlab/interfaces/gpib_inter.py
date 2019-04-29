@@ -45,7 +45,7 @@ def closest_timeout(t):
 
 class GPIBInterface(QueryInterface):
     def __init__(self, board_adress, instrument_adress, timeout=1.0):
-        super(GPIBInterface, self).__init__()
+        super().__init__()
         self.board_adress = board_adress
         self.instrument_adress = instrument_adress
         self.default_tmo = closest_timeout(timeout)

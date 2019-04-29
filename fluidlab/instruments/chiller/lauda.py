@@ -142,7 +142,7 @@ class Lauda(Driver):
     }
 
     def __enter__(self):
-        super(Lauda, self).__enter__()
+        super().__enter__()
         identification = self.interface.query(b"TYPE\r").decode("ascii")
         if identification not in Lauda.Models:
             if len(identification) > 0:

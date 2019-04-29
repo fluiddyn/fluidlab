@@ -17,7 +17,7 @@ from fluidlab.interfaces import QueryInterface
 
 class SocketInterface(QueryInterface):
     def __init__(self, ip_address, port, autoremove_eol=True):
-        super(SocketInterface, self).__init__()
+        super().__init__()
         self.ip_address = ip_address
         self.port = port
         self.autoremove_eol = autoremove_eol

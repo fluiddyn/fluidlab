@@ -37,7 +37,7 @@ from fluidlab.objects.pinchvalve import PinchValve, tube_as_opened_as_possible
 #     """A class handling the temperature probe."""
 #     def __init__(self, board=None):
 
-#         super(TemperatureProbe, self).__init__(board=board)
+#         super().__init__(board=board)
 
 
 class ConductivityProbe(ObjectUsingBoard):

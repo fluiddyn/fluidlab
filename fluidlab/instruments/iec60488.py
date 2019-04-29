@@ -136,7 +136,7 @@ class IEC60488(Driver):
     default_physical_interface = PhysicalInterfaceType.GPIB
 
     def __enter__(self):
-        super(IEC60488, self).__enter__()
+        super().__enter__()
         identification = self.query_identification()
 
         if isinstance(identification, str):

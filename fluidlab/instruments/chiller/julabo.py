@@ -33,7 +33,7 @@ class Julabo(Driver):
     }
 
     def __enter__(self):
-        super(Julabo, self).__enter__()
+        super().__enter__()
         identification = self.interface.query("version")
         print("identification =", repr(identification))
         return self

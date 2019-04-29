@@ -38,7 +38,7 @@ class USBTMCInterface(QueryInterface):
                 device number (e.g. 0)
 
         """
-        super(USBTMCInterface, self).__init__()
+        super().__init__()
         if isinstance(device, bytes):
             device = device.decode("ascii")
         if isinstance(device, Path):

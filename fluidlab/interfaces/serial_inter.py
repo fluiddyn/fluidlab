@@ -44,7 +44,7 @@ class SerialInterface(QueryInterface):
         To automatically add '\n' on writes, and remove '\r\n' on reads, set
         autoremove_eol to True
         """
-        super(SerialInterface, self).__init__()
+        super().__init__()
         self.port = port
         self.baudrate = baudrate
         self.bytesize = bytesize

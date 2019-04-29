@@ -122,7 +122,7 @@ class PfeifferMaxiGauge(Driver):
         self.debug = debug
 
     def __enter__(self):
-        super(PfeifferMaxiGauge, self).__enter__()
+        super().__enter__()
 
         self.clear_interface()
         print("Pfeiffer MaxiGauge:", self.program_version().decode("ascii"))

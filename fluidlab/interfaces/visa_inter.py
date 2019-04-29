@@ -21,7 +21,7 @@ resource_managers = dict()  # key: backend(str), object: rm
 
 class VISAInterface(QueryInterface):
     def __init__(self, resource_name, backend=None):
-        super(VISAInterface, self).__init__()
+        super().__init__()
         self.resource_name = resource_name
         if backend is None:
             backend = default_visa_backend
