@@ -74,9 +74,7 @@ def interface_from_string(name, defaultPhysicalInterface=None, **kwargs):
     elif "ASRL" in name:
         physicalInterface = PhysicalInterfaceType.Serial
         classname = "VISAInterface"
-    elif isinstance(name, ipaddress.IPv4Address) or isinstance(
-        name, ipaddress.IPv6Address
-    ):
+    elif isinstance(name, (ipaddress.IPv4Address, ipaddress.IPv6Address)):
         name = str(name)
         physicalInterface = PhysicalInterfaceType.Ethernet
     else:
