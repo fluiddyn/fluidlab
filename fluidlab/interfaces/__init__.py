@@ -53,8 +53,8 @@ if sys.platform.startswith("linux"):
     DefaultInterface[PhysicalInterfaceType.GPIB] = "GPIBInterface"
 
 
-def set_default_interface(interfaceType, interfaceClassname):
-    DefaultInterface[interfaceType] = interfaceClassname
+def set_default_interface(interface_type, interface_classname):
+    DefaultInterface[interface_type] = interface_classname
 
 
 def interface_from_string(name, defaultPhysicalInterface=None, **kwargs):
