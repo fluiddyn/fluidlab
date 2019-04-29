@@ -34,8 +34,9 @@ class Driver:
       The interface used to communicate with the instrument.
 
     """
+
     default_physical_interface = None
-    default_inter_params = {'port': 0}
+    default_inter_params = {"port": 0}
 
     @classmethod
     def _build_class_with_features(cls, features):
@@ -44,9 +45,11 @@ class Driver:
 
     def __init__(self, interface=None):
         if isinstance(interface, str):
-            interface = interface_from_string(interface, 
-                                              self.default_physical_interface,
-                                              **self.default_inter_params)
+            interface = interface_from_string(
+                interface,
+                self.default_physical_interface,
+                **self.default_inter_params
+            )
         elif not interface:
             interface = FalseInterface()
         elif not isinstance(interface, Interface):
@@ -54,7 +57,7 @@ class Driver:
 
         self._interface = self.interface = interface
         self.values = {}
-        
+
         for name in dir(self):
             v = getattr(self, name)
             if isinstance(v, SuperValue):
@@ -106,6 +109,7 @@ class Driver:
 
     def __exit__(self, type_, value, cb):
         self.interface.__exit__(type_, value, cb)
+
 
 if __name__ == "__main__":
     driver = Driver("ASRL4::INSTR", backend="@sim")

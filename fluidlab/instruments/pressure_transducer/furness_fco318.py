@@ -68,14 +68,17 @@ class FurnessValue(Value):
 
 class FurnessFCO318(Driver):
     default_physical_interface = PhysicalInterfaceType.Serial
-    default_inter_params = {'baudrate': 2400,
-                            'bytesize': 8,
-                            'parity': "N",
-                            'stopbits': 1,
-                            'timeout': 1.0,
-                            'xonxoff': False,
-                            'rtscts': False,
-                            'dsrdtr': False}
+    default_inter_params = {
+        "baudrate": 2400,
+        "bytesize": 8,
+        "parity": "N",
+        "stopbits": 1,
+        "timeout": 1.0,
+        "xonxoff": False,
+        "rtscts": False,
+        "dsrdtr": False,
+    }
+
 
 features = [
     FurnessValue(

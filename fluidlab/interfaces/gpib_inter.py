@@ -49,20 +49,20 @@ class GPIBInterface(QueryInterface):
         self.board_adress = board_adress
         self.instrument_adress = instrument_adress
         self.default_tmo = closest_timeout(timeout)
-        
+
     def __str__(self):
-        return f'GPIBInterface({self.board_adress:d}, {self.instrument_adress:d})'
-        
+        return f"GPIBInterface({self.board_adress:d}, {self.instrument_adress:d})"
+
     def __repr__(self):
         return str(self)
-        
+
     def _open(self):
         self.handle = gpib.dev(self.board_adress, self.instrument_adress)
         gpib.timeout(self.handle, self.default_tmo)
-        
+
     def _close(self):
         gpib.close(self.handle)
-        
+
     def _read(self, numbytes=None, verbose=False, tracing=False):
         if tracing:
             sys.stdout.write("* <- " + str(self.instrument_adress) + " ")
@@ -80,7 +80,7 @@ class GPIBInterface(QueryInterface):
                     chunk_size = 150
                     chunk = gpib.read(self.handle, chunk_size)
                     data = data + chunk.decode("ascii")
-                    
+
                     if verbose:
                         sys.stdout.write(
                             "{:d} bytes read       \r".format(len(data))
@@ -123,7 +123,7 @@ class GPIBInterface(QueryInterface):
                 if (sta & gpib.TIMO) != 0:
                     # Timed out
                     if time.monotonic() - start > timeout:
-                        print('Timeout occured')
+                        print("Timeout occured")
                         break
                 else:
                     # SRQ asserted

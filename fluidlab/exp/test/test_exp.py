@@ -24,7 +24,7 @@ def del_and_load_exp(exp, **kargs):
     path_save = exp.path_save
     # str_path = os.path.split(path_save)[-1]
     str_path = path_save
-    del (exp)
+    del exp
     # load the experiment
     exp = fluidlab.load_exp(str_path, **kargs)
     # clean by removing the directory

@@ -106,22 +106,24 @@ class PfeifferMaxiGaugeOnOffValue(PfeifferMaxiGaugeValue):
 class PfeifferMaxiGauge(Driver):
 
     default_physical_interface = PhysicalInterfaceType.Serial
-    default_inter_params = {'baudrate': 9600,
-                            'bytesize': 8,
-                            'parity': "N",
-                            'stopbits': 1,
-                            'timeout': 1.0,
-                            'xonxoff': False,
-                            'rtscts': False,
-                            'dsrdtr': False}
-                            
+    default_inter_params = {
+        "baudrate": 9600,
+        "bytesize": 8,
+        "parity": "N",
+        "stopbits": 1,
+        "timeout": 1.0,
+        "xonxoff": False,
+        "rtscts": False,
+        "dsrdtr": False,
+    }
+
     def __init__(self, serialPort, debug=False):
         super().__init__(serialPort)
         self.debug = debug
-        
+
     def __enter__(self):
         super(PfeifferMaxiGauge, self).__enter__()
-        
+
         self.clear_interface()
         print("Pfeiffer MaxiGauge:", self.program_version().decode("ascii"))
         long_description = {

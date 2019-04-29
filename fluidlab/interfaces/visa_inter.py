@@ -13,10 +13,11 @@ import pyvisa as visa
 
 from fluidlab.interfaces import QueryInterface
 
-default_visa_backend = '@ni'
+default_visa_backend = "@ni"
 
-opened_devices_for_rm = dict() # key: rm, object: device
-resource_managers = dict()     # key: backend(str), object: rm 
+opened_devices_for_rm = dict()  # key: rm, object: device
+resource_managers = dict()  # key: backend(str), object: rm
+
 
 class VISAInterface(QueryInterface):
     def __init__(self, resource_name, backend=None):
@@ -25,13 +26,13 @@ class VISAInterface(QueryInterface):
         if backend is None:
             backend = default_visa_backend
         self.backend = backend
-        
+
     def __str__(self):
         return f'VISAInterface("{self.resource_name:}", "{self.backend:}")'
-        
+
     def __repr__(self):
         return str(self)
-        
+
     def _open(self):
         if self.backend in resource_managers:
             rm = resource_managers[self.backend]
@@ -50,7 +51,7 @@ class VISAInterface(QueryInterface):
         except AttributeError as e:
             # with @py ?
             print(e)
-    
+
     def _close(self):
         self.pyvisa_instr.close()
         opened_devices_for_rm[self.rm].remove(self)
@@ -73,7 +74,9 @@ class VISAInterface(QueryInterface):
         # input('Sending '+message+'?')
         return self.pyvisa_instr.write(message, termination, encoding)
 
-    def _read(self, termination=None, encoding=None, verbose=False, tracing=False):
+    def _read(
+        self, termination=None, encoding=None, verbose=False, tracing=False
+    ):
         return self.pyvisa_instr.read(termination, encoding)
 
     def _query(self, message, time_delay=None, verbose=False, tracing=False):

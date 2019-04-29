@@ -132,8 +132,9 @@ class IEC60488(Driver):
       Defines the backend used by pyvisa ("@py", "@ni", "@sim"...)
 
     """
+
     default_physical_interface = PhysicalInterfaceType.GPIB
-    
+
     def __enter__(self):
         super(IEC60488, self).__enter__()
         identification = self.query_identification()
@@ -142,9 +143,9 @@ class IEC60488(Driver):
             identification = identification.strip()
 
         print(f"Initialization driver for device: {identification}")
-        
+
         return self
-        
+
     def query_event_status_register(self):
         number = self.query_esr()
         return self.status_enable_register.compute_dict_from_number(number)

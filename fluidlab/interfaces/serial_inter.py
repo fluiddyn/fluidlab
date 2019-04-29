@@ -57,13 +57,13 @@ class SerialInterface(QueryInterface):
         self.eol = eol
         self.multilines = multilines
         self.autoremove_eol = autoremove_eol
-        
+
     def __str__(self):
         return f'SerialInterface("{self.port:}")'
-        
+
     def __repr__(self):
         return str(self)
-        
+
     def _open(self):
 
         # open serial port
@@ -82,7 +82,9 @@ class SerialInterface(QueryInterface):
         self._close = sp.close
         if self.eol is not None:
             self.ser_io = io.TextIOWrapper(
-                io.BufferedRWPair(sp, sp, 1), newline=self.eol, line_buffering=True
+                io.BufferedRWPair(sp, sp, 1),
+                newline=self.eol,
+                line_buffering=True,
             )
 
     def _write(self, *args):

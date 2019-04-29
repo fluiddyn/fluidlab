@@ -34,24 +34,29 @@ from enum import IntEnum
 import sys
 import ipaddress
 
+
 class PhysicalInterfaceType(IntEnum):
     GPIB = 0
     Ethernet = 1
     Serial = 2
     Modbus = 3
-    
-DefaultInterface = {PhysicalInterfaceType.GPIB: 'VISAInterface',
-                    PhysicalInterfaceType.Ethernet: 'SocketInterface',
-                    PhysicalInterfaceType.Serial: 'SerialInterface',
-                    PhysicalInterfaceType.Modbus: 'MinimalModbusInterface',
-                   }
 
-if sys.platform.startswith('linux'):
-    DefaultInterface[PhysicalInterfaceType.GPIB] = 'GPIBInterface'
-    
+
+DefaultInterface = {
+    PhysicalInterfaceType.GPIB: "VISAInterface",
+    PhysicalInterfaceType.Ethernet: "SocketInterface",
+    PhysicalInterfaceType.Serial: "SerialInterface",
+    PhysicalInterfaceType.Modbus: "MinimalModbusInterface",
+}
+
+if sys.platform.startswith("linux"):
+    DefaultInterface[PhysicalInterfaceType.GPIB] = "GPIBInterface"
+
+
 def set_default_interface(interfaceType, interfaceClassname):
     DefaultInterface[interfaceType] = interfaceClassname
-    
+
+
 def interface_from_string(name, defaultPhysicalInterface=None, **kwargs):
     """
     Infer physicalInterface from name if possible, or use the default provided
@@ -64,79 +69,97 @@ def interface_from_string(name, defaultPhysicalInterface=None, **kwargs):
     """
     classname = None
     physicalInterface = None
-    if 'GPIB' in name:
+    if "GPIB" in name:
         physicalInterface = PhysicalInterfaceType.GPIB
-    elif 'ASRL' in name:
+    elif "ASRL" in name:
         physicalInterface = PhysicalInterfaceType.Serial
-        classname = 'VISAInterface'
-    elif isinstance(name, ipaddress.IPv4Address) or isinstance(name, ipaddress.IPv6Address):
+        classname = "VISAInterface"
+    elif isinstance(name, ipaddress.IPv4Address) or isinstance(
+        name, ipaddress.IPv6Address
+    ):
         name = str(name)
         physicalInterface = PhysicalInterfaceType.Ethernet
     else:
         try:
             ip = ipaddress.ip_address(name)
-            physicalInterface = PhysicalInterfaceType.Ethernet if defaultPhysicalInterface is not PhysicalInterfaceType.Modbus else PhysicalInterfaceType.Modbus
+            physicalInterface = (
+                PhysicalInterfaceType.Ethernet
+                if defaultPhysicalInterface is not PhysicalInterfaceType.Modbus
+                else PhysicalInterfaceType.Modbus
+            )
         except ValueError:
             pass
     if physicalInterface is None:
         physicalInterface = defaultPhysicalInterface
     if classname is None:
         classname = DefaultInterface[physicalInterface]
-    if classname == 'VISAInterface':
+    if classname == "VISAInterface":
         from fluidlab.interfaces.visa_inter import VISAInterface
+
         return VISAInterface(name)
-    if classname == 'GPIBInterface':
+    if classname == "GPIBInterface":
         from fluidlab.interfaces.gpib_inter import GPIBInterface
-        if name.endswith('::INSTR'):
+
+        if name.endswith("::INSTR"):
             name = name[:-7]
-        boardname, devnum = name.split('::')
-        if boardname.startswith('GPIB'):
+        boardname, devnum = name.split("::")
+        if boardname.startswith("GPIB"):
             boardname = boardname[4:]
         board = int(boardname)
         dev = int(devnum)
         return GPIBInterface(board, dev)
-    if classname == 'SocketInterface':
+    if classname == "SocketInterface":
         from fluidlab.interfaces.socket_inter import SocketInterface
+
         return SocketInterface(name, **kwargs)
-    if classname == 'SerialInterface':
+    if classname == "SerialInterface":
         from fluidlab.interfaces.serial_inter import SerialInterface
+
         return SerialInterface(name, **kwargs)
-    if classname == 'MinimalModbusInterface':
+    if classname == "MinimalModbusInterface":
         from fluidlab.interfaces.modbus_inter import MinimalModbusInterface
+
         return MinimalModbusInterface(name, **kwargs)
-    if classname == 'PyModbusInterface':
+    if classname == "PyModbusInterface":
         from fluidlab.interfaces.modbus_inter import PyModbusInterface
+
         return PyModbusInterface(name, **kwargs)
-    raise ValueError('Unknown interface type')
-    
+    raise ValueError("Unknown interface type")
+
+
 class InterfaceWarning(Warning):
     pass
+
 
 class Interface:
     def _open(self):
         # do the actual open (without testing self.opened)
         raise NotImplementedError
-    
+
     def _close(self):
         # do the actual close (without testing self.opened)
         raise NotImplementedError
-    
+
     def __init__(self):
         self.opened = False
-        
+
     def open(self):
         if not self.opened:
             self._open()
             self.opened = True
         else:
-            warnings.warn('open() called on already opened interface.', InterfaceWarning)
-            
+            warnings.warn(
+                "open() called on already opened interface.", InterfaceWarning
+            )
+
     def close(self):
         if self.opened:
             self._close()
             self.opened = False
         else:
-            warnings.warn('close() called on already closed interface.', InterfaceWarning)
+            warnings.warn(
+                "close() called on already closed interface.", InterfaceWarning
+            )
 
     def __enter__(self):
         self.open()
@@ -144,9 +167,9 @@ class Interface:
 
     def __exit__(self, type_, value, cb):
         self.close()
-        
-class QueryInterface(Interface):
 
+
+class QueryInterface(Interface):
     def _write(self, *args, **kwargs):
         # do the actual write
         raise NotImplementedError
@@ -154,23 +177,29 @@ class QueryInterface(Interface):
     def _read(self, *args, **kwargs):
         # do the actual read
         raise NotImplementedError
-        
+
     def write(self, *args, **kwargs):
         if not self.opened:
-            warnings.warn('write() called on non-opened interface.', InterfaceWarning)
+            warnings.warn(
+                "write() called on non-opened interface.", InterfaceWarning
+            )
             self.open()
         self._write(*args, **kwargs)
 
     def read(self, *args, **kwargs):
         if not self.opened:
-            warnings.warn('read() called on non-opened interface.', InterfaceWarning)
+            warnings.warn(
+                "read() called on non-opened interface.", InterfaceWarning
+            )
             self.open()
         return self._read(*args, **kwargs)
 
     def query(self, command, time_delay=0.1, **kwargs):
-        if hasattr(self, '_query'):
+        if hasattr(self, "_query"):
             if not self.opened:
-                warnings.warn('query() called on non-opened interface.', InterfaceWarning)
+                warnings.warn(
+                    "query() called on non-opened interface.", InterfaceWarning
+                )
                 self.open()
             return self._query(command, **kwargs)
         else:
@@ -178,17 +207,18 @@ class QueryInterface(Interface):
             sleep(time_delay)
             return self.read(**kwargs)
 
+
 class FalseInterface(QueryInterface):
     """
     Dummy interface
     """
-    
+
     def _open(self):
         pass
-        
+
     def _close(self):
         pass
-        
+
     def _write(self, s):
         print(s)
 

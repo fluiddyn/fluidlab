@@ -49,10 +49,10 @@ class USBTMCInterface(QueryInterface):
         self.devname = device
         self.write_termination = b"\n"
         self.read_termination = b"\n"
-        
+
     def __str__(self):
         return f'USBTMCInterface("{self.devame:}")'
-        
+
     def __repr__(self):
         return str(self)
 
@@ -63,7 +63,7 @@ class USBTMCInterface(QueryInterface):
         os.close(self.dev)
         self.dev = None
         self.devname = None
-            
+
     def _write(self, message, tracing=False, verbose=False):
         # On prend a priori des bytes, mais si on nous donne un str
         # on convertit à condition que ce soit du pur ascii

@@ -192,19 +192,19 @@ class Value(SuperValue):
         if self.channel_argument:
             # here we don't call _convert_as_str to allow the user to choose
             # the desired format in the command_set string
-            command = self.command_set.format(
-                channel=channel, value=value
-            )
+            command = self.command_set.format(channel=channel, value=value)
         else:
             command = self.command_set + " " + self._convert_as_str(value)
         self._interface.write(command)
         if self.check_instrument_value_after_set:
             self._check_instrument_value(value)
 
+
 class ReadOnlyBoolValue(Value):
     def get(self):
         return self._interface.read_readonlybool(self._adress)
-        
+
+
 class BoolValue(Value):
     def __init__(
         self,
@@ -304,6 +304,7 @@ class StringValue(Value):
                 + " instead"
             )
             warnings.warn(msg, UserWarning)
+
 
 class ReadOnlyInt16Value(Value):
     def get(self):

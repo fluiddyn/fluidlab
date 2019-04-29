@@ -19,17 +19,19 @@ from time import sleep
 
 class Julabo(Driver):
     default_physical_interface = PhysicalInterfaceType.Serial
-    default_inter_params = {'baudrate': 9600,
-                            'bytesize': 8,
-                            'parity': "N",
-                            'stopbits': 1,
-                            'timeout': 5.0,
-                            'xonxoff': True,
-                            'rtscts': False,
-                            'dsrdtr': False,
-                            'eol': '\r\n',
-                            'autoremove_eol': True}
-                            
+    default_inter_params = {
+        "baudrate": 9600,
+        "bytesize": 8,
+        "parity": "N",
+        "stopbits": 1,
+        "timeout": 5.0,
+        "xonxoff": True,
+        "rtscts": False,
+        "dsrdtr": False,
+        "eol": "\r\n",
+        "autoremove_eol": True,
+    }
+
     def __enter__(self):
         super(Julabo, self).__enter__()
         identification = self.interface.query("version")
