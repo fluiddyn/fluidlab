@@ -53,7 +53,7 @@ features = [
         command_get="OFFS?",
     ),
     FloatValue(
-        "freq",
+        "frequency",
         doc="Frequency of generated wave",
         command_set="FREQ",
         command_get="FREQ?",

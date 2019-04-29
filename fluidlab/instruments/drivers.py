@@ -17,8 +17,7 @@ Provides:
 
 """
 
-from fluidlab.interfaces import (interface_from_string, FalseInterface,
-                                 Interface)
+from fluidlab.interfaces import interface_from_string, FalseInterface, Interface
 from fluidlab.instruments.features import SuperValue
 
 
