@@ -29,7 +29,6 @@ A mechanism to easily write such drivers is implemented in:
    :toctree:
 
    drivers
-   interfaces
    features
    iec60488
 
@@ -47,28 +46,6 @@ packages:
    sourcemeter
    chiller
    pressure_transducer
-
-Other very common communication standards are Modbus and Firewire:
-
-.. autosummary::
-   :toctree:
-
-   modbus
-   firewire
-
-For other instruments, the communication is done with libraries:
-
-.. autosummary::
-   :toctree:
-
-   sound
-
-The drivers for the data acquisition boards are also gather in this package:
-
-.. autosummary::
-   :toctree:
-
-   daq
 
 """
 

@@ -11,10 +11,6 @@ Provides:
    :members:
    :private-members:
 
-.. autoclass:: VISADriver
-   :members:
-   :private-members:
-
 """
 
 from fluidlab.interfaces import interface_from_string, FalseInterface, Interface

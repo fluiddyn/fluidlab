@@ -28,20 +28,9 @@ Modules Reference
    fluidlab.instruments
    fluidlab.objects
    fluidlab.exp
-   fluidlab.postproc
+   fluidlab.daq
+   fluidlab.util
 
-   
-Scripts and examples
---------------------
-
-FluidLab also comes with scripts and examples. They are organised in
-the following directories:
-
-.. autosummary::
-   :toctree: generated/
-
-   bin
-   scripts
 
 More
 ----
@@ -61,4 +50,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

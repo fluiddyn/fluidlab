@@ -1,6 +1,6 @@
 """
-Data acquisition boards (:mod:`fluidlab.instruments.daq`)
-=========================================================
+Data acquisition boards
+=======================
 
 .. todo:: Data acquisition board drivers.
 

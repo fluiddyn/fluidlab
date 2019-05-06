@@ -364,7 +364,7 @@ def write_analog(
       Frequency rate for all channels (Hz).
 
     volt_min: {number or iterable of numbers}
-        
+
         Minima for the channels
 
     volt_max: {number or iterable of numbers}

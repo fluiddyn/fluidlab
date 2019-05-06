@@ -1,6 +1,6 @@
 """
-Utilities for the lab (:mod:`fluidlab.util`)
-============================================
+Utilities for the lab
+=====================
 
 Provides
 
@@ -13,6 +13,3 @@ Provides
 
 
 """
-
-
-from .util import load_exp

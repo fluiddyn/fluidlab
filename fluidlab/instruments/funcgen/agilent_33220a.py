@@ -150,7 +150,7 @@ class Agilent33220a(
     def configure_burst(self, freq, ncycles):
         """
         Configure a TTL burst with a given number of cycles
-        Send *TRG or gbf.trigger() to start a burst
+        Send ``*TRG`` or ``gbf.trigger()`` to start a burst
         """
 
         self.interface.write("OUTP:LOAD INF")
