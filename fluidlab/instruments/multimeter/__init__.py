@@ -11,4 +11,4 @@ Provides:
 
 """
 
-__all__ = ["hp_34401a", "thorlabs_s110"]
+__all__ = ["hp_34401a", "thorlabs_s110", "neel_lhlm"]
