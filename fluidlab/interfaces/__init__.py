@@ -141,9 +141,14 @@ def interface_from_string(name, default_physical_interface=None, **kwargs):
         dev = int(devnum)
         return GPIBInterface(board, dev)
     if classname == "SocketInterface":
-        from fluidlab.interfaces.socket_inter import SocketInterface
-
-        return SocketInterface(name, **kwargs)
+        from fluidlab.interfaces.socket_inter import TCPSocketInterface, UDPSocketInterface
+        protocol = kwargs.pop('ethernet_protocol', 'tcp')
+        if protocol == 'tcp':
+            return TCPSocketInterface(name, **kwargs)
+        elif protocol == 'udp':
+            return UDPSocketInterface(name, **kwargs)
+        else:
+            raise ValueError('Wrong ethernet_protocol. Should be tcp or udp')
     if classname == "SerialInterface":
         from fluidlab.interfaces.serial_inter import SerialInterface
 

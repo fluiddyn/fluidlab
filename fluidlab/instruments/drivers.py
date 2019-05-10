@@ -29,7 +29,7 @@ class Driver:
     """
 
     default_physical_interface = None
-    default_inter_params = {"port": 0}
+    default_inter_params = {}
 
     @classmethod
     def _build_class_with_features(cls, features):
