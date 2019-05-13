@@ -84,8 +84,8 @@ class UDPSocketInterface(SocketInterface):
                     raise
             if ip_address(server[0]) == ip_address(self.ip_address):
                 chunks.append(data)
-            if len(data) < 1024:
-                break
+                if len(data) < 1024:
+                    break
         data = b"".join(chunks).decode("ascii")
         return data
 
@@ -116,7 +116,7 @@ class TCPSocketInterface(SocketInterface):
                     raise
             if len(chunk) > 0:
                 chunks.append(chunk)
-            if len(chunks) < 1024:
+            if len(chunk) < 1024:
                 break
         data = b"".join(chunks).decode("ascii")
         return data
