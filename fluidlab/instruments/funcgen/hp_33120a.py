@@ -10,15 +10,28 @@
 
 __all__ = ["HP33120a"]
 
-from fluidlab.instruments.iec60488 import IEC60488
+from fluidlab.instruments.iec60488 import IEC60488, Trigger
 from fluidlab.instruments.features import SuperValue, FloatValue
 
 
-class HP33120a(IEC60488):
+class HP33120a(IEC60488, Trigger):
     """
 	Driver for the function generator Hewlett-Packard 33120A
 	
 	"""
+
+    def configure_burst(self, freq, ncycles):
+        """
+        Configure a TTL burst with a given number of cycles
+        Send ``*TRG`` or ``gbf.trigger()`` to start a burst
+        """
+
+        self.interface.write("OUTP:LOAD INF")
+        self.interface.write(f"APPL:SQU {freq} HZ, 5 VPP, +2.5 V")
+        self.interface.write(f"BM:NCYC {ncycles}")
+        self.interface.write("BM:PHAS 0")
+        self.interface.write("TRIG:SOUR BUS")
+        self.interface.write("BM:STAT ON")
 
 
 class HP33120a_ShapeValue(SuperValue):
