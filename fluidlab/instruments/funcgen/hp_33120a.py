@@ -29,7 +29,7 @@ class HP33120a(IEC60488, Trigger):
         self.interface.write("OUTP:LOAD INF")
         self.interface.write(f"APPL:SQU {freq} HZ, 5 VPP, +2.5 V")
         self.interface.write(f"BM:NCYC {ncycles}")
-        self.interface.write("BM:PHAS 0")
+        self.interface.write("BM:PHAS -20")
         self.interface.write("TRIG:SOUR BUS")
         self.interface.write("BM:STAT ON")
 
