@@ -25,6 +25,11 @@ mock_modules(
         "u3",
         "rpyc",
         "rpyc.utils.server",
+        "labjack",
+        "pymodbus3",
+        "pymodbus3.client.sync",
+        "pymodbus3.pdu",
+
     ]
 )
 

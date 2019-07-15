@@ -16,6 +16,10 @@ Provides some modules to represent and control devices:
    pinchvalve
    traverse
    rotatingobjects
+   calib_density_probes
+   galvanometer
+   mscti_probes
+   traverse_lxm32
 
 and two packages to control acquisition boards and Raspberry Pi:
 
@@ -25,5 +29,6 @@ and two packages to control acquisition boards and Raspberry Pi:
    boards
    raspberrypi
    position_sensors
+
 
 """

@@ -1,9 +1,19 @@
-"""
-192.168.28.11 - Variateur1
-192.168.28.12 - Variateur2
-192.168.28.13 - Variateur3
-192.168.28.14 - Variateur4
-192.168.28.19 - PC pilote Muriel
+"""Traverses (:mod:`fluidlab.objects.traverse_lxm32`)
+=====================================================
+
+.. currentmodule:: fluidlab.objects.traverse_lxm3
+
+Provides:
+
+.. autoclass:: Traverse
+   :members:
+   :undoc-members:
+
+- 192.168.28.11 - Variateur1
+- 192.168.28.12 - Variateur2
+- 192.168.28.13 - Variateur3
+- 192.168.28.14 - Variateur4
+- 192.168.28.19 - PC pilote Muriel
 
 """
 
@@ -208,7 +218,7 @@ class Traverse:
         -------
         _coef_meter_per_rot : float
         Value of the calibration
-        
+
         """
         path = os.path.join(
             path_dir, make_ip_as_str(self.ip_modbus) + "calibration.txt"

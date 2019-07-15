@@ -1,6 +1,13 @@
-"""
-Probes (:mod:`fluidlab.objects.mscti_probes`)
-=============================================
+"""Probes (:mod:`fluidlab.objects.mscti_probes`)
+=================================================
+
+.. autosummary::
+   :toctree:
+
+
+.. autoclass:: MSCTIProbe
+   :members:
+   :undoc-members:
 
 
 """
@@ -12,7 +19,7 @@ import os
 import matplotlib.pyplot as plt
 
 from fluiddyn.io import query
-from fluidlab.instruments.daq.daqmx import read_analog
+from fluidlab.daq.daqmx import read_analog
 
 import h5py
 
