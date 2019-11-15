@@ -70,7 +70,11 @@ class Agilent34970a(IEC60488):
         self.NPLC = dict()
         self.Range = dict()
         self.TkType = dict()
+        self.tmo = None
 
+    def set_tmo(self, tmo):
+        self.tmo = tmo
+        
     def set_range(self, channelNumber, manualRange=False, rangeValue=None):
         if not manualRange and str(channelNumber) in self.Range:
             del self.Range[str(channelNumber)]
@@ -239,11 +243,16 @@ class Agilent34970a(IEC60488):
         # Wait for Service Request (triggered by *OPC after the scan
         # is complete)
         self.wait_till_completion_of_operations()  # *OPC
-        if sampleRate:
-            tmo = int(1000 * samplesPerChan / sampleRate)
+        if not self.tmo:
+            if sampleRate:
+                tmo = int(1000 * samplesPerChan / sampleRate)
+            else:
+                tmo = 10000
+            if tmo < 10000:
+                tmo = 10000
+            print("tmo =", tmo, "ms")
         else:
-            tmo = 10000
-        print("tmo =", tmo, "ms")
+            tmo = self.tmo
         self.interface.wait_for_srq(timeout=tmo)
 
         # Unassert SRQ
