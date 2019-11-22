@@ -210,9 +210,9 @@ class NewportXpsRL:
     def __init__(self, ip_address, port=5001):
         self.ip_address = ip_address
         self.port = port
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def open(self):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.ip_address, self.port))
 
     def close(self):
@@ -225,17 +225,7 @@ class NewportXpsRL:
     def __exit__(self, type_, value, cb):
         self.close()
 
-    def query(self, command_str):
-        if isinstance(command_str, str):
-            command_str = command_str.encode("ascii")
-        self.socket.sendall(command_str)
-        chunks = []
-        while True:
-            chunk = self.socket.recv(1024)
-            if len(chunk) > 0:
-                chunks.append(chunk)
-            if len(chunks) < 1024:
-                break
+    def _parse_chunks(self, chunks):
         data_raw = b"".join(chunks).decode("ascii")
         parsed = data_raw.split(",")
         status = parsed[0]
@@ -248,6 +238,19 @@ class NewportXpsRL:
             print(eol)
             raise RuntimeError("Wrong answer from XPS-RL Controller")
         return int(status), response
+
+    def query(self, command_str):
+        if isinstance(command_str, str):
+            command_str = command_str.encode("ascii")
+        self.socket.sendall(command_str)
+        chunks = []
+        while True:
+            chunk = self.socket.recv(1024)
+            if len(chunk) > 0:
+                chunks.append(chunk)
+            if len(chunks) < 1024:
+                break
+        return self._parse_chunks(chunks)
 
     def FirmwareVersionGet(self):
         status, response = self.query("FirmwareVersionGet(char *)")

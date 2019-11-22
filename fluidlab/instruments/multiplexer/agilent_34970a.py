@@ -74,7 +74,7 @@ class Agilent34970a(IEC60488):
 
     def set_tmo(self, tmo):
         self.tmo = tmo
-        
+
     def set_range(self, channelNumber, manualRange=False, rangeValue=None):
         if not manualRange and str(channelNumber) in self.Range:
             del self.Range[str(channelNumber)]

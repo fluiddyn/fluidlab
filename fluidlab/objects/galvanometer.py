@@ -22,6 +22,7 @@ serial_numbers = {"horiz": 470012356, "vert": 470012767}
 
 class Galva:
     """Galvanometer which controls an oscillating mirror to set angles."""
+
     def __init__(self):
         self.t7 = T7(identifier=serial_numbers["horiz"])
 

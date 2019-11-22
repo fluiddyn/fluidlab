@@ -46,7 +46,9 @@ features = [
     # # # # # # # # # # # #
     # Read-only commands  #
     # # # # # # # # # # # #
-    FloatValue("temperature", doc="MGC3 internal temperature", command_get="MGC3GET 0"),
+    FloatValue(
+        "temperature", doc="MGC3 internal temperature", command_get="MGC3GET 0"
+    ),
     # PID0 commands
     FloatValue(
         "pid0_meas",
