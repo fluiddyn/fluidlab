@@ -61,6 +61,7 @@ def prepare_calibration(rho_min=1, rho_max=1.18, nb_solutions=6):
 
 class Calibration:
     """Calibrate density"""
+
     def __init__(self, path_rho, path_temp=None):
         self.path_rho = path_rho
 

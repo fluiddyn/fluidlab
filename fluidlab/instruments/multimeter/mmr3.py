@@ -46,27 +46,57 @@ features = [
     # # # # # # # # # # # #
     # Read-only commands  #
     # # # # # # # # # # # #
-    FloatValue("temperature", doc="MMR3 internal temperature", command_get="MMR3GET 2"),
+    FloatValue(
+        "temperature", doc="MMR3 internal temperature", command_get="MMR3GET 2"
+    ),
     # CH1 commands
-    FloatValue("r1_meas", doc="MMR3 R1 measurement result", command_get="MMR3GET 3"),
-    FloatValue("r1_range", doc="MMR3 R1 range computation", command_get="MMR3GET 4"),
-    FloatValue("r1_convert", doc="MMR3 R1 converted value", command_get="MMR3GET 5"),
-    FloatValue("r1_status", doc="MMR3 R1 measurement status", command_get="MMR3GET 6"),
-    FloatValue("r1_offset", doc="MMR3 R1 offset measurement", command_get="MMR3GET 13"),
+    FloatValue(
+        "r1_meas", doc="MMR3 R1 measurement result", command_get="MMR3GET 3"
+    ),
+    FloatValue(
+        "r1_range", doc="MMR3 R1 range computation", command_get="MMR3GET 4"
+    ),
+    FloatValue(
+        "r1_convert", doc="MMR3 R1 converted value", command_get="MMR3GET 5"
+    ),
+    FloatValue(
+        "r1_status", doc="MMR3 R1 measurement status", command_get="MMR3GET 6"
+    ),
+    FloatValue(
+        "r1_offset", doc="MMR3 R1 offset measurement", command_get="MMR3GET 13"
+    ),
     # CH2 commands
-    FloatValue("r2_meas", doc="MMR3 R2 measurement result", command_get="MMR3GET 14"),
-    FloatValue("r2_range", doc="MMR3 R2 range computation", command_get="MMR3GET 15"),
-    FloatValue("r2_convert", doc="MMR3 R2 converted value", command_get="MMR3GET 16"),
-    FloatValue("r2_status", doc="MMR3 R2 measurement status", command_get="MMR3GET 17"),
-    FloatValue("r2_offset", doc="MMR3 R2 offset measurement", command_get="MMR3GET 24"),
+    FloatValue(
+        "r2_meas", doc="MMR3 R2 measurement result", command_get="MMR3GET 14"
+    ),
+    FloatValue(
+        "r2_range", doc="MMR3 R2 range computation", command_get="MMR3GET 15"
+    ),
+    FloatValue(
+        "r2_convert", doc="MMR3 R2 converted value", command_get="MMR3GET 16"
+    ),
+    FloatValue(
+        "r2_status", doc="MMR3 R2 measurement status", command_get="MMR3GET 17"
+    ),
+    FloatValue(
+        "r2_offset", doc="MMR3 R2 offset measurement", command_get="MMR3GET 24"
+    ),
     # CH3 commands
-    FloatValue("r3_meas", doc="MMR3 R3 measurement result", command_get="MMR3GET 25"),
-    FloatValue("r3_range", doc="MMR3 R3 range computation", command_get="MMR3GET 26"),
+    FloatValue(
+        "r3_meas", doc="MMR3 R3 measurement result", command_get="MMR3GET 25"
+    ),
+    FloatValue(
+        "r3_range", doc="MMR3 R3 range computation", command_get="MMR3GET 26"
+    ),
     FloatValue(
         "r3_convert", doc="MMR3 MMR3 R3 converted value", command_get="MMR3GET 27"
     ),
-    FloatValue("r3_status", doc="MMR3 R3 measurement status", command_get="MMR3GET 28"),
-    FloatValue("r3_offset", doc="MMR3 R3 offset measurement", command_get="MMR3GET 35"),
+    FloatValue(
+        "r3_status", doc="MMR3 R3 measurement status", command_get="MMR3GET 28"
+    ),
+    FloatValue(
+        "r3_offset", doc="MMR3 R3 offset measurement", command_get="MMR3GET 35"
+    ),
     # # # # # # # # # #
     #  R+W commands   #
     # # # # # # # # # #
