@@ -1,5 +1,5 @@
-"""Interfaces with the instruments (:mod:`fluidlab.instruments.interfaces`)
-===========================================================================
+"""Interfaces with the instruments (:mod:`fluidlab.interfaces`)
+===============================================================
 
 Provides some classes:
 

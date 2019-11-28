@@ -107,11 +107,10 @@ class Agilent34970a(IEC60488):
         try:
             # Checks if channelList is iterable
             numChans = len([x for x in channelList])
-        except:
+        except Exception:
             # If not, convert to 1-tuple
             channelList = (channelList,)
             numChans = 1
-            pass
 
         # Max number of points: 50000
         if samplesPerChan * numChans > 50000:
