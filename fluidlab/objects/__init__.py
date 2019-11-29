@@ -19,7 +19,7 @@ Provides some modules to represent and control devices:
    calib_density_probes
    galvanometer
    mscti_probes
-   traverse_lxm32
+   traverse_lxm3
 
 and two packages to control acquisition boards and Raspberry Pi:
 

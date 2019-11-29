@@ -10,7 +10,6 @@
 __all__ = ["Keithley2700"]
 
 import numpy as np
-from datetime import datetime
 import time
 
 from clint.textui import colored
@@ -20,11 +19,10 @@ from fluidlab.instruments.features import SuperValue, BoolValue
 
 class Keithley2700(IEC60488):
     """Driver for the multiplexer Keithley 2700 Series
-    
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, interface=None):
+        super().__init__(interface)
         self.Range = dict()
         self.NPLC = dict()
 
@@ -35,17 +33,27 @@ class Keithley2700(IEC60488):
             self.Range[channelNumber] = rangeValue
 
     def set_nplc(self, *, channelNumber=1, nplcValue=1.0):
-        """
-        This function sets the integration time of the ADC.
-        This time is expressed in terms of line frequency (PLC). It spans
-        from 0.01 to 10.
-        The default PLC is 1.
-        
-        >Fast: NPLC=0.01 3 1/2 digits
-        Fast:  NPLC=0.1 5 1/2 digits
-        Med:   NPLC=1.0 6 1/2 digits
-        Slow:  NPLC=5.0
-        
+        """This function sets the integration time of the ADC.
+
+        :param channelNumber: the channel for which to set the NPLC value
+        :type channelNumber: int
+        :param nplcValue: Integration time, expressed in terms of line frequency (PLC). It spans from 0.01 to 10. The default PLC is 1.
+        :type nplcValue: float
+
+        .. note::
+
+            Per the documentation, there is a relation between the integration
+            time, the short name (fast, med, slow) and the effective number of digits
+
+            ==========  ====  =============
+            Short name  NPLC  Resolution
+            ==========  ====  =============
+            >Fast       0.01  3 1/2 digits
+            Fast        0.1   5 1/2 digits
+            Med         1.0   6 1/2 digits
+            Slow        5.0
+            ==========  ====  =============
+
         """
         nplcValue = float(nplcValue)
         self.NPLC[channelNumber] = nplcValue
@@ -53,11 +61,25 @@ class Keithley2700(IEC60488):
     def scan(
         self, channelList, functionName, samplesPerChan, sampleRate, verbose
     ):
-        """ 
-        Initiates a scan
+        """Initiates a scan.
+        This method is called by the features get method.
 
-        If channelList == [1] and samplesPerChan = 1, a one-shot front measurement is
-        performed.
+        :param channelList: channel number or iterable of channel numbers
+        :type channelList: int or list
+        :param functionName: measurement function to configure. Some possible values are VOLT:DC, VOLT:AC, FRES, RES, CURR:DC or CURR:AC. Refer to Keithley documentation for other functions.
+        :type functionName: str
+        :param samplesPerChan: Number of samples to be acquired on each channel. They are stored in the device buffer during acquisition (maximum 450000). Defaults to 1.
+        :type samplesPerChan: int
+        :param sampleRate: frequency of the internal clock used to trigger measurements. The instrument resolution is 1ms. Defaults to 1 kHz (maximum frequency).
+        :type sampleRate: float
+        :param verbose: prints additionnal information for debugging purposes
+        :type verbose: bool
+
+        .. note::
+
+            If len(channelList) == 1 and samplesPerChan = 1, a one-shot
+            measurement is performed, instead of a scan.
+
         """
 
         # Make sure channelList is iterable
@@ -301,6 +323,9 @@ class Keithley2700(IEC60488):
 
 
 class Keithley2700Value(SuperValue):
+    """Custom :class:`Value` class for the Keithley 2700 features.
+    """
+
     def __init__(self, name, doc="", function_name=None):
         super().__init__(name, doc)
         self.function_name = function_name
@@ -341,7 +366,7 @@ class Keithley2700Value(SuperValue):
 features = [
     BoolValue(
         "front",
-        doc="True if switch Front/Rear is on Front",
+        doc="True if switch Front/Rear is on Front (read-only)",
         command_get=":SYST:FRSW?",
     ),
     Keithley2700Value("vdc", doc="DC voltage", function_name="VOLT:DC"),

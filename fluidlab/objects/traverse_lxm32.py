@@ -1,7 +1,7 @@
 """Traverses (:mod:`fluidlab.objects.traverse_lxm32`)
 =====================================================
 
-.. currentmodule:: fluidlab.objects.traverse_lxm3
+.. currentmodule:: fluidlab.objects.traverse_lxm32
 
 Provides:
 
