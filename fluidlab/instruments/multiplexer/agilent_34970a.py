@@ -17,9 +17,18 @@ from fluidlab.instruments.features import SuperValue
 
 
 class Agilent34970aValue(SuperValue):
+    """Custom Value for Agilent 34970a
+    """
+
     def __init__(self, name, doc="", function_name=None):
         super().__init__(name, doc)
         self.function_name = function_name
+
+    def __repr__(self):
+        """For documentation purpose, it is not useful to read <Agilent34970aValue object>.
+        It is more informative to know that this is just in the same manner as any Value object.
+        """
+        return "<Value object>"
 
     def _build_driver_class(self, Driver):
         name = self._name
@@ -54,7 +63,6 @@ class Agilent34970aValue(SuperValue):
 
 class Agilent34970a(IEC60488):
     """Driver for the multiplexer Agilent 34970A.
-
     """
 
     def __init__(self, interface=None):
@@ -73,18 +81,51 @@ class Agilent34970a(IEC60488):
         self.tmo = None
 
     def set_tmo(self, tmo):
+        """Sets the timeout for scan operations. If reading takes longer, then an exception
+        is raised.
+            
+        :param tmo: timeout in milliseconds
+        :type tmo: float
+
+        .. note::
+            
+            this only takes effects when the :meth:`scan` method is invoked.
+
+        """
         self.tmo = tmo
 
     def set_range(self, channelNumber, manualRange=False, rangeValue=None):
+        """Select auto/manual range for the specified channel
+
+        :param channelNumber: channel to set range for
+        :type channelNumber: int
+        :param manualRange: True if manual, False if autorange
+        :type manualRange: bool
+        :param rangeValue: possible values for voltage: 100e-3, 1, 10, 100, 300. possible values for resistance: 100 (1 mA), 1e3 (1 mA), 10e3 (100 µA), 100e3 (10 µA), 1e6 (5 µA), 10e6 (500 nA), 100e6 (500 nA || 10 MΩ). See Agilent Chapter 9 documentation for other cases.
+        :type rangeValue: float
+
+        .. note::
+            
+            this only takes effects when the :meth:`scan` method is invoked.
+
+        """
         if not manualRange and str(channelNumber) in self.Range:
             del self.Range[str(channelNumber)]
         elif manualRange:
             self.Range[str(channelNumber)] = rangeValue
 
     def set_nplc(self, channelNumber, nplcValue):
-        """
-        Sets the averaging for each channel expressed in line cycles.
-        Possible values are: 0.02, 0.2, 1.0, 2.0, 10, 20, 100, 200
+        """Sets the averaging for the specified channel
+
+        :param channelNumber: channel to set averaging for
+        :type channelNumber: int
+        :param nplcValue: averaging time expressed in power line cycles (e.g. 20 ms in Europe). Possible values are: 0.02, 0.2, 1.0, 2.0, 10, 20, 100, 200.
+        :type nplcValue: float
+
+        .. note::
+            
+            this only takes effects when the :meth:`scan` method is invoked.
+
         """
         possible_values = {0.02, 0.2, 1.0, 2.0, 10.0, 20.0, 100.0, 200.0}
         nplcValue = float(nplcValue)
@@ -94,6 +135,18 @@ class Agilent34970a(IEC60488):
         self.NPLC[str(channelNumber)] = nplcValue
 
     def set_tk_type(self, channelNumber, tkType):
+        """Sets the Thermocouple type for the specified channel
+
+        :param channelNumber: channel to set thermocouple type for
+        :type channelNumber: int
+        :param tkType: thermocouple types. Possible values are "B", "E", "J", "K", "N", "R", "S", "T".
+        :type tkType: str
+
+        .. note::
+
+            this only takes effects when the :meth:`scan` method is invoked.
+
+        """
         if tkType in ("B", "E", "J", "K", "N", "R", "S", "T"):
             self.TkType[str(channelNumber)] = tkType
         else:
@@ -102,7 +155,25 @@ class Agilent34970a(IEC60488):
     def scan(
         self, channelList, functionName, samplesPerChan, sampleRate, verbose=True
     ):
-        """ Initiates a scan """
+        """Initiates a scan.
+
+        :param channelList: channel number or iterable of channel numbers
+        :type channelList: int or list
+        :param functionName: measurement function to configure. Some possible values are VOLT:DC, VOLT:AC, FRES, RES, CURR:DC or TEMP. Refer to Agilent documentation for other functions.
+        :type functionName: str
+        :param samplesPerChan: Number of samples to be acquired on each channel. They are stored in the device buffer during acquisition (maximum 50000).
+        :type samplesPerChan: int
+        :param sampleRate: frequency of the internal clock used to trigger measurements. The instrument resolution is 1 ms.
+        :type sampleRate: float
+        :param verbose: prints additionnal information for debugging purposes. Defaults to True.
+        :type verbose: bool, optional
+
+        .. note::
+
+            If len(channelList) == 1 and samplesPerChan = 1, a one-shot
+            measurement is performed, instead of a scan.
+
+        """
 
         try:
             # Checks if channelList is iterable
@@ -276,13 +347,8 @@ class Agilent34970a(IEC60488):
 
         return retval
 
-    def write_vdc(self, channel, value):
+    def write_vdc(self, channelList, value):
         """Write DC-Voltage on specified AO channel.
-
-        .. todo::
-
-           Solve an evident bug in this function (should be easy).
-
         """
 
         print("Warning there is clearly a bug here: channelList !")
@@ -298,9 +364,10 @@ class Agilent34970a(IEC60488):
             )
 
         # Write DC Voltage
-        self.interface.write(
-            "SOUR:VOLT " + str(value) + ",(@" + str(channel) + ")"
-        )
+        for channel in channelList:
+            self.interface.write(
+                "SOUR:VOLT " + str(value) + ",(@" + str(channel) + ")"
+            )
 
 
 features = [

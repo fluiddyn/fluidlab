@@ -70,7 +70,7 @@ class Keithley2700(IEC60488):
         :type functionName: str
         :param samplesPerChan: Number of samples to be acquired on each channel. They are stored in the device buffer during acquisition (maximum 450000). Defaults to 1.
         :type samplesPerChan: int
-        :param sampleRate: frequency of the internal clock used to trigger measurements. The instrument resolution is 1ms. Defaults to 1 kHz (maximum frequency).
+        :param sampleRate: frequency of the internal clock used to trigger measurements. The instrument resolution is 1 ms. Defaults to 1 kHz (maximum frequency).
         :type sampleRate: float
         :param verbose: prints additionnal information for debugging purposes
         :type verbose: bool

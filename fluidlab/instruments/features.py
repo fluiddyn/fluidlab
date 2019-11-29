@@ -65,6 +65,10 @@ class Feature:
         self._name = name
         self.__doc__ = doc
 
+    def __repr__(self):
+        C = type(self)
+        return "<" + C.__name__ + " object>"
+
 
 class WriteCommand(Feature):
     def __init__(self, name, doc="", command_str=""):
