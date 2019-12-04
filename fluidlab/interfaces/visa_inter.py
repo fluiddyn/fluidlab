@@ -25,7 +25,7 @@ def set_default_pyvisa_backend(backend):
 
 
 class VISAInterface(QueryInterface):
-    def __init__(self, resource_name, backend=None):
+    def __init__(self, resource_name, backend=None, **kwargs):
         super().__init__()
         self.resource_name = resource_name
         if backend is None:

@@ -103,6 +103,9 @@ def interface_classname_from_string(
     elif isinstance(name, (ipaddress.IPv4Address, ipaddress.IPv6Address)):
         name = str(name)
         physical_interface = PhysicalInterfaceType.Ethernet
+    elif name.startswith('/dev/tty'):
+        physical_interface = PhysicalInterfaceType.Serial
+        classname = "SerialInterface"
     else:
         try:
             _ = ipaddress.ip_address(name)
@@ -190,7 +193,7 @@ class Interface:
         # do the actual close (without testing self.opened)
         raise NotImplementedError
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.opened = False
 
     def open(self):

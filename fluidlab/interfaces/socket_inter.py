@@ -21,7 +21,7 @@ class SocketInterface(QueryInterface):
     Concrete classes are UDPSocketInterface and TCPSocketInterface
     """
 
-    def __init__(self, ip_address, autoremove_eol):
+    def __init__(self, ip_address, autoremove_eol, **kwargs):
         super().__init__()
         self.ip_address = ip_address
         self.autoremove_eol = autoremove_eol
@@ -47,7 +47,7 @@ class SocketInterface(QueryInterface):
 
 
 class UDPSocketInterface(SocketInterface):
-    def __init__(self, ip_address, in_port, out_port, autoremove_eol=True):
+    def __init__(self, ip_address, in_port, out_port, autoremove_eol=True, **kwargs):
         super().__init__(ip_address, autoremove_eol)
         if callable(in_port):
             self.in_port = in_port(ip_address)
@@ -91,7 +91,7 @@ class UDPSocketInterface(SocketInterface):
 
 
 class TCPSocketInterface(SocketInterface):
-    def __init__(self, ip_address, port, autoremove_eol=True):
+    def __init__(self, ip_address, port, autoremove_eol=True, **kwargs):
         super().__init__(ip_address, autoremove_eol)
         self.port = port
 
