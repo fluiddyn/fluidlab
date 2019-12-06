@@ -66,6 +66,29 @@ class T7:
             )
         )
 
+    def split_data_in_buffer(data):
+        MAX_BUFFER_SIZE = 512
+        BYTES_PER_VALUE = 2
+        buffer_size = []
+        data_splited = []
+        for d in data:
+            loop_size = d.size
+            data_byte_size = loop_size * BYTES_PER_VALUE
+            if is_power2(data_byte_size):
+                buff_size = data_byte_size
+            else:
+                buff_size = int(
+                    2 ** (int(np.log(data_byte_size) / np.log(2)) + 1)
+                )
+            if buff_size <= MAX_BUFFER_SIZE:
+                buffer_size.append(buff_size)
+                data_splited.append([d])
+            else:
+                NUMBER_SAMPLE = data_byte_size // MAX_BUFFER_SIZE + 1
+                data_splited.append(np.split(d, NUMBER_SAMPLE))
+                buffer_size.append(MAX_BUFFER_SIZE)
+        return buffer_size, data_splited
+
     def write_out_buffer(self, streamout, volt):
         """ to replace
             for l in volt:
@@ -109,30 +132,23 @@ class T7:
         NUM_IN_CHANNELS = len(IN_NAMES)
 
         NUM_OUT_CHANNELS = len(OUT_NAMES)
-
+        buffer_size, volt_splitted = self.split_data_in_buffer(volt)
         for indout, out in enumerate(OUT_NAMES):
             outAddress = ljm.nameToAddress(OUT_NAMES[indout])[0]
             ljm.eWriteName(handle, f"STREAM_OUT{indout}_ENABLE", 0)
             ljm.eWriteName(handle, f"STREAM_OUT{indout}_TARGET", outAddress)
 
-            buffer_size = volt[indout].size * 2
-
-            if is_power2(buffer_size):
-                ljm.eWriteName(
-                    handle, f"STREAM_OUT{indout}_BUFFER_SIZE", buffer_size
-                )
-            else:
-                buffer_size = int(2 ** (int(np.log(buffer_size) / np.log(2)) + 1))
-                ljm.eWriteName(
-                    handle, f"STREAM_OUT{indout}_BUFFER_SIZE", buffer_size
-                )
+            ljm.eWriteName(handle, f"STREAM_OUT{indout}_BUFFER_SIZE", buffer_size)
 
             ljm.eWriteName(handle, f"STREAM_OUT{indout}_ENABLE", 1)
 
-        for indout, out in enumerate(OUT_NAMES):
-            self.write_out_buffer(f"STREAM_OUT{indout}_BUFFER_F32", volt[indout])
+            self.write_out_buffer(
+                f"STREAM_OUT{indout}_BUFFER_F32", volt_splitted[indout][0]
+            )
             ljm.eWriteName(
-                handle, f"STREAM_OUT{indout}_LOOP_SIZE", volt[indout].size
+                handle,
+                f"STREAM_OUT{indout}_LOOP_SIZE",
+                volt_splitted[indout][0].size,
             )
             ljm.eWriteName(handle, f"STREAM_OUT{indout}_SET_LOOP", 1)
 
@@ -153,7 +169,7 @@ class T7:
             aValues = [0, 0]
             ljm.eWriteNames(handle, len(aNames), aNames, aValues)
 
-        return aScanList
+        return aScanList, volt_splitted
 
     def prepare_stream(self, IN_NAMES=[], OUT_NAMES=[], volt=[]):
         handle = self.handle

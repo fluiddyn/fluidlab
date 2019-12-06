@@ -198,28 +198,9 @@ class PIVScan:
         t7 = self.t7
         handle = t7.handle
 
-        aScanList = t7.prepare_stream(
+        aScanList, volt_splitted = t7.prepare_stream_loopV2(
             IN_NAMES=IN_NAMES, OUT_NAMES=OUT_NAMES, volt=volt
         )
-
-        # to avoid a strange bug
-        for indout, out in enumerate(OUT_NAMES):
-            t7.write_out_buffer(
-                f"STREAM_OUT{indout}_BUFFER_F32", 0 * volt[indout]
-            )
-
-        scanRate = ljm.eStreamStart(
-            handle, int(scansPerRead), TOTAL_NUM_CHANNELS, aScanList, scanRate
-        )
-
-        time.sleep(time_between_pairs)
-        for indout, out in enumerate(OUT_NAMES):
-            t7.write_out_buffer(
-                f"STREAM_OUT{indout}_BUFFER_F32", 0 * volt[indout]
-            )
-
-        time.sleep(time_between_pairs)
-        # end of the code to avoid the strange bug
 
         if not query_yes_no("Are you ready to start acquisition?"):
             self.stop_stream()
@@ -238,9 +219,20 @@ class PIVScan:
         if wait_file:
             wait_for_file("oscillate_*", nb_period_to_wait)
 
-        timer = Timer(time_between_pairs)
-        try:
-            for i in range(nb_couples):
+        NUM_BUFFER_UPDATES = len(volt_splitted[0])
+        STAT_SIZE = volt_splitted[0][0].size
+
+        if NUM_BUFFER_UPDATES == 1:
+            scanRate = ljm.eStreamStart(
+                handle, int(scansPerRead), TOTAL_NUM_CHANNELS, aScanList, scanRate
+            )
+            print("Stream started")
+
+            t7.wait_before_stop(
+                nb_couples * time_between_pairs, time_between_frames
+            )
+        else:
+            try:
                 scanRate = ljm.eStreamStart(
                     handle,
                     int(scansPerRead),
@@ -248,19 +240,37 @@ class PIVScan:
                     aScanList,
                     scanRate,
                 )
-                print("\r{}/{}".format(i + 1, nb_couples), end="")
-                sys.stdout.flush()
-                time.sleep(2 * time_between_frames)
-                for indout, out in enumerate(OUT_NAMES):
-                    t7.write_out_buffer(
-                        f"STREAM_OUT{indout}_BUFFER_F32", volt[indout]
-                    )
-                t = timer.wait_tick()
-        except KeyboardInterrupt:
-            pass
-        finally:
-            print("")
-            t7.stop_stream()
+                for i in range(nb_couples):
+                    print("\r{}/{}".format(i + 1, nb_couples), end="")
+                    sys.stdout.flush()
+                    if i == 0:
+                        iteration = 1
+                    else:
+                        iteration = 0
+                    while iteration < NUM_BUFFER_UPDATES:
+                        bs = ljm.eReadName(
+                            handle, f"STREAM_OUT{OUT_NAMES[0]}_BUFFER_STATUS"
+                        )
+                        if bs >= STAT_SIZE:
+                            for indout, out in enumerate(OUT_NAMES):
+                                ljm.eWriteName(
+                                    handle,
+                                    f"STREAM_OUT{indout}_LOOP_SIZE",
+                                    STAT_SIZE,
+                                )
+                                t7.write_out_buffer(
+                                    f"STREAM_OUT{indout}_BUFFER_F32",
+                                    volt[indout][iteration],
+                                )
+                                ljm.eWriteName(
+                                    handle, f"STREAM_OUT{indout}_SET_LOOP", 1
+                                )
+                            iteration = iteration + 1
+            except KeyboardInterrupt:
+                pass
+            finally:
+                print("")
+                t7.stop_stream()
 
     def stop_stream(self):
         self.t7.stop_stream()
@@ -550,8 +560,10 @@ def saw_tooth_period2(vmin, vmax, time_expo, nb_levels, time_between_frames):
 #     return volt, freq, time_between_frames, t
 
 
-def double_saw_tooth2(vmin, vmax, time_expo, nb_levels, time_between_frames):
-    """Determine the saw tooth profile for double frame acquisition
+def double_saw_tooth2(
+    vmin, vmax, time_expo, nb_levels, time_between_frames, time_between_pairs
+):
+    """Determine the saw tooth profile for double frame acquisition, for a whole period
 
     Parameters
     ----------
@@ -560,7 +572,8 @@ def double_saw_tooth2(vmin, vmax, time_expo, nb_levels, time_between_frames):
     - time_expo: exposure time (in s)
     - nb_levels: number of steps in the rising part
     - time_between_frames: total time (in s)
-
+    - time_between_pairs: time between 2 pairs of saw tooth
+    
     Returns
     -------
 
@@ -575,8 +588,18 @@ def double_saw_tooth2(vmin, vmax, time_expo, nb_levels, time_between_frames):
     time_between_frames.
 
     """
+    if nb_levels * time_expo > time_between_frames:
+        raise ValueError(
+            "nb_levels X time_expo should be smaller than time_between_frames"
+        )
     nb_levels -= 1
     freq = 2.0 / time_expo
+    datalenght = int(time_between_pairs * freq)
+
+    if not datalenght % (datalenght * 2 // 512 + 1) == 0:
+        raise ValueError(
+            f"Data lenght = {datalenght} should be divisible by {datalenght*2//512+1}"
+        )
 
     N = time_between_frames / time_expo
     # if (N != int(N)) or (N <= nb_levels):
@@ -618,14 +641,20 @@ def double_saw_tooth2(vmin, vmax, time_expo, nb_levels, time_between_frames):
     for ind in range(volttemp.size):
         volt1[2 * ind : 2 * ind + 2] = np.asarray([volttemp[ind], 0])
     volt1[-1] = 0
-    volt = np.vstack([volt0, volt1])
+
+    t_missing = time_between_pairs - (time_between_frames * 2 + time_expo)
+    nbpoint_to_add = int(t_missing * freq) + 1
+
+    volt0_loop = np.hstack([volt0, np.ones(nbpoint_to_add) * volt0[-1]])
+
+    volt1_loop = np.hstack([volt1, np.ones(nbpoint_to_add) * volt1[-1]])
+
+    volt = np.vstack([volt0_loop, volt1_loop])
 
     pylab.figure()
-    t = np.arange(0, time_between_frames * 2 + time_expo, 1 / freq)[
-        0 : volt0.size
-    ]
+    t = np.arange(0, time_between_pairs, 1 / freq)[0 : volt0_loop.size]
     # t = np.linspace(0, (N+1)/freq, 2 * N+1)[0:volt0.size]
-    pylab.plot(t, volt0, "+")
+    pylab.plot(t, volt0_loop, "+")
     pylab.plot(t, volt[1], "r+")
     for i in range(int(t.size / 2 - 1)):
         pylab.plot(
@@ -641,7 +670,7 @@ def double_saw_tooth2(vmin, vmax, time_expo, nb_levels, time_between_frames):
     pylab.ylim([-1, 6])
     pylab.xlabel("t (s)")
     pylab.ylabel("voltage (V)")
-    time_between_frames = t[np.argwhere(volt0 == vmin)][2]
+    time_between_frames = t[np.argwhere(volt0_loop == vmin)][2]
     pylab.plot(time_between_frames * np.ones(2), [0, 5], "k")
     pylab.show()
     print(f"time_between_frames is set to {time_between_frames}s")
