@@ -21,11 +21,18 @@ class HP33120a(IEC60488, Trigger):
 	"""
 
     def configure_burst(self, freq, ncycles):
-        """
-        Configure a TTL burst with a given number of cycles
-        Send ``*TRG`` or ``gbf.trigger()`` to start a burst
+        """Configure a TTL burst with a given number of cycles
+        Send ``*TRG`` or ``gbf.trigger()`` to start a burst.
+        
+        Conditions: ncyles must be <= 50000 and if freq <= 100 Hz, we
+        must have:
+        burst count / carrier frequency <= 500 seconds
         """
 
+        if freq <= 100.0 and ncycles/freq > 500.0:
+            raise ValueError("For freq <= 100 Hz, ncycles/freq must be <= 500 seconds")
+        if ncycles > 50000:
+            raise ValueError("Maximum count number is 50000")
         self.interface.write("OUTP:LOAD INF")
         self.interface.write(f"APPL:SQU {freq} HZ, 5 VPP, +2.5 V")
         self.interface.write(f"BM:NCYC {ncycles}")
