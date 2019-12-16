@@ -27,7 +27,7 @@ from fluidlab.interfaces import QueryInterface
 
 
 class USBTMCInterface(QueryInterface):
-    def __init__(self, device=0):
+    def __init__(self, device=0, **kwargs):
         """
         Create a new USBTMCInterface.
 

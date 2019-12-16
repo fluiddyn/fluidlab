@@ -7,6 +7,14 @@ from docutils.statemachine import ViewList
 from sphinx.domains.python import PythonDomain
 
 
+def mangle_signature(app, what, name, obj, options, signature, return_annotation):
+
+    if what == 'attribute' and isinstance(obj, Feature):
+
+        if obj.__doc__ is not None:
+            return ("()", obj.__doc__)
+
+
 def mangle_docstrings(app, what, name, obj, options, lines,
                       reference_offset=[0]):
 
@@ -47,4 +55,5 @@ class DocAttributesDomain(PythonDomain):
 
 def setup(app):
     app.connect('autodoc-process-docstring', mangle_docstrings)
+    app.connect('autodoc-process-signature', mangle_signature)
     app.add_domain(DocAttributesDomain)

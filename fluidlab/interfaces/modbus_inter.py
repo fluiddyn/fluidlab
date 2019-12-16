@@ -25,7 +25,7 @@ from fluidlab.interfaces import Interface
 
 
 class ModbusInterface(Interface):
-    def __init__(self, port, method="rtu", slave_address=1, timeout=1):
+    def __init__(self, port, method="rtu", slave_address=1, timeout=1, **kwargs):
         self.port = port
         self.method = method
         self.slave_address = slave_address

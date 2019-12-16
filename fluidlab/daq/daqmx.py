@@ -10,6 +10,8 @@ Provides:
 
 .. autofunction:: write_analog
 
+.. autofunction:: write_analog_end_task
+
 .. autofunction:: measure_freq
 
 
@@ -379,7 +381,7 @@ def write_analog(
 
       Specifies whether to wait until the task is done before
       returning. If blocking=false, then a task object is
-      returned. To stop the task, ???.
+      returned. To stop the task, use the :func:`write_analog_end_task` function.
 
     """
     # prepare resource_names
@@ -528,7 +530,7 @@ def write_analog(
 
 
 def write_analog_end_task(task, timeout=0.0):
-    """End task.
+    """This function ends a writing task that has been created with blocking=False.
 
     Parameters
     ----------
@@ -549,7 +551,7 @@ def write_analog_end_task(task, timeout=0.0):
 
 
 def measure_freq(resource_name, freq_min=1, freq_max=1000):
-    """Write analogic output
+    """Read analogic output
 
     Parameters
     ----------

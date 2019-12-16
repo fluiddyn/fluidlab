@@ -1,5 +1,5 @@
-"""Interfaces with the instruments (:mod:`fluidlab.instruments.interfaces`)
-===========================================================================
+"""Interfaces with the instruments (:mod:`fluidlab.interfaces`)
+===============================================================
 
 Provides some classes:
 
@@ -89,7 +89,10 @@ def set_default_interface(interface_type, interface_classname):
     """
     default_interface[interface_type] = interface_classname
 
-def interface_classname_from_string(name, default_physical_interface=None, **kwargs):
+
+def interface_classname_from_string(
+    name, default_physical_interface=None, **kwargs
+):
     classname = None
     physical_interface = None
     if "GPIB" in name:
@@ -100,6 +103,9 @@ def interface_classname_from_string(name, default_physical_interface=None, **kwa
     elif isinstance(name, (ipaddress.IPv4Address, ipaddress.IPv6Address)):
         name = str(name)
         physical_interface = PhysicalInterfaceType.Ethernet
+    elif name.startswith('/dev/tty'):
+        physical_interface = PhysicalInterfaceType.Serial
+        classname = "SerialInterface"
     else:
         try:
             _ = ipaddress.ip_address(name)
@@ -115,7 +121,8 @@ def interface_classname_from_string(name, default_physical_interface=None, **kwa
     if classname is None:
         classname = default_interface[physical_interface]
     return classname, physical_interface
-    
+
+
 def interface_from_string(name, default_physical_interface=None, **kwargs):
     """
     Infer physical_interface from name if possible, or use the default provided
@@ -127,7 +134,9 @@ def interface_from_string(name, default_physical_interface=None, **kwargs):
     ASRL0::INSTR is a VISA Serial address
     192.168.0.1 is a IP address, so Ethernet interface
     """
-    classname, physical_interface = interface_classname_from_string(name, default_physical_interface)
+    classname, physical_interface = interface_classname_from_string(
+        name, default_physical_interface
+    )
     if classname == "VISAInterface":
         from fluidlab.interfaces.visa_inter import VISAInterface
 
@@ -184,7 +193,7 @@ class Interface:
         # do the actual close (without testing self.opened)
         raise NotImplementedError
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.opened = False
 
     def open(self):

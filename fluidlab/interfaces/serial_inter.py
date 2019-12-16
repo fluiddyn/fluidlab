@@ -32,6 +32,8 @@ class SerialInterface(QueryInterface):
         eol=None,
         multilines=False,
         autoremove_eol=False,
+        use_readlines=True,
+        **kwargs,
     ):
         """
         if eol is not None, the serial port is wrapped into TextIOWrapper to
@@ -57,6 +59,7 @@ class SerialInterface(QueryInterface):
         self.eol = eol
         self.multilines = multilines
         self.autoremove_eol = autoremove_eol
+        self.use_readlines = use_readlines
 
     def __str__(self):
         return f'SerialInterface("{self.port:}")'
@@ -80,7 +83,7 @@ class SerialInterface(QueryInterface):
         )
         self._lowlevel = self.serial_port = sp
         self._close = sp.close
-        if self.eol is not None:
+        if self.eol is not None and self.use_readlines:
             self.ser_io = io.TextIOWrapper(
                 io.BufferedRWPair(sp, sp, 1),
                 newline=self.eol,
@@ -92,11 +95,15 @@ class SerialInterface(QueryInterface):
             args = [a.strip() + "\n" for a in args]
         # print('->', repr(args[0]))
         if self.eol is not None:
-            return self.ser_io.write(*args)
-
-        # ensure no unicode strings sent to serial_port.write
-        args = [a.encode("ascii") if isinstance(a, str) else a for a in args]
-        return self.serial_port.write(*args)
+            if self.use_readlines:
+                return self.ser_io.write(*args)
+            else:
+                for a in args:
+                    self.serial_port.write(a.encode('ascii') + self.eol.encode('ascii'))
+        else:
+            # ensure no unicode strings sent to serial_port.write
+            args = [a.encode("ascii") if isinstance(a, str) else a for a in args]
+            return self.serial_port.write(*args)
 
     def readline(self, *args):
         if self.eol is not None:
@@ -121,6 +128,11 @@ class SerialInterface(QueryInterface):
         return self.serial_port.readlines(*args)
 
     def _read(self):
+        if not self.use_readlines:
+            iw = self.serial_port.inWaiting()
+            data = self.serial_port.read(iw).decode('ascii')
+            return data
+
         if self.multilines:
             result = self.readlines()
             return "\n".join(result)

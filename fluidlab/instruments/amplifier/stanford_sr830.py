@@ -58,7 +58,7 @@ class StanfordSR830SenseValue(FloatValue):
         return self.sense_values[int(value)]
 
     def set(self, value):
-        super().set(sense_values.index(value))
+        super().set(self.sense_values.index(value))
 
 
 class StanfordSR830TCValue(FloatValue):
