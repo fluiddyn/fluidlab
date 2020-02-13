@@ -1,13 +1,13 @@
 
 dependencies:
-  - python=3.6
-  - numpy
-  - scipy
-  - h5py
-  - sphinx
-  - numpydoc
-  - jupyter
-  - matplotlib
+  - python=3.7
   - pip:
+    - numpy
+    - scipy
+    - h5py
+    - sphinx
+    - numpydoc
+    - jupyter
+    - matplotlib
     - sphinx_rtd_theme
     - clint
