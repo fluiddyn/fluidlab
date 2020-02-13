@@ -90,7 +90,7 @@ setup(
     keywords="Fluid dynamics, research",
     author="Pierre Augier",
     author_email="pierre.augier@legi.cnrs.fr",
-    url="https://bitbucket.org/paugier/fluiddyn",
+    url="https://foss.heptapod.net/fluiddyn/fluidlab",
     license="CeCILL-B",
     classifiers=[
         # How mature is this project? Common values are

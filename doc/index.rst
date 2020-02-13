@@ -4,6 +4,12 @@
 FluidLab documentation
 ======================
 
+.. warning ::
+
+   Our repositories in Bitbucket.org will soon be deleted! Our new home:
+   https://foss.heptapod.net/fluiddyn (`more details
+   <https://fluiddyn.readthedocs.io/en/latest/advice_developers.html>`_).
+
 FluidLab is a framework for studying fluid dynamics by experiments
 using Python.  It is part of the wider project `FluidDyn
 <http://fluiddyn.readthedocs.org>`_.
@@ -38,7 +44,7 @@ More
 .. toctree::
    :maxdepth: 1
 
-   FluidLab forge in Bitbucket <https://bitbucket.org/fluiddyn/fluidlab>
+   FluidLab forge in Heptapod <https://foss.heptapod.net/fluiddyn/fluidlab>
    FluidLab in PyPI <https://pypi.python.org/pypi/fluidlab/>
    to_do
    changes

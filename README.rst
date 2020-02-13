@@ -1,3 +1,9 @@
+.. warning ::
+
+   Our repositories in Bitbucket.org will soon be deleted! Our new home:
+   https://foss.heptapod.net/fluiddyn (`more details
+   <https://fluiddyn.readthedocs.io/en/latest/advice_developers.html>`_).
+
 ========
 FluidLab
 ========
@@ -41,13 +47,13 @@ license.
 Installation
 ------------
 
-You can get the source code from `Bitbucket
-<https://bitbucket.org/fluiddyn/fluidlab>`__ or from `the Python Package Index
+You can get the source code from `Heptapod
+<https://foss.heptapod.net/fluiddyn/fluidlab>`__ or from `the Python Package Index
 <https://pypi.python.org/pypi/fluidlab/>`__.
 
 The development mode is often useful. From the root directory::
 
-  python setup.py develop
+  pip install -e .
 
 Tests
 -----

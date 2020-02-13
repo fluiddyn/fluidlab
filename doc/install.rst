@@ -34,8 +34,8 @@ We give some advises for packages that are not very easy to install:
    :maxdepth: 2
 
    linuxgpib
-   
-  
+
+
 Install commands
 ----------------
 
@@ -47,7 +47,7 @@ However, since the package is still in alpha phase (testing for
 developers), it is often useful to install it from source in "develop"
 mode. To download the source, the easier is to use Mercurial::
 
-  hg clone https://bitbucket.org/fluiddyn/fluidlab
+  hg clone https://foss.heptapod.net/fluiddyn/fluidlab
   cd fluidlab
   python setup.py develop
 
@@ -55,5 +55,3 @@ mode. To download the source, the easier is to use Mercurial::
 After the installation, try to run the unit tests by running ``make
 tests`` from the root directory or ``python -m unittest discover``
 from the root directory or from any of the "test" directories.
-
-
