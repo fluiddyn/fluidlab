@@ -44,10 +44,22 @@ More
 .. toctree::
    :maxdepth: 1
 
-   FluidLab forge in Heptapod <https://foss.heptapod.net/fluiddyn/fluidlab>
-   FluidLab in PyPI <https://pypi.python.org/pypi/fluidlab/>
    to_do
    changes
+   Advice for FluidDyn developers <http://fluiddyn.readthedocs.io/en/latest/advice_developers.html>
+
+
+Links
+-----
+
+- `FluidLab forge in Heptapod <https://foss.heptapod.net/fluiddyn/fluidlab>`__
+- `FluidLab in PyPI <https://pypi.python.org/pypi/fluidlab/>`__
+- `FluidDyn documentation <http://fluiddyn.readthedocs.io>`_
+- FluidDyn user chat room in
+  `Riot <https://riot.im/app/#/room/#fluiddyn-users:matrix.org>`_ or
+  `Slack <https://fluiddyn.slack.com>`_
+- `FluidDyn mailing list <https://www.freelists.org/list/fluiddyn>`_
+- `FluidDyn on Twitter <https://twitter.com/pyfluiddyn>`_
 
 
 Indices and tables
