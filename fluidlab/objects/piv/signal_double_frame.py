@@ -95,9 +95,13 @@ if __name__ == "__main__":
     delta_t = 0.5
     n = 256
 
-    times1, volts1, time_expo, delta_t, time_between_nodes = make_signal_double_frame(
-        time_between_pairs, time_expo, delta_t, n
-    )
+    (
+        times1,
+        volts1,
+        time_expo,
+        delta_t,
+        time_between_nodes,
+    ) = make_signal_double_frame(time_between_pairs, time_expo, delta_t, n)
 
     import matplotlib.pyplot as plt
 

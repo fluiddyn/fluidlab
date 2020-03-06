@@ -103,7 +103,7 @@ def interface_classname_from_string(
     elif isinstance(name, (ipaddress.IPv4Address, ipaddress.IPv6Address)):
         name = str(name)
         physical_interface = PhysicalInterfaceType.Ethernet
-    elif name.startswith('/dev/tty'):
+    elif name.startswith("/dev/tty"):
         physical_interface = PhysicalInterfaceType.Serial
         classname = "SerialInterface"
     else:

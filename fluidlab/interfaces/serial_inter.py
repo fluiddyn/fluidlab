@@ -99,7 +99,9 @@ class SerialInterface(QueryInterface):
                 return self.ser_io.write(*args)
             else:
                 for a in args:
-                    self.serial_port.write(a.encode('ascii') + self.eol.encode('ascii'))
+                    self.serial_port.write(
+                        a.encode("ascii") + self.eol.encode("ascii")
+                    )
         else:
             # ensure no unicode strings sent to serial_port.write
             args = [a.encode("ascii") if isinstance(a, str) else a for a in args]
@@ -130,7 +132,7 @@ class SerialInterface(QueryInterface):
     def _read(self):
         if not self.use_readlines:
             iw = self.serial_port.inWaiting()
-            data = self.serial_port.read(iw).decode('ascii')
+            data = self.serial_port.read(iw).decode("ascii")
             return data
 
         if self.multilines:

@@ -14,6 +14,7 @@ from fluidlab.instruments.iec60488 import IEC60488
 from fluidlab.instruments.features import FloatValue, BoolValue
 from fluidlab.interfaces import PhysicalInterfaceType
 
+
 class TtiCpx400dpUnitValue(FloatValue):
     def _convert_from_str(self, value):
         index_v = value.find("V")
@@ -53,6 +54,7 @@ class TtiCpx400dp(IEC60488):
            v = tti.vdc.get(channel=1)
            print(v)
     """
+
     # the default params below are for use with Serial connection (RS-232 or USB)
     # they are ignored by the GPIBInterface, VISAInterface and SocketInterface
     # classes.
@@ -68,6 +70,7 @@ class TtiCpx400dp(IEC60488):
         "eol": "\r\n",
         "use_readlines": False,
     }
+
 
 features = [
     TtiCpx400dpUnitValue(

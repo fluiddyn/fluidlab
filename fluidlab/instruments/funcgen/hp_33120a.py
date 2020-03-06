@@ -29,8 +29,10 @@ class HP33120a(IEC60488, Trigger):
         burst count / carrier frequency <= 500 seconds
         """
 
-        if freq <= 100.0 and ncycles/freq > 500.0:
-            raise ValueError("For freq <= 100 Hz, ncycles/freq must be <= 500 seconds")
+        if freq <= 100.0 and ncycles / freq > 500.0:
+            raise ValueError(
+                "For freq <= 100 Hz, ncycles/freq must be <= 500 seconds"
+            )
         if ncycles > 50000:
             raise ValueError("Maximum count number is 50000")
         self.interface.write("OUTP:LOAD INF")

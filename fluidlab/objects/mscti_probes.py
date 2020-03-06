@@ -90,9 +90,13 @@ class MSCTIProbe:
             self.fit_rho_vs_voltrho(rho_old, voltrho_old)
 
         if self._has_temp:
-            rho_old, voltrho_old, T_old, voltT_old, date_old = self.load_calibration(
-                "T"
-            )
+            (
+                rho_old,
+                voltrho_old,
+                T_old,
+                voltT_old,
+                date_old,
+            ) = self.load_calibration("T")
 
             if _isarray(rho_old) and rho_old.size > 1:
                 self.fit_T_vs_voltT(T_old, voltT_old)
@@ -192,9 +196,13 @@ class MSCTIProbe:
             if os.path.exists(self.files_calib[0] + ".h5"):
                 f["calibration/file_calibration_rho"] = self.files_calib[0]
                 if not hasattr(self, "coeffs_rho"):
-                    rho_old, voltrho_old, T_old, voltT_old, date_old = self.load_calibration(
-                        "rho"
-                    )
+                    (
+                        rho_old,
+                        voltrho_old,
+                        T_old,
+                        voltT_old,
+                        date_old,
+                    ) = self.load_calibration("rho")
                     if _isarray(rho_old) and rho_old.size >= 1:
                         self.fit_rho_vs_voltrho(rho_old, voltrho_old)
                         f["calibration/coeffsrho"] = self.coeffsrho
@@ -204,9 +212,13 @@ class MSCTIProbe:
             if self._has_temp and os.path.exists(self.files_calib[1] + ".h5"):
                 f["calibration/file_calibration_T"] = self.files_calib[1]
                 if not hasattr(self, "coeffs_T"):
-                    rho_old, voltrho_old, T_old, voltT_old, date_old = self.load_calibration(
-                        "T"
-                    )
+                    (
+                        rho_old,
+                        voltrho_old,
+                        T_old,
+                        voltT_old,
+                        date_old,
+                    ) = self.load_calibration("T")
                     if _isarray(rho_old) and rho_old.size >= 1:
                         self.fit_T_vs_voltT(T_old, voltT_old)
                         f["calibration/coeffsT"] = self.coeffsT

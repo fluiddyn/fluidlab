@@ -47,7 +47,9 @@ class SocketInterface(QueryInterface):
 
 
 class UDPSocketInterface(SocketInterface):
-    def __init__(self, ip_address, in_port, out_port, autoremove_eol=True, **kwargs):
+    def __init__(
+        self, ip_address, in_port, out_port, autoremove_eol=True, **kwargs
+    ):
         super().__init__(ip_address, autoremove_eol)
         if callable(in_port):
             self.in_port = in_port(ip_address)
