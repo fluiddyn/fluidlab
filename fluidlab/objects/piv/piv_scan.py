@@ -198,7 +198,7 @@ class PIVScan:
         t7 = self.t7
         handle = t7.handle
 
-        aScanList, volt_splitted = t7.prepare_stream_loopV2(
+        aScanList, volt_splitted = t7.prepare_stream_loop(
             IN_NAMES=IN_NAMES, OUT_NAMES=OUT_NAMES, volt=volt
         )
 
@@ -229,7 +229,7 @@ class PIVScan:
             print("Stream started")
 
             t7.wait_before_stop(
-                nb_couples * time_between_pairs, time_between_frames
+                nb_couples * time_between_pairs, time_between_pairs
             )
         else:
             try:
@@ -248,9 +248,7 @@ class PIVScan:
                     else:
                         iteration = 0
                     while iteration < NUM_BUFFER_UPDATES:
-                        bs = ljm.eReadName(
-                            handle, f"STREAM_OUT{OUT_NAMES[0]}_BUFFER_STATUS"
-                        )
+                        bs = ljm.eReadName(handle, f"STREAM_OUT{0}_BUFFER_STATUS")
                         if bs >= STAT_SIZE:
                             for indout, out in enumerate(OUT_NAMES):
                                 ljm.eWriteName(
@@ -260,7 +258,7 @@ class PIVScan:
                                 )
                                 t7.write_out_buffer(
                                     f"STREAM_OUT{indout}_BUFFER_F32",
-                                    volt[indout][iteration],
+                                    volt_splitted[indout][iteration],
                                 )
                                 ljm.eWriteName(
                                     handle, f"STREAM_OUT{indout}_SET_LOOP", 1
@@ -656,21 +654,23 @@ def double_saw_tooth2(
     # t = np.linspace(0, (N+1)/freq, 2 * N+1)[0:volt0.size]
     pylab.plot(t, volt0_loop, "+")
     pylab.plot(t, volt[1], "r+")
-    for i in range(int(t.size / 2 - 1)):
-        pylab.plot(
-            t[i * 2 : i * 2 + 3],
-            np.hstack([volt[0][i * 2 : i * 2 + 2], volt[0][i * 2 + 1]]),
-            "b-",
-        )
-        pylab.plot(
-            t[i * 2 : i * 2 + 2],
-            np.hstack([volt[1][i * 2 : i * 2 + 1], volt[1][i * 2]]),
-            "r-",
-        )
+    pylab.step(t, volt[0], "b-", where="post")
+    pylab.step(t, volt[1], "r-", where="post")
+    # for i in range(int(t.size / 2 - 1)):
+    #    pylab.plot(
+    #        t[i * 2 : i * 2 + 3],
+    #        np.hstack([volt[0][i * 2 : i * 2 + 2], volt[0][i * 2 + 1]]),
+    #        "b-",
+    #    )
+    #    pylab.plot(
+    #        t[i * 2 : i * 2 + 2],
+    #        np.hstack([volt[1][i * 2 : i * 2 + 1], volt[1][i * 2]]),
+    #        "r-",
+    #    )
     pylab.ylim([-1, 6])
     pylab.xlabel("t (s)")
     pylab.ylabel("voltage (V)")
-    time_between_frames = t[np.argwhere(volt0_loop == vmin)][2]
+    time_between_frames = t[np.argwhere(volt0_loop == vmin)].squeeze()[2]
     pylab.plot(time_between_frames * np.ones(2), [0, 5], "k")
     pylab.show()
     print(f"time_between_frames is set to {time_between_frames}s")

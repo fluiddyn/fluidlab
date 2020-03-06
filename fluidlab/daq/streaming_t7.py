@@ -66,7 +66,7 @@ class T7:
             )
         )
 
-    def split_data_in_buffer(data):
+    def split_data_in_buffer(self, data):
         MAX_BUFFER_SIZE = 512
         BYTES_PER_VALUE = 2
         buffer_size = []
@@ -84,7 +84,7 @@ class T7:
                 buffer_size.append(buff_size)
                 data_splited.append([d])
             else:
-                NUMBER_SAMPLE = data_byte_size // MAX_BUFFER_SIZE + 1
+                NUMBER_SAMPLE = 2 * (data_byte_size // MAX_BUFFER_SIZE + 1)
                 data_splited.append(np.split(d, NUMBER_SAMPLE))
                 buffer_size.append(MAX_BUFFER_SIZE)
         return buffer_size, data_splited
@@ -138,7 +138,9 @@ class T7:
             ljm.eWriteName(handle, f"STREAM_OUT{indout}_ENABLE", 0)
             ljm.eWriteName(handle, f"STREAM_OUT{indout}_TARGET", outAddress)
 
-            ljm.eWriteName(handle, f"STREAM_OUT{indout}_BUFFER_SIZE", buffer_size)
+            ljm.eWriteName(
+                handle, f"STREAM_OUT{indout}_BUFFER_SIZE", buffer_size[indout]
+            )
 
             ljm.eWriteName(handle, f"STREAM_OUT{indout}_ENABLE", 1)
 
