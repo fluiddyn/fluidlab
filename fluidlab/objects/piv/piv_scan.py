@@ -174,6 +174,7 @@ class PIVScan:
             time_expo=time_expo,
             nb_levels=nb_levels,
             time_between_frames=time_between_frames,
+            time_between_pairs=time_between_pairs,
         )
         print(f"volt = {volt}")
         print(f"frequency = {frequency}")
