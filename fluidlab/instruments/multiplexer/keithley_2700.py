@@ -12,7 +12,8 @@ __all__ = ["Keithley2700"]
 import numpy as np
 import time
 
-from clint.textui import colored
+
+from fluiddyn.util.terminal_colors import cprint
 from fluidlab.instruments.iec60488 import IEC60488
 from fluidlab.instruments.features import SuperValue, BoolValue
 
@@ -239,14 +240,12 @@ class Keithley2700(IEC60488):
                 try:
                     self.interface.wait_for_srq(timeout=tmo)
                 except:
-                    print(colored.red("Error while waiting SRQ"))
+                    cprint("Error while waiting SRQ", color="RED")
                 else:
-                    print(
-                        colored.green(
-                            "SRQ received after {:.1f} seconds".format(
-                                time.monotonic() - start_meas
-                            )
-                        )
+                    cprint(
+                        "SRQ received after "
+                        f"{time.monotonic() - start_meas:.1f} seconds",
+                        color="GREEN",
                     )
 
                 # Unassert SRQ
@@ -271,12 +270,12 @@ class Keithley2700(IEC60488):
                         print("Timeout reading on interface")
                     nread = len(data.split(",")) // 3
                     if nread == npoints:
-                        print(colored.green("All datapoints read"))
+                        cprint("All datapoints read", color="GREEN")
                         break
                     time.sleep(0.5)
                     self.interface.write("TRAC:DATA?")
                     if time.monotonic() - start_fetch > 15:
-                        print(colored.red("Timeout fetching data"))
+                        cprint("Timeout fetching data", color="RED")
                         break
             else:
                 # self.interface.write("TRIG:COUN {:}".format(samplesPerChan))

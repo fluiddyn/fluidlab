@@ -8,17 +8,16 @@
 
 """
 
-from __future__ import print_function, unicode_literals, division
+from functools import reduce
+
+# from time import sleep
+
+import numpy as np
 
 from fluidlab.instruments.drivers import Driver
 from fluidlab.interfaces import PhysicalInterfaceType
 from fluidlab.instruments.features import Value
-
-# from time import sleep
-import numpy as np
-import six
-from clint.textui import colored
-from functools import reduce
+from fluiddyn.util.terminal_colors import cprint
 
 __all__ = ["PfeifferMaxiGauge"]
 
@@ -68,20 +67,19 @@ class PfeifferMaxiGaugePressureValue(PfeifferMaxiGaugeValue):
         status = int(p[0])
         value = float(p[1])
         if status == 3:
-            print(
-                colored.red("Sensor error on channel " + sensor.decode("ascii"))
+            cprint(
+                "Sensor error on channel " + sensor.decode("ascii"), color="RED"
             )
         elif status == 4:
-            print(
-                colored.red("Sensor is off on channel " + sensor.decode("ascii"))
+            cprint(
+                "Sensor is off on channel " + sensor.decode("ascii"), color="RED"
             )
         elif status == 5:
-            print(colored.red("No sensor on channel " + sensor.decode("ascii")))
+            cprint("No sensor on channel " + sensor.decode("ascii"), color="RED")
         elif status == 6:
-            print(
-                colored.red(
-                    "Identification error on channel " + sensor.decode("ascii")
-                )
+            cprint(
+                "Identification error on channel " + sensor.decode("ascii"),
+                color="RED",
             )
         return value
 
