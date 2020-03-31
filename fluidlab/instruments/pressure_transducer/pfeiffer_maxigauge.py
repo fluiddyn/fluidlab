@@ -67,19 +67,14 @@ class PfeifferMaxiGaugePressureValue(PfeifferMaxiGaugeValue):
         status = int(p[0])
         value = float(p[1])
         if status == 3:
-            cprint(
-                "Sensor error on channel " + sensor.decode("ascii"), color="RED"
-            )
+            cprint.red("Sensor error on channel " + sensor.decode("ascii"))
         elif status == 4:
-            cprint(
-                "Sensor is off on channel " + sensor.decode("ascii"), color="RED"
-            )
+            cprint.red("Sensor is off on channel " + sensor.decode("ascii"))
         elif status == 5:
-            cprint("No sensor on channel " + sensor.decode("ascii"), color="RED")
+            cprint.red("No sensor on channel " + sensor.decode("ascii"))
         elif status == 6:
-            cprint(
-                "Identification error on channel " + sensor.decode("ascii"),
-                color="RED",
+            cprint.red(
+                "Identification error on channel " + sensor.decode("ascii")
             )
         return value
 

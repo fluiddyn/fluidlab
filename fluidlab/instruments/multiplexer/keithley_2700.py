@@ -240,12 +240,11 @@ class Keithley2700(IEC60488):
                 try:
                     self.interface.wait_for_srq(timeout=tmo)
                 except:
-                    cprint("Error while waiting SRQ", color="RED")
+                    cprint.red("Error while waiting SRQ")
                 else:
-                    cprint(
+                    cprint.green(
                         "SRQ received after "
-                        f"{time.monotonic() - start_meas:.1f} seconds",
-                        color="GREEN",
+                        f"{time.monotonic() - start_meas:.1f} seconds"
                     )
 
                 # Unassert SRQ
@@ -270,12 +269,12 @@ class Keithley2700(IEC60488):
                         print("Timeout reading on interface")
                     nread = len(data.split(",")) // 3
                     if nread == npoints:
-                        cprint("All datapoints read", color="GREEN")
+                        cprint.green("All datapoints read")
                         break
                     time.sleep(0.5)
                     self.interface.write("TRAC:DATA?")
                     if time.monotonic() - start_fetch > 15:
-                        cprint("Timeout fetching data", color="RED")
+                        cprint.red("Timeout fetching data")
                         break
             else:
                 # self.interface.write("TRIG:COUN {:}".format(samplesPerChan))
