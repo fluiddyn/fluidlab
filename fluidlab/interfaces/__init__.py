@@ -37,7 +37,7 @@ Provides some modules:
 
 """
 
-from time import sleep
+from time import sleep, monotonic
 import warnings
 from enum import IntEnum
 import sys
@@ -200,6 +200,7 @@ class Interface:
         if not self.opened:
             self._open()
             self.opened = True
+            self.opening_timestamp = monotonic()
         else:
             warnings.warn(
                 "open() called on already opened interface.", InterfaceWarning
