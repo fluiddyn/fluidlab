@@ -1,4 +1,3 @@
-
 from __future__ import print_function
 
 from fluidlab.instruments.features import Feature
@@ -9,29 +8,28 @@ from sphinx.domains.python import PythonDomain
 
 def mangle_signature(app, what, name, obj, options, signature, return_annotation):
 
-    if what == 'attribute' and isinstance(obj, Feature):
+    if what == "attribute" and isinstance(obj, Feature):
 
         if obj.__doc__ is not None:
             return ("()", obj.__doc__)
 
 
-def mangle_docstrings(app, what, name, obj, options, lines,
-                      reference_offset=[0]):
+def mangle_docstrings(app, what, name, obj, options, lines, reference_offset=[0]):
 
-    if what == 'attribute' and isinstance(obj, Feature):
+    if what == "attribute" and isinstance(obj, Feature):
         # print('docattributes mangle_docstrings', what, name)
 
         if obj.__doc__ is not None:
-            lines[:] = obj.__doc__.split('\n')
+            lines[:] = obj.__doc__.split("\n")
 
 
 class DocAttributesDomain(PythonDomain):
-    name = 'docattributes'
+    name = "docattributes"
 
     def __init__(self, *a, **kw):
         super().__init__(*a, **kw)
 
-        objtype = 'attribute'
+        objtype = "attribute"
         base_directive = self.directives[objtype]
 
         class directive(base_directive):
@@ -39,10 +37,10 @@ class DocAttributesDomain(PythonDomain):
                 env = self.state.document.settings.env
 
                 name = self.arguments[0]
-                currmodule = env.ref_context.get('py:module')
-                currclass = env.ref_context.get('py:class')
-                cls = env.app.import_object(currmodule + '.' + currclass)
-                name_attr = name.split('.')[1]
+                currmodule = env.ref_context.get("py:module")
+                currclass = env.ref_context.get("py:class")
+                cls = env.app.import_object(currmodule + "." + currclass)
+                name_attr = name.split(".")[1]
                 obj = cls.__dict__[name_attr]
                 lines = list(self.content)
                 mangle_docstrings(env.app, objtype, name, obj, None, lines)
@@ -54,6 +52,6 @@ class DocAttributesDomain(PythonDomain):
 
 
 def setup(app):
-    app.connect('autodoc-process-docstring', mangle_docstrings)
-    app.connect('autodoc-process-signature', mangle_signature)
+    app.connect("autodoc-process-docstring", mangle_docstrings)
+    app.connect("autodoc-process-signature", mangle_signature)
     app.add_domain(DocAttributesDomain)

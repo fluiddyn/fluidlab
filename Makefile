@@ -6,7 +6,7 @@ clean_so:
 	find fluidlab -name "*.so" -delete
 
 black:
-	black -l 82 fluidlab
+	black -l 82 .
 
 tests:
 	python -m unittest discover

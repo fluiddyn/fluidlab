@@ -25,6 +25,7 @@ from fluidlab.exp import Timer
 
 # We can use processes or threads...
 from fluiddyn.util.daemons import DaemonProcess as Daemon
+
 # from fluiddyn.util.daemons import DaemonThread as Daemon
 
 
@@ -33,9 +34,10 @@ def make_loop_function(dt, total_time):
         timer = Timer(dt)
         t = 0
         while t < total_time:
-            print(f'loop dt = {dt:5.3f}, t = {t:7.5f}')
+            print(f"loop dt = {dt:5.3f}, t = {t:7.5f}")
             t = timer.wait_tick()
-        print(f'end of loop dt = {dt:5.3f}, t = {t:7.5f}')
+        print(f"end of loop dt = {dt:5.3f}, t = {t:7.5f}")
+
     return loop
 
 
@@ -49,6 +51,6 @@ for dt in [0.1, 0.025]:
 for daemon in daemons:
     daemon.start()
 
-print('Daemons launched!')
+print("Daemons launched!")
 sleep(total_time + 0.02)
-print('End of the script')
+print("End of the script")
