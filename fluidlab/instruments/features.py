@@ -46,8 +46,8 @@ Provides:
    :private-members:
 
 """
-import warnings, time
-import six
+import warnings
+import time
 
 
 def custom_formatwarning(message, category, filename, lineno, line=None):
@@ -147,8 +147,18 @@ class Value(SuperValue):
         # in that case, command_get and command_set strings are provided
         # with python string format arguments {channel} and {value}
 
-        if command_get is None and command_set is not None:
-            command_get = command_set + "?"
+        if (
+            command_get is None
+            and command_set is not None
+            and not isinstance(command_set, int)
+        ):
+            try:
+                command_get = command_set + "?"
+            except TypeError:
+                print(command_set)
+                print(self.__class__)
+                print(name)
+                raise
 
         self.command_get = command_get
 
