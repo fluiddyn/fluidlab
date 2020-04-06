@@ -1,7 +1,7 @@
 from time import sleep
 
 from fluidlab.exp import Timer
-from fluidlab.instruments.modbus.unidrive_sp import UnidriveSP
+from fluidlab.instruments.motor_controller.unidrive_sp import UnidriveSP
 
 motor = UnidriveSP()
 

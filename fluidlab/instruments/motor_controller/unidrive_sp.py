@@ -116,7 +116,7 @@ from fluiddyn.util.timer import TimerIrregular
 import warnings
 import numpy as np
 
-
+from fluidlab.instruments.drivers import Driver
 from fluidlab.instruments.features import DecimalInt16Value, Int16StringValue
 from fluidlab.interfaces import PhysicalInterfaceType
 
