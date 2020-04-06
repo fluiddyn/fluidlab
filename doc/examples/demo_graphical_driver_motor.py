@@ -7,14 +7,22 @@
 
 """
 
-
 import sys
-from PySide import QtGui
+
+from PyQt5.QtWidgets import (
+    QWidget,
+    QApplication,
+    QPushButton,
+    QInputDialog,
+    QGridLayout,
+    QLCDNumber,
+    QVBoxLayout,
+)
 
 from serial import SerialException
 
 
-from fluidlab.instruments.modbus.unidrive_sp import (
+from fluidlab.instruments.motor_controller.unidrive_sp import (
     OpenLoopUnidriveSP,
     example_linear_ramps,
 )
@@ -43,7 +51,7 @@ class FalseMotor:
         pass
 
 
-class GraphicalDriver(QtGui.QWidget):
+class GraphicalDriver(QWidget):
     def __init__(self, class_motor=OpenLoopUnidriveSP):
         super().__init__()
 
@@ -57,13 +65,13 @@ class GraphicalDriver(QtGui.QWidget):
         self.initUI()
 
     def create_btn(self, name, function, x, y):
-        button = QtGui.QPushButton(name, self)
+        button = QPushButton(name, self)
         self.grid.addWidget(button, x, y)
         button.clicked.connect(function)
         return button
 
     def initUI(self):
-        self.grid = QtGui.QGridLayout()
+        self.grid = QGridLayout()
         self.grid.setSpacing(20)
 
         # create few basic buttons
@@ -74,14 +82,14 @@ class GraphicalDriver(QtGui.QWidget):
         self.create_btn("Triangle", self.triangle_dialog, 2, 1)
 
         # create a layout for the speed with one button and one "lcd"
-        speed_layout = QtGui.QVBoxLayout()
+        speed_layout = QVBoxLayout()
         speed_layout.setSpacing(5)
 
-        set_speed_btn = QtGui.QPushButton("Set speed", self)
+        set_speed_btn = QPushButton("Set speed", self)
         set_speed_btn.clicked.connect(self.show_set_speed_dialog)
         self.set_speed_btn = set_speed_btn
 
-        self.lcd = QtGui.QLCDNumber(self)
+        self.lcd = QLCDNumber(self)
         self.lcd.display(self.motor.get_target_rotation_rate())
 
         speed_layout.addWidget(set_speed_btn)
@@ -96,7 +104,7 @@ class GraphicalDriver(QtGui.QWidget):
         self.show()
 
     def show_set_speed_dialog(self):
-        speed, ok = QtGui.QInputDialog.getText(
+        speed, ok = QInputDialog.getText(
             self, "Input Dialog", "Enter the motor speed in Hz:"
         )
         if ok:
@@ -104,13 +112,13 @@ class GraphicalDriver(QtGui.QWidget):
             self.lcd.display(self.motor.get_target_rotation_rate())
 
     def triangle_dialog(self):
-        max_speed, ok_a = QtGui.QInputDialog.getText(
+        max_speed, ok_a = QInputDialog.getText(
             self, "Input Dialog 1", "Enter the maximum motor speed in Hz:"
         )
-        duration, ok_b = QtGui.QInputDialog.getText(
+        duration, ok_b = QInputDialog.getText(
             self, "Input Dialog 2", "Enter the duration in s:"
         )
-        steps, ok_c = QtGui.QInputDialog.getText(
+        steps, ok_c = QInputDialog.getText(
             self, "Input Dialog 3", "Enter the number of steps:"
         )
         if ok_a and ok_b and ok_c:
@@ -118,8 +126,8 @@ class GraphicalDriver(QtGui.QWidget):
 
 
 def main():
-    app = QtGui.QApplication(sys.argv)
-    ex = GraphicalDriver()
+    app = QApplication(sys.argv)
+    GraphicalDriver()
     sys.exit(app.exec_())
 
 
