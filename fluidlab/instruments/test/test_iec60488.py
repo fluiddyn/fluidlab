@@ -9,7 +9,7 @@ class InstruWithTrigger(IEC60488, Trigger):
     """An IEC60488 instrument with trigger."""
 
 
-class SimpleTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
     def test_instr(self):
 
         with stdout_redirected(), InstruWithTrigger() as instr:
@@ -39,7 +39,3 @@ class SimpleTestCase(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             instr.get("interface")
-
-
-if __name__ == "__main__":
-    unittest.main()

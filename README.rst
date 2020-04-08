@@ -64,4 +64,4 @@ From the root directory::
 
 Or, from the root directory or from any of the "test" directories::
 
-  python -m unittest discover
+  pytest

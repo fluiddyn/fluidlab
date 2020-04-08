@@ -21,7 +21,6 @@ from PyQt5.QtWidgets import (
 
 from serial import SerialException
 
-
 from fluidlab.instruments.motor_controller.unidrive_sp import (
     OpenLoopUnidriveSP,
     example_linear_ramps,
@@ -39,6 +38,7 @@ class FalseMotor:
         pass
 
     def set_target_rotation_rate(self, rr, check=False):
+        print(f"set_target_rotation_rate {rr} Hz")
         self.rr = rr
 
     def get_target_rotation_rate(self):
@@ -48,7 +48,7 @@ class FalseMotor:
         pass
 
     def stop_rotation(self):
-        pass
+        self.rr = 0.0
 
 
 class GraphicalDriver(QWidget):
@@ -59,9 +59,11 @@ class GraphicalDriver(QWidget):
         try:
             self.motor = class_motor()
         except (OSError, SerialException):
+            print("OSError or SerialException so let's use a FalseMotor")
             self.motor = FalseMotor()
 
         # initialization of the window
+        print("initialization of the window")
         self.initUI()
 
     def create_btn(self, name, function, x, y):

@@ -3,7 +3,7 @@
 
 Provides:
 
-.. autoclass:: PyvisaInterface
+.. autoclass:: VISAInterface
    :members:
    :private-members:
 

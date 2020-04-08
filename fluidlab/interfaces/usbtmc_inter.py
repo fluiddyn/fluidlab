@@ -14,7 +14,7 @@ In that case, use SerialInterface, not LinuxUSBTMCInterface.
 
 Provides:
 
-.. autoclass:: LinuxUSBTMCInterface
+.. autoclass:: USBTMCInterface
    :members:
    :private-members:
 
@@ -22,7 +22,7 @@ Provides:
 
 import os
 from pathlib import Path
-from time import sleep
+
 from fluidlab.interfaces import QueryInterface
 
 

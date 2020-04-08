@@ -1,5 +1,3 @@
-import unittest
-
 import os
 import shutil
 from glob import glob
@@ -9,7 +7,7 @@ from fluiddyn.io import stdout_redirected
 from fluidlab.exp.session import Session
 
 
-class SimpleTestCase(unittest.TestCase):
+class TestCase:
     # def setUp(self):
     #     pass
 
@@ -29,7 +27,3 @@ class SimpleTestCase(unittest.TestCase):
         paths = glob(os.path.join(session.path, session.name) + "_*")
         for path in paths:
             os.remove(path)
-
-
-if __name__ == "__main__":
-    unittest.main(exit=False)

@@ -4,6 +4,8 @@ Modbus interfaces (:mod:`fluidlab.interfaces.modbus_inter`)
 
 Provides:
 
+.. autofunction:: get_modbus_interface
+
 .. autoclass:: ModbusInterface
    :members:
    :private-members:
@@ -30,6 +32,13 @@ class ModbusInterface(Interface):
         self.method = method
         self.slave_address = slave_address
         self.timeout = timeout
+        super().__init__()
+
+    def __str__(self):
+        return (
+            f"{self.__class__.__name__}({self.port:}, {self.method:}, "
+            f"{self.slave_address:}, {self.timeout})"
+        )
 
     def read_readonlybool(self, addresses):
         raise NotImplementedError
@@ -58,17 +67,11 @@ class ModbusInterface(Interface):
     def write_float32(self, addresses, values):
         raise NotImplementedError
 
-    def __str__(self):
-        return f"ModbusInterface({self.port:}, {self.method:}, {self.slave_address:}, {self.timeout})"
-
     def __repr__(self):
         return str(self)
 
 
 class MinimalModbusInterface(ModbusInterface):
-    def __str__(self):
-        return f"MinimalModbusInterface({self.port:}, {self.method:}, {self.slave_address:}, {self.timeout})"
-
     def _open(self):
         import minimalmodbus
 
@@ -123,9 +126,6 @@ class MinimalModbusInterface(ModbusInterface):
 
 
 class PyModbusInterface(ModbusInterface):
-    def __str__(self):
-        return f"PyModbusInterface({self.port:}, {self.method:}, {self.slave_address:}, {self.timeout})"
-
     def _open(self):
         try:
             if sys.version_info.major == 2:
@@ -170,3 +170,68 @@ class PyModbusInterface(ModbusInterface):
 
     def write_float32(self, addresses, values):
         raise NotImplementedError
+
+
+class FalseModbusInterface(ModbusInterface):
+    def _open(self):
+        pass
+
+    def read_readonlybool(self, addresses):
+        return False
+
+    def read_bool(self, addresses):
+        return False
+
+    def write_bool(self, addresses, values):
+        pass
+
+    def read_readonlyint16(self, addresses):
+        return 0
+
+    def read_int16(self, addresses):
+        return 0
+
+    def write_int16(self, address, values, signed=False):
+        pass
+
+    def read_readonlyfloat32(self, addresses):
+        return 0.0
+
+    def read_float32(self, addresses):
+        return 0.0
+
+    def write_float32(self, addresses, values):
+        pass
+
+
+classes = {
+    "minimalmodbus": MinimalModbusInterface,
+    "pymodbus": PyModbusInterface,
+    "false": FalseModbusInterface,
+}
+
+
+def get_modbus_interface(
+    port,
+    timeout=1,
+    module="minimalmodbus",
+    signed=False,
+    method="rtu",
+    slave_address=1,
+    **kwargs,
+):
+    f"""Get a Modbus interface
+
+    module can be in {list(classes.keys())}
+
+    """
+    cls = classes[module]
+    interface = cls(
+        port,
+        method=method,
+        slave_address=slave_address,
+        timeout=timeout,
+        **kwargs,
+    )
+    interface.open()
+    return interface

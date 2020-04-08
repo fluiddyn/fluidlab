@@ -9,11 +9,11 @@ black:
 	black -l 82 .
 
 tests:
-	python -m unittest discover
+	pytest fluidlab
 
 tests_coverage:
 	mkdir -p .coverage
-	coverage run -p -m unittest discover
+	coverage run -p -m pytest fluidlab
 
 report_coverage:
 	coverage combine

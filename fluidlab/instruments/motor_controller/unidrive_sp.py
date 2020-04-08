@@ -119,6 +119,7 @@ import numpy as np
 from fluidlab.instruments.drivers import Driver
 from fluidlab.instruments.features import DecimalInt16Value, Int16StringValue
 from fluidlab.interfaces import PhysicalInterfaceType
+from fluidlab.interfaces.modbus_inter import get_modbus_interface
 
 from fluiddyn.util.terminal_colors import print_fail, print_warning
 
@@ -158,7 +159,13 @@ class BaseUnidriveSP(Driver):
     _constant_nb_pairs_poles = 4
 
     def __init__(
-        self, port=None, timeout=1, module="minimalmodbus", signed=False
+        self,
+        port=None,
+        timeout=1,
+        module="minimalmodbus",
+        signed=False,
+        method="rtu",
+        interface=None,
     ):
 
         self.signed = signed
@@ -171,16 +178,26 @@ class BaseUnidriveSP(Driver):
             except AttributeError:
                 raise ValueError(
                     'If port is None, "port_unidrive_sp" has to be defined in'
-                    " one of the FluidLab user configuration files."
+                    " one of the FluidLab user configuration files "
+                    "(for example `~/.fluidlab/config.py`)."
                 )
 
-        super().__init__(port=port, method="rtu", timeout=timeout, module=module)
+        if interface is None:
+            interface = get_modbus_interface(
+                port=port,
+                timeout=timeout,
+                module=module,
+                signed=signed,
+                method=method,
+            )
+
+        super().__init__(interface)
 
         mode = self.mode.get()
         if hasattr(self, "_mode") and self._mode_cls != mode:
             raise ModeError(
-                "Instantiating a class for mode "
-                "{} but driver is in mode {}.".format(self._mode_cls, mode)
+                f"Instantiating a class for mode {self._mode_cls} "
+                f"but driver is in mode {mode}."
             )
 
     def unlock(self):

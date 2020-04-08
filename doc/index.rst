@@ -34,6 +34,7 @@ Modules Reference
    fluidlab.instruments
    fluidlab.objects
    fluidlab.exp
+   fluidlab.interfaces
    fluidlab.daq
    fluidlab.util
 

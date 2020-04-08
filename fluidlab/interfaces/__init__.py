@@ -21,8 +21,9 @@ Provides some classes:
 
 Provides some functions:
 
-set_default_interface
-interface_from_string
+.. autofunction:: set_default_interface
+
+.. autofunction:: interface_from_string
 
 
 Provides some modules:
@@ -30,10 +31,12 @@ Provides some modules:
 .. autosummary::
    :toctree:
 
-   visa
-   linuxgpib
+   gpib_inter
+   modbus_inter
    serial_inter
-   linuxusbtmc
+   socket_inter
+   usbtmc_inter
+   visa_inter
 
 """
 
