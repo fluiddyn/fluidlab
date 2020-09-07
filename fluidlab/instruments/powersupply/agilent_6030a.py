@@ -15,9 +15,7 @@ from fluidlab.instruments.features import FloatValue, BoolValue
 
 
 class Agilent6030a(IEC60488):
-    """Driver for the power supply Agilent 6030a
-
-    """
+    """Driver for the power supply Agilent 6030a"""
 
 
 features = [

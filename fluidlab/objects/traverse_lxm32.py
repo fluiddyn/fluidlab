@@ -212,7 +212,7 @@ class Traverse:
         return coef_meter_per_rot
 
     def _load_calibration(self):
-        """ Loads the calibration of the traverse.
+        """Loads the calibration of the traverse.
 
         Returns
         -------

@@ -86,7 +86,7 @@ class Agilent33220a_Frequency(SuperValue):
 def parse_agilent33220a_configuration_str(str):
     """Parse the Agilent 33220A configuration string.
 
-    Returns 4 elements: function name, frequency, amplitude, offset """
+    Returns 4 elements: function name, frequency, amplitude, offset"""
     valeurs = re.split(",", str)
     function_frequency = valeurs[0]
     amplitude = valeurs[1]

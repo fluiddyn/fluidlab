@@ -76,9 +76,7 @@ class WriteCommand(Feature):
         self.command_str = command_str
 
     def _build_driver_class(self, Driver):
-        """Add a "write function" to the driver class
-
-        """
+        """Add a "write function" to the driver class"""
         command_str = self.command_str
 
         def func(self):
@@ -95,9 +93,7 @@ class QueryCommand(Feature):
         self.parse_result = parse_result
 
     def _build_driver_class(self, Driver):
-        """Add a "query function" to the driver class
-
-        """
+        """Add a "query function" to the driver class"""
         command_str = self.command_str
 
         parse_result = self.parse_result
@@ -176,8 +172,8 @@ class Value(SuperValue):
 
     def get(self, channel=0):
         """Get the value from the instrument.
-           Optional argument 'channel' is used for multichannel instrument.
-           Then command_get should include '{channel:}'
+        Optional argument 'channel' is used for multichannel instrument.
+        Then command_get should include '{channel:}'
         """
         if isinstance(channel, list) or isinstance(channel, tuple):
             return [self.get(c) for c in channel]
@@ -197,8 +193,8 @@ class Value(SuperValue):
 
     def set(self, value, channel=0):
         """Set the value in the instrument.
-           Optional argument 'channel' is used for multichannel instrument.
-           Then command_set argument should include '{channel:}' and '{value:}'
+        Optional argument 'channel' is used for multichannel instrument.
+        Then command_set argument should include '{channel:}' and '{value:}'
         """
         if self.pause_instrument > 0:
             time.sleep(self.pause_instrument)

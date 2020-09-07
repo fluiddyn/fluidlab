@@ -32,10 +32,7 @@ __all__ = ["AgilentDSOX2014a"]
 class AgilentDSOX2014a(
     IEC60488, Trigger, ObjectIdentification, StoredSetting, Learn
 ):
-    """Driver for the oscilloscope Agilent DSOX2014a.
-
-
-    """
+    """Driver for the oscilloscope Agilent DSOX2014a."""
 
     def get_curve(
         self, channel=1, nb_points=65535, acquire=True, format_output="byte"
@@ -47,14 +44,14 @@ class AgilentDSOX2014a(
 
         channel: int or Iterable of ints
           The channels to get data from
-          
+
         nb_points : int
           The number of points that have to be returned (max is 65535)
 
         acquire: bool
           if True, starts a single acquisition
           if False, get data without restarting digitization
-          
+
         format_output : string
           The format of the data that is sent from the scope.
           Has to be in ['ascii', 'byte'].

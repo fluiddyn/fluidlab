@@ -14,8 +14,7 @@ from fluidlab.instruments.features import FloatValue, BoolValue
 
 
 class XantrexXDC300(IEC60488):
-    """ Driver for the power supply Xantrex XDC300
-    """
+    """Driver for the power supply Xantrex XDC300"""
 
 
 features = [

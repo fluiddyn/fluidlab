@@ -25,7 +25,7 @@ class HP34401aValue(FloatValue):
     Range can be:
      - "DEF" for autorange, or alternatively autorange=True
      - "MIN" for the lowest range
-     - "MAX" for the highest range 
+     - "MAX" for the highest range
      - or one acceptable value for the specified measurement
 
     Possible RES and FRES range values:
@@ -65,9 +65,7 @@ class HP34401aValue(FloatValue):
 
 
 class HP34401a(IEC60488):
-    """Driver for the multimeter HP 34401a.
-
-    """
+    """Driver for the multimeter HP 34401a."""
 
     def print_configuration(self):
         s = self.query_configuration().strip()

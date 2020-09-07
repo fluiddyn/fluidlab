@@ -19,9 +19,7 @@ from fluidlab.instruments.features import (
 
 
 class Keithley2400(IEC60488):
-    """Driver for the sourcemeter Keithley 2400.
-
-    """
+    """Driver for the sourcemeter Keithley 2400."""
 
 
 features = [

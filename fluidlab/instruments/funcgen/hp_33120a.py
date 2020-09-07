@@ -16,14 +16,14 @@ from fluidlab.instruments.features import SuperValue, FloatValue
 
 class HP33120a(IEC60488, Trigger):
     """
-	Driver for the function generator Hewlett-Packard 33120A
-	
-	"""
+    Driver for the function generator Hewlett-Packard 33120A
+
+    """
 
     def configure_burst(self, freq, ncycles):
         """Configure a TTL burst with a given number of cycles
         Send ``*TRG`` or ``gbf.trigger()`` to start a burst.
-        
+
         Conditions: ncyles must be <= 50000 and if freq <= 100 Hz, we
         must have:
         burst count / carrier frequency <= 500 seconds

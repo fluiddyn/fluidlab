@@ -181,7 +181,7 @@ def make_track_sleep_1period(z_max, z_min, v_up, v_down, acc, dacc, dt, t_sleep)
 def make_track_sleep_1period_tbottom(
     z_max, z_min, v_up, v_down, acc, dacc, dt, t_bottom, t_period=None
 ):
-    """ 
+    """
     Track for the profilometers with a sleeping time at the end AND
     sleeping time at the bottom (to measure the signal at the bottom).
     """

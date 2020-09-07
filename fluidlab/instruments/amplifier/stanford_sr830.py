@@ -115,9 +115,7 @@ class StanfordSR830ExpandValue(FloatValue):
 
 
 class StanfordSR830(IEC60488):
-    """Driver for Lock-in Amplifier Stanford 830.
-
-    """
+    """Driver for Lock-in Amplifier Stanford 830."""
 
 
 features = [

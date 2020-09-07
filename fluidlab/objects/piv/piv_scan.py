@@ -404,7 +404,7 @@ def multilevel_piv(time_between_frames, volt, tacq=None, nloop=None):
 
 
 def saw_tooth_period2(vmin, vmax, time_expo, nb_levels, time_between_frames):
-    """ Determine the saw tooth profile for single frame acquisition
+    """Determine the saw tooth profile for single frame acquisition
 
     Parameters
     ----------
@@ -572,7 +572,7 @@ def double_saw_tooth2(
     - nb_levels: number of steps in the rising part
     - time_between_frames: total time (in s)
     - time_between_pairs: time between 2 pairs of saw tooth
-    
+
     Returns
     -------
 

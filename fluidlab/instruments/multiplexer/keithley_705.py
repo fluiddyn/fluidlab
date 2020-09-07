@@ -14,9 +14,7 @@ from fluidlab.instruments.features import SuperValue, BoolValue
 
 
 class Keithley705(IEC60488):
-    """Driver for the multiplexer Keithley 705*
-
-    """
+    """Driver for the multiplexer Keithley 705*"""
 
     def query_identification(self):
         self.open_all_channels()

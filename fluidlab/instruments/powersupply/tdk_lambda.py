@@ -15,9 +15,7 @@ from fluidlab.instruments.features import FloatValue, BoolValue
 
 
 class TdkLambda(IEC60488):
-    """Driver for the power supply TDK Lambda
-
-    """
+    """Driver for the power supply TDK Lambda"""
 
 
 features = [

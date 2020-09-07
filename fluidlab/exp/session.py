@@ -447,10 +447,7 @@ class DataTable:
 
 
 class SessionWithDefaultParams(Session):
-    """Not implemented
-
-
-    """
+    """Not implemented"""
 
     @classmethod
     def create_default_params(cls):

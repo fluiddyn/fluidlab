@@ -21,9 +21,7 @@ def is_power2(num):
 
 
 class T7:
-    """Streaming with a T7 board (LabJack)
-
-    """
+    """Streaming with a T7 board (LabJack)"""
 
     def __init__(self, identifier="ANY"):
         # Open a T7 board
@@ -90,9 +88,9 @@ class T7:
         return buffer_size, data_splited
 
     def write_out_buffer(self, streamout, volt):
-        """ to replace
-            for l in volt:
-                ljm.eWriteName(handle, "STREAM_OUT0_BUFFER_F32", l)
+        """to replace
+        for l in volt:
+            ljm.eWriteName(handle, "STREAM_OUT0_BUFFER_F32", l)
         """
 
         handle = self.handle

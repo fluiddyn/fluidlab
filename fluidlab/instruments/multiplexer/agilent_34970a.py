@@ -17,8 +17,7 @@ from fluidlab.instruments.features import SuperValue
 
 
 class Agilent34970aValue(SuperValue):
-    """Custom Value for Agilent 34970a
-    """
+    """Custom Value for Agilent 34970a"""
 
     def __init__(self, name, doc="", function_name=None):
         super().__init__(name, doc)
@@ -62,8 +61,7 @@ class Agilent34970aValue(SuperValue):
 
 
 class Agilent34970a(IEC60488):
-    """Driver for the multiplexer Agilent 34970A.
-    """
+    """Driver for the multiplexer Agilent 34970A."""
 
     def __init__(self, interface=None):
         super().__init__(interface)
@@ -83,12 +81,12 @@ class Agilent34970a(IEC60488):
     def set_tmo(self, tmo):
         """Sets the timeout for scan operations. If reading takes longer, then an exception
         is raised.
-            
+
         :param tmo: timeout in milliseconds
         :type tmo: float
 
         .. note::
-            
+
             this only takes effects when the :meth:`scan` method is invoked.
 
         """
@@ -105,7 +103,7 @@ class Agilent34970a(IEC60488):
         :type rangeValue: float
 
         .. note::
-            
+
             this only takes effects when the :meth:`scan` method is invoked.
 
         """
@@ -123,7 +121,7 @@ class Agilent34970a(IEC60488):
         :type nplcValue: float
 
         .. note::
-            
+
             this only takes effects when the :meth:`scan` method is invoked.
 
         """
@@ -348,8 +346,7 @@ class Agilent34970a(IEC60488):
         return retval
 
     def write_vdc(self, channelList, value):
-        """Write DC-Voltage on specified AO channel.
-        """
+        """Write DC-Voltage on specified AO channel."""
 
         print("Warning there is clearly a bug here: channelList !")
 

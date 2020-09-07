@@ -53,7 +53,7 @@ class PIV2D:
         wait_file=False,
         nb_period_to_wait=1.0,
     ):
-        """ Single frame 2D PIV.
+        """Single frame 2D PIV.
 
         Send a square signal to trig cameras (DAC0)
 

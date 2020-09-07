@@ -49,7 +49,7 @@ def colored(string, color):
 
 
 def read_header(f, verbose):
-    """ Reads Octave binary file header (one per file)
+    """Reads Octave binary file header (one per file)
 
     Format is described in libinterp/corefcn/ls-oct-binary.cc
     recalled below.
@@ -77,7 +77,7 @@ def read_header(f, verbose):
 
 
 def read_scalar_var(f, verbose):
-    """ Reads one variable of type 'scalar' from Octave binary file
+    """Reads one variable of type 'scalar' from Octave binary file
 
     See: octave_scalar::load_binary from libinterp/octave-value/ov-scalar.cc
     from GNU Octave source files
@@ -95,7 +95,7 @@ def read_scalar_var(f, verbose):
 
 
 def read_matrix_var(f, verbose):
-    """ Reads one variable of type 'matrix' from Octave binary file
+    """Reads one variable of type 'matrix' from Octave binary file
 
     See: octave_matrix::load_binary from libinterp/octave-value/ov-re-mat.cc
     from GNU Octave source files
@@ -146,7 +146,7 @@ def read_matrix_var(f, verbose):
 
 
 def read_scalar_struct_var(f, verbose):
-    """ Reads one scalar structure variable from Octave binary file and returns
+    """Reads one scalar structure variable from Octave binary file and returns
     it as a dictionnary.
 
     See: octave_struct::load_binary from libinterp/octave-value/ov-struct.cc
@@ -179,7 +179,7 @@ def read_scalar_struct_var(f, verbose):
 
 
 def read_string_var(f, verbose):
-    """ Reads one sq_string variable from Octave binary file
+    """Reads one sq_string variable from Octave binary file
 
     See: octave_char_matrix_str::load_binary from octinterp/octave-value/ov-str-mat.cc
     from GNU Octave source files
@@ -218,7 +218,7 @@ def read_string_var(f, verbose):
 
 
 def read_cell_var(f, verbose):
-    """ Reads one Cell variable from Octave binary file and returns it as a list
+    """Reads one Cell variable from Octave binary file and returns it as a list
 
     See: octave_cell::load_binary from octinterp/octave-value/ov-cell.cc
     from GNU Octave source files
@@ -250,7 +250,7 @@ def read_cell_var(f, verbose):
 
 
 def read_var(f, verbose):
-    """ Reads one variable from Octave binary file
+    """Reads one variable from Octave binary file
 
     Format is described in libinterp/corefcn/ls-oct-binary.cc
     recalled below.

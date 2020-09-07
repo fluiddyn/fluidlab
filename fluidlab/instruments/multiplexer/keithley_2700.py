@@ -19,8 +19,7 @@ from fluidlab.instruments.features import SuperValue, BoolValue
 
 
 class Keithley2700(IEC60488):
-    """Driver for the multiplexer Keithley 2700 Series
-    """
+    """Driver for the multiplexer Keithley 2700 Series"""
 
     def __init__(self, interface=None):
         super().__init__(interface)
@@ -321,8 +320,7 @@ class Keithley2700(IEC60488):
 
 
 class Keithley2700Value(SuperValue):
-    """Custom :class:`Value` class for the Keithley 2700 features.
-    """
+    """Custom :class:`Value` class for the Keithley 2700 features."""
 
     def __init__(self, name, doc="", function_name=None):
         super().__init__(name, doc)
