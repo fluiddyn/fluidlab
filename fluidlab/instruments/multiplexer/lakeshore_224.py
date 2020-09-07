@@ -106,6 +106,7 @@ class Lakeshore224(IEC60488):
         coefficient = CurveCoefficient(coefficient)
 
         # Curve Header Command
+        self.interface.write(f"CRVDEL {curve_number:d}")
         self.interface.write(
             f"CRVHDR {curve_number:d},{curve_name:},{curve_sn:},{curve_format:d},{limit_value:.1f},{coefficient:d}"
         )
@@ -119,6 +120,7 @@ class Lakeshore224(IEC60488):
             self.interface.write(
                 f"CRVPT {curve_number:d},{index:d},{unit_str:},{temp_str}"
             )
+            index = index + 1
 
 
 features = [
@@ -134,6 +136,13 @@ features = [
         command_get="SRDG? {channel:}",
         channel_argument=True,
     ),
+    IntValue(
+        "curve_number",
+        doc="Specifies the curve an input uses for temperature conversion",
+        command_set="INCRV {channel:},{value:}",
+        command_get="INCRV? {channel:}",
+        channel_argument=True,
+    )
 ]
 
 Lakeshore224._build_class_with_features(features)
