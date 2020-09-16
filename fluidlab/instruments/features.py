@@ -130,10 +130,16 @@ class Value(SuperValue):
         check_instrument_value=True,
         pause_instrument=0.0,
         channel_argument=False,
+        possible_values=None,
+        possible_channels=None,
+        default_channel=0,
     ):
         super().__init__(name, doc)
         self.command_set = command_set
         self.check_instrument_value_after_set = check_instrument_value
+        self.possible_channels = possible_channels
+        self.possible_values = possible_values
+        self.default_channel = default_channel
 
         self.pause_instrument = pause_instrument
         # certains appareils plantent si on leur parle sans faire de pauses
@@ -170,13 +176,17 @@ class Value(SuperValue):
     def _convert_as_str(self, value):
         return self._fmt.format(value)
 
-    def get(self, channel=0):
+    def get(self, channel=None):
         """Get the value from the instrument.
         Optional argument 'channel' is used for multichannel instrument.
         Then command_get should include '{channel:}'
         """
         if isinstance(channel, list) or isinstance(channel, tuple):
             return [self.get(c) for c in channel]
+        if channel is None:
+            channel = self.default_channel
+        if self.possible_channels is not None and channel not in self.possible_channels:
+            raise ValueError(f"Wrong channel. Must be in {str(self.possible_channels):}.")
         if self.pause_instrument > 0:
             time.sleep(self.pause_instrument)
         command = self.command_get
@@ -191,7 +201,7 @@ class Value(SuperValue):
         self._check_value(result)
         return result
 
-    def set(self, value, channel=0):
+    def set(self, value, channel=None):
         """Set the value in the instrument.
         Optional argument 'channel' is used for multichannel instrument.
         Then command_set argument should include '{channel:}' and '{value:}'
@@ -199,6 +209,12 @@ class Value(SuperValue):
         if self.pause_instrument > 0:
             time.sleep(self.pause_instrument)
         self._check_value(value)
+        if channel is None:
+            channel = self.default_channel
+        if self.possible_channels is not None and channel not in self.possible_channels:
+            raise ValueError(f"Wrong channel. Must be in {str(self.possible_channels):}.")
+        if self.possible_values is not None and value not in self.possible_values:
+            raise ValueError(f"Wrong value. Must be in {str(self.possible_values):}.")
         if self.channel_argument:
             # here we don't call _convert_as_str to allow the user to choose
             # the desired format in the command_set string
@@ -229,6 +245,8 @@ class BoolValue(Value):
         channel_argument=False,
         true_string="1",
         false_string="0",
+        possible_channels=None,
+        default_channel=0,
     ):
         super().__init__(
             name,
@@ -238,6 +256,9 @@ class BoolValue(Value):
             check_instrument_value,
             pause_instrument,
             channel_argument,
+            possible_values={True, False},
+            possible_channels=possible_channels,
+            default_channel=default_channel,
         )
         self.true_string = true_string
         self.false_string = false_string
@@ -282,6 +303,9 @@ class StringValue(Value):
         check_instrument_value=True,
         pause_instrument=0.0,
         channel_argument=False,
+        possible_values=None,
+        possible_channels=None,
+        default_channel=0,
     ):
         super().__init__(
             name,
@@ -291,6 +315,9 @@ class StringValue(Value):
             check_instrument_value=check_instrument_value,
             pause_instrument=pause_instrument,
             channel_argument=channel_argument,
+            possible_values=possible_values,
+            possible_channels=possible_channels,
+            default_channel=default_channel,
         )
         self.valid_values = valid_values
 
@@ -412,6 +439,9 @@ class NumberValue(Value):
         check_instrument_value=True,
         pause_instrument=0.0,
         channel_argument=False,
+        possible_values=None,
+        possible_channels=None,
+        default_channel=0,
     ):
         super().__init__(
             name,
@@ -421,6 +451,9 @@ class NumberValue(Value):
             check_instrument_value=check_instrument_value,
             pause_instrument=pause_instrument,
             channel_argument=channel_argument,
+            possible_values=possible_values,
+            possible_channels=possible_channels,
+            default_channel=default_channel,
         )
 
         if limits is not None and len(limits) != 2:
@@ -492,6 +525,9 @@ class RegisterValue(NumberValue):
         check_instrument_value=True,
         pause_instrument=0.0,
         channel_argument=False,
+        possible_values=None,
+        possible_channels=None,
+        default_channel=0,
     ):
 
         if keys is None:
@@ -511,6 +547,9 @@ class RegisterValue(NumberValue):
             check_instrument_value=check_instrument_value,
             pause_instrument=pause_instrument,
             channel_argument=channel_argument,
+            possible_values=possible_values,
+            possible_channels=possible_channels,
+            default_channel=default_channel,
         )
 
         if isinstance(default_value, int):

@@ -5,34 +5,15 @@
    :members:
    :private-members:
 
-.. autoclass: CurveFormat
-   :members:
-   :private-members:
+
 
 """
 
 __all__ = ["Lakeshore224"]
 
-from enum import IntEnum
-
+from fluidlab.instruments.multiplexer import CurveFormat, CurveCoefficient
 from fluidlab.instruments.iec60488 import IEC60488
 from fluidlab.instruments.features import FloatValue, BoolValue, IntValue
-
-
-class CurveFormat(IntEnum):
-    """Curve format."""
-
-    MILLIVOLT_PER_KELVIN = 1
-    VOLT_PER_KELVIN = 2
-    OHM_PER_KELVIN = 3
-    LOGOHM_PER_KELVIN = 4
-
-
-class CurveCoefficient(IntEnum):
-    """Curve coefficient."""
-
-    NEGATIVE = 1
-    POSITIVE = 2
 
 
 def float_to_LS(number):
