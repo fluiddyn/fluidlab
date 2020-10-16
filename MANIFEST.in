@@ -4,5 +4,3 @@ recursive-include doc *.rst
 recursive-include fluidlab *.h
 recursive-include fluidlab *.pyx
 recursive-include fluidlab *.pxd
-recursive-include fluidlab *.c
-recursive-include include *.h
