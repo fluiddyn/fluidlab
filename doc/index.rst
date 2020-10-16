@@ -4,12 +4,6 @@
 FluidLab documentation
 ======================
 
-.. warning ::
-
-   Our repositories in Bitbucket.org will soon be deleted! Our new home:
-   https://foss.heptapod.net/fluiddyn (`more details
-   <https://fluiddyn.readthedocs.io/en/latest/advice_developers.html>`_).
-
 FluidLab is a framework for studying fluid dynamics by experiments
 using Python.  It is part of the wider project `FluidDyn
 <http://fluiddyn.readthedocs.org>`_.
@@ -24,7 +18,6 @@ User Guide
    tutorials
    examples
 
-
 Modules Reference
 -----------------
 
@@ -38,7 +31,6 @@ Modules Reference
    fluidlab.daq
    fluidlab.util
 
-
 More
 ----
 
@@ -48,7 +40,6 @@ More
    to_do
    changes
    Advice for FluidDyn developers <http://fluiddyn.readthedocs.io/en/latest/advice_developers.html>
-
 
 Links
 -----
@@ -61,7 +52,6 @@ Links
   `Slack <https://fluiddyn.slack.com>`_
 - `FluidDyn mailing list <https://www.freelists.org/list/fluiddyn>`_
 - `FluidDyn on Twitter <https://twitter.com/pyfluiddyn>`_
-
 
 Indices and tables
 ==================
