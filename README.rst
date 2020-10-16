@@ -1,28 +1,31 @@
-.. warning ::
-
-   Our repositories in Bitbucket.org will soon be deleted! Our new home:
-   https://foss.heptapod.net/fluiddyn (`more details
-   <https://fluiddyn.readthedocs.io/en/latest/advice_developers.html>`_).
-
 ========
 FluidLab
 ========
 
-|release| |docs| |coverage| |travis|
+|release| |pyversions| |docs| |coverage| |heptapod_ci| |travis|
 
 .. |release| image:: https://img.shields.io/pypi/v/fluidlab.svg
    :target: https://pypi.python.org/pypi/fluidlab/
    :alt: Latest version
 
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/fluidlab.svg
+   :alt: Supported Python versions
+
 .. |docs| image:: https://readthedocs.org/projects/fluidlab/badge/?version=latest
    :target: http://fluidlab.readthedocs.org
    :alt: Documentation status
 
-.. |coverage| image:: https://codecov.io/gh/fluiddyn/fluidlab/branch/master/graph/badge.svg
+.. |coverage| image:: https://codecov.io/gh/fluiddyn/fluidlab/branch/branch%2Fdefault/graph/badge.svg
    :target: https://codecov.io/gh/fluiddyn/fluidlab
+   :alt: Code coverage
 
-.. |travis| image:: https://travis-ci.org/fluiddyn/fluidlab.svg?branch=master
+.. |heptapod_ci| image:: https://foss.heptapod.net/fluiddyn/fluidlab/badges/branch/default/pipeline.svg
+   :target: https://foss.heptapod.net/fluiddyn/fluidlab/-/pipelines
+   :alt: Heptapod CI
+
+.. |travis| image:: https://travis-ci.org/fluiddyn/fluidlab.svg
    :target: https://travis-ci.org/fluiddyn/fluidlab
+   :alt: Travis CI status
 
 FluidLab is the package of the `FluidDyn project
 <http://fluiddyn.readthedocs.org>`__ for doing laboratory experiments.
@@ -47,21 +50,19 @@ license.
 Installation
 ------------
 
-You can get the source code from `Heptapod
-<https://foss.heptapod.net/fluiddyn/fluidlab>`__ or from `the Python Package Index
-<https://pypi.python.org/pypi/fluidlab/>`__.
+With a recent version of `pip`, one can use::
 
-The development mode is often useful. From the root directory::
+  pip install fluidlab
+
+Alternatively, one can install from source, which are available from `Heptapod
+<https://foss.heptapod.net/fluiddyn/fluidlab>`__. From the root directory of
+the repository::
 
   pip install -e .
 
 Tests
 -----
 
-From the root directory::
-
-  make tests
-
-Or, from the root directory or from any of the "test" directories::
+From the root directory or from any of the "test" directories, run::
 
   pytest
