@@ -23,9 +23,13 @@ class CryoconFloatValue(FloatValue):
     to NaN instead of raising ValueError exception.
     """
     def _convert_from_str(self, value):
+        value = value.strip()
         if value == '.......':
             return float("nan")
-        return super()._convert_from_str(value)
+        try:
+            return super()._convert_from_str(value)
+        except ValueError:
+            return float("nan")
         
 class Cryocon24c(IEC60488):
     default_physical_interface = PhysicalInterfaceType.Ethernet
