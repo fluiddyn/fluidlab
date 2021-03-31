@@ -41,6 +41,21 @@ class HP33120a(IEC60488, Trigger):
         self.interface.write("BM:PHAS -20")
         self.interface.write("TRIG:SOUR BUS")
         self.interface.write("BM:STAT ON")
+        
+    def configure_square(self, vmin, vmax=None, freq=None):
+        """
+        Set the device in Square function
+        """
+
+        if vmax and freq:
+            vpp = vmax - vmin
+            voffset = (vmin + vmax) / 2
+            self.interface.write("OUTP:LOAD INF")
+            self.interface.write(
+                "APPL:SQU {freq:} HZ, {ampl:} VPP, {offset:} V".format(
+                    freq=freq, ampl=vpp, offset=voffset
+                )
+            )
 
 
 class HP33120a_ShapeValue(SuperValue):
