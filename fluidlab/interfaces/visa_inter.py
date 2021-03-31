@@ -13,7 +13,7 @@ import pyvisa as visa
 
 from fluidlab.interfaces import QueryInterface
 
-default_visa_backend = "@ni"
+default_visa_backend = "@ivi"
 
 opened_devices_for_rm = dict()  # key: rm, object: device
 resource_managers = dict()  # key: backend(str), object: rm
