@@ -122,7 +122,7 @@ class GPIBInterface(QueryInterface):
                 sta = gpib.wait(self.board_adress, gpib.TIMO | gpib.SRQI)
                 if (sta & gpib.TIMO) != 0:
                     # Timed out
-                    if time.monotonic() - start > timeout:
+                    if time.monotonic() - tstart > timeout:
                         print("Timeout occured")
                         break
                 else:
