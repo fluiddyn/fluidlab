@@ -17,9 +17,11 @@ Provides:
 
 """
 
-from __future__ import print_function
-
-from collections import Iterable
+try:
+    from collections.abc import Iterable
+except ImportError:
+    # For Python < 3.9
+    from collections import Iterable
 from numbers import Number
 from platform import platform
 import time
@@ -29,7 +31,7 @@ import numpy as np
 import ctypes
 import six
 
-from PyDAQmx import Task, byref, float64, int32, uInt32, bool32
+from PyDAQmx import Task, byref, float64, int32
 
 from PyDAQmx import (
     DAQmx_Val_Cfg_Default,
@@ -56,7 +58,11 @@ except ImportError:
 
 from PyDAQmx.DAQmxFunctions import AttributeNotSupportedInTaskContextError
 
-_coupling_values = {"DC": DAQmx_Val_DC, "AC": DAQmx_Val_AC, "GND": DAQmx_Val_GND}
+_coupling_values = {
+    "DC": DAQmx_Val_DC,
+    "AC": DAQmx_Val_AC,
+    "GND": DAQmx_Val_GND,
+}
 
 
 def _parse_resource_names(resource_names):
@@ -183,10 +189,7 @@ def read_analog(
         raise ValueError("samples_per_chan has to be a positive integer.")
 
     # prepare coupling_types
-    if (
-        not isinstance(coupling_types, str)
-        and len(coupling_types) != nb_resources
-    ):
+    if not isinstance(coupling_types, str) and len(coupling_types) != nb_resources:
         raise ValueError(
             "coupling_types has to be a number or an iterable "
             "of the same length as resource_names"
@@ -277,19 +280,13 @@ def read_analog(
             elif samples_per_chan < 1_000_000:
                 verbose_text += str(samples_per_chan / 1000) + " kSamp/chan @ "
             else:
-                verbose_text += (
-                    str(samples_per_chan / 1_000_000) + " MSamp/chan @ "
-                )
+                verbose_text += str(samples_per_chan / 1_000_000) + " MSamp/chan @ "
             if sample_rate < 1000:
                 verbose_text += "%.2f Hz using OnboardClock)" % sample_rate
             elif sample_rate < 1_000_000:
-                verbose_text += "%.2f kHz using OnboardClock)" % (
-                    sample_rate / 1000.0
-                )
+                verbose_text += "%.2f kHz using OnboardClock)" % (sample_rate / 1000.0)
             else:
-                verbose_text += "%.2f MHz using OnboardClock)" % (
-                    sample_rate / 1e6
-                )
+                verbose_text += "%.2f MHz using OnboardClock)" % (sample_rate / 1e6)
             print(verbose_text)
         task.CfgSampClkTiming(
             "OnboardClock",
@@ -405,7 +402,7 @@ def write_analog(
     if isinstance(volt_max, Number):
         volt_max = [volt_max] * nb_resources
 
-    if isinstance(signals, (list, tuple, np.ndarray)) == False:
+    if not isinstance(signals, (list, tuple, np.ndarray)):
         nb_samps_per_chan = 1
     # if np.isscalar(signals)==True
     elif signals.ndim == 1:
@@ -413,9 +410,7 @@ def write_analog(
     elif signals.ndim == 2:
         nb_samps_per_chan = signals.shape[1]
     else:
-        raise ValueError(
-            "signals has to be a scalar or an array of dimension 1 or 2."
-        )
+        raise ValueError("signals has to be a scalar or an array of dimension 1 or 2.")
 
     # create task
     if verbose:
@@ -443,19 +438,15 @@ def write_analog(
     if nb_samps_per_chan > 1:
         verbose_text = "DAQmx: Configure clock timing ("
         if verbose:
-            if samples_per_chan < 1000:
+            if nb_samps_per_chan < 1000:
+                verbose_text = verbose_text + str(nb_samps_per_chan) + " samp/chan @ "
+            elif nb_samps_per_chan < 1_000_000:
                 verbose_text = (
-                    verbose_text + str(samples_per_chan) + " samp/chan @ "
-                )
-            elif samples_per_chan < 1_000_000:
-                verbose_text = (
-                    verbose_text + str(samples_per_chan / 1000) + " kSamp/chan @ "
+                    verbose_text + str(nb_samps_per_chan / 1000) + " kSamp/chan @ "
                 )
             else:
                 verbose_text = (
-                    verbose_text
-                    + str(samples_per_chan / 1_000_000)
-                    + " MSamp/chan @ "
+                    verbose_text + str(nb_samps_per_chan / 1_000_000) + " MSamp/chan @ "
                 )
             if sample_rate < 1000:
                 verbose_text = verbose_text + (
@@ -592,7 +583,7 @@ def measure_freq(resource_name, freq_min=1, freq_max=1000):
 
     timeout = 10
     result = float64()
-    null = ctypes.POINTER(ctypes.c_uint)()
+    _ = ctypes.POINTER(ctypes.c_uint)()
     task.ReadCounterScalarF64(timeout, byref(result), None)
 
     return result.value
