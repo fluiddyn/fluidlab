@@ -414,6 +414,30 @@ The values for loop 2 is 10W into a 50 Ohm load.
 
 Cryocon24c._build_class_with_features(features)
 
+
+def loop_output_power_to_power(loop_channel, loop_output_power, loop_range="Low", heater_resistance=50.0):
+    """Converts the loop output power, which is a percentage of the power full scale to actual power (in watts).
+
+    For loop 1, there are three range values, "High" (1 A), "Mid" (0.333 A), "Low" (0.100 A). The load parameter (25 Ohm or 50 Ohm)
+    controls the compliance voltage (25 V or 50 V respectively).
+
+    For loop 2 (secondary loop), maximum output current is 450 mA, and compliance 25 V.
+
+    Both have 1.0ppm full scale (20 bits).
+    """
+
+    if loop_channel == 1:
+        maximum_current = {
+            "High": 1.0,
+            "Mid": 0.333,
+            "Low": 0.1,
+        }[loop_range]
+    elif loop_channel == 2:
+        maximum_current = 0.45
+
+    return heater_resistance * (loop_output_power / 100) * maximum_current ** 2
+        
+
 if __name__ == "__main__":
     with Cryocon24c("192.168.0.2") as cc:
         Ta = cc.temperature.get("A")
