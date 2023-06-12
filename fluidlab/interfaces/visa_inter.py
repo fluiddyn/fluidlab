@@ -47,7 +47,7 @@ class VISAInterface(QueryInterface):
             resource_managers[self.backend] = rm
             opened_devices_for_rm[rm] = {self}
         self.rm = rm
-        instr = rm.get_instrument(self.resource_name)
+        instr = rm.open_resource(self.resource_name)
         self._lowlevel = instr
         self.pyvisa_instr = instr
         self.assert_trigger = instr.assert_trigger
