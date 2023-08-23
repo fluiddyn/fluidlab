@@ -1,6 +1,0 @@
-
-dependencies:
-  - python=3.6
-  - numpy
-  - h5py
-  - matplotlib

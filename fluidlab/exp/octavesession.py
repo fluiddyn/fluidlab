@@ -54,7 +54,7 @@ def read_header(f, verbose):
     Format is described in libinterp/corefcn/ls-oct-binary.cc
     recalled below.
 
-    Header (one per file):
+    Header (one per file)
     =====================
 
     object               type            bytes
@@ -255,7 +255,7 @@ def read_var(f, verbose):
     Format is described in libinterp/corefcn/ls-oct-binary.cc
     recalled below.
 
-    Data (one set for each item):
+    Data (one set for each item)
     ============================
 
     object               type            bytes

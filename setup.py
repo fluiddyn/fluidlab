@@ -64,7 +64,7 @@ if path_PowerDAQ.exists():
         ext_modules.append(ext_PowerDAQ)
 
 
-install_requires = ["fluiddyn >= 0.3.2", "pyusb", "minimalmodbus"]
+install_requires = ["fluiddyn >= 0.3.2", "pyusb", "minimalmodbus", "progressbar2"]
 # Even though we also use scipy, we don't require its installation
 # because it can be heavy to install.
 

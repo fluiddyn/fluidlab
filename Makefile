@@ -1,6 +1,6 @@
 
 develop:
-	pip install -v -e .[dev] | grep -v link
+	pip install -e .[dev]
 
 clean_so:
 	find fluidlab -name "*.so" -delete

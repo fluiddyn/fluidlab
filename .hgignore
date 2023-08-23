@@ -51,3 +51,6 @@ scripts\Experiments\path_working_exp.txt
 .coverage/*
 .pytest_cache
 .mypy_cache
+
+.venv
+.vscode

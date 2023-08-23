@@ -28,9 +28,8 @@ class TtiCpx400dpUnitValue(FloatValue):
 
 class TtiCpx400dp(IEC60488):
     """Driver for the power supply TTI CPX400DP
-    ===========================================
 
-        Dual 420 watt DC Power Supply.
+    Dual 420 watt DC Power Supply.
 
     Default interface is GPIB, but the device can work also
     with LAN, RS-232 and USB connection.

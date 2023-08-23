@@ -1,8 +1,0 @@
-jupyter
-numpy
-matplotlib
-scipy
-fluiddyn>=0.0.11a1
-Sphinx>=1.1
-numpydoc
-setuptools>=18.5
